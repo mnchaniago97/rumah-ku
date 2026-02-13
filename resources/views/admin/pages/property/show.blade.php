@@ -12,6 +12,29 @@
                     class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
                     Kembali
                 </a>
+                @if(!$property->is_approved)
+                    <form action="{{ route('admin.properties.approve', $property) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                            class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-green-700">
+                            Approve
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.properties.reject', $property) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                            class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-red-700">
+                            Reject
+                        </button>
+                    </form>
+                @else
+                    <span
+                        class="inline-flex items-center rounded-lg bg-green-50 px-3 py-2 text-sm font-semibold text-green-700 dark:bg-green-500/10 dark:text-green-400">
+                        Approved
+                    </span>
+                @endif
                 <a href="{{ route('admin.properties.edit', $property) }}"
                     class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">Edit</a>
             </div>
@@ -70,6 +93,26 @@
                             <span class="rounded-full bg-yellow-50 px-2 py-0.5 text-yellow-600 dark:bg-yellow-500/10 dark:text-yellow-400">Yes</span>
                         @else
                             <span class="text-gray-500">No</span>
+                        @endif
+                    </dd>
+                </div>
+                <div class="md:col-span-2">
+                    <dt class="text-xs text-gray-500 dark:text-gray-400">Kategori Home</dt>
+                    <dd class="mt-1 flex flex-wrap gap-2 text-sm font-medium text-gray-900 dark:text-white">
+                        @forelse(($property->listingCategories ?? collect())->sortBy('sort_order') as $cat)
+                            <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-brand-600 dark:text-brand-300">{{ $cat->name }}</span>
+                        @empty
+                            <span class="text-gray-500">-</span>
+                        @endforelse
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-gray-500 dark:text-gray-400">Approval</dt>
+                    <dd class="text-sm font-medium text-gray-900 dark:text-white">
+                        @if($property->is_approved)
+                            <span class="rounded-full bg-green-50 px-2 py-0.5 text-green-600 dark:bg-green-500/10 dark:text-green-400">Approved</span>
+                        @else
+                            <span class="rounded-full bg-yellow-50 px-2 py-0.5 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300">Pending</span>
                         @endif
                     </dd>
                 </div>

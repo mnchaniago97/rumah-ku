@@ -16,6 +16,25 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
                 </div>
                 <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Slug (Permalink)</label>
+                    <input name="slug" value="{{ old('slug', $property->slug) }}" placeholder="otomatis dari judul jika kosong"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Jika dikosongkan, sistem akan membuat slug dari judul saat disimpan.</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori Listing (Home)</label>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-800/30 dark:text-gray-300">
+                        <div class="flex flex-wrap gap-2">
+                            @forelse(($property->listingCategories ?? collect())->sortBy('sort_order') as $cat)
+                                <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-xs font-semibold text-brand-600 dark:text-brand-300">{{ $cat->name }}</span>
+                            @empty
+                                <span>-</span>
+                            @endforelse
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Kategori ini ditentukan Admin. Jika Anda melakukan perubahan, properti akan kembali <span class="font-semibold">pending approval</span>.</p>
+                    </div>
+                </div>
+                <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
                     <input name="price" value="{{ old('price', $property->price) }}" type="number"
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
@@ -23,7 +42,7 @@
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Periode Harga</label>
                     <select name="price_period"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
                         <option value="">-</option>
                         <option value="one_time" @selected(old('price_period', $property->price_period) === 'one_time')>Sekali</option>
                         <option value="monthly" @selected(old('price_period', $property->price_period) === 'monthly')>Bulanan</option>
@@ -32,14 +51,24 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                    <input name="status" value="{{ old('status', $property->status) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="status"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="dijual" @selected(old('status', $property->status)=='dijual')>Dijual</option>
+                        <option value="disewakan" @selected(old('status', $property->status)=='disewakan')>Disewakan</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Properti</label>
-                    <input name="type" value="{{ old('type', $property->type) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="type"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="Rumah" @selected(old('type', $property->type)=='Rumah')>Rumah</option>
+                        <option value="Apartemen" @selected(old('type', $property->type)=='Apartemen')>Apartemen</option>
+                        <option value="Villa" @selected(old('type', $property->type)=='Villa')>Villa</option>
+                        <option value="Ruko" @selected(old('type', $property->type)=='Ruko')>Ruko</option>
+                        <option value="Tanah" @selected(old('type', $property->type)=='Tanah')>Tanah</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kota</label>
                     <input name="city" value="{{ old('city', $property->city) }}"
@@ -102,29 +131,66 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sertifikat</label>
-                    <input name="certificate" value="{{ old('certificate', $property->certificate) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="certificate"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="shm" @selected(old('certificate', $property->certificate)=='shm')>SHM</option>
+                        <option value="shgb" @selected(old('certificate', $property->certificate)=='shgb')>SHGB</option>
+                        <option value="girik" @selected(old('certificate', $property->certificate)=='girik')>Girik</option>
+                        <option value="ajb" @selected(old('certificate', $property->certificate)=='ajb')>AJB</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Listrik</label>
-                    <input name="electricity" value="{{ old('electricity', $property->electricity) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="electricity"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="450" @selected(old('electricity', $property->electricity)=='450')>450 VA</option>
+                        <option value="900" @selected(old('electricity', $property->electricity)=='900')>900 VA</option>
+                        <option value="1300" @selected(old('electricity', $property->electricity)=='1300')>1300 VA</option>
+                        <option value="2200" @selected(old('electricity', $property->electricity)=='2200')>2200 VA</option>
+                        <option value="3500" @selected(old('electricity', $property->electricity)=='3500')>3500 VA</option>
+                        <option value="4400" @selected(old('electricity', $property->electricity)=='4400')>4400 VA</option>
+                        <option value="5500" @selected(old('electricity', $property->electricity)=='5500')>5500 VA</option>
+                        <option value="6600" @selected(old('electricity', $property->electricity)=='6600')>6600 VA</option>
+                        <option value="7700" @selected(old('electricity', $property->electricity)=='7700')>7700 VA</option>
+                        <option value="10600" @selected(old('electricity', $property->electricity)=='10600')>10600 VA</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sumber Air</label>
-                    <input name="water_source" value="{{ old('water_source', $property->water_source) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="water_source"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="pdam" @selected(old('water_source', $property->water_source)=='pdam')>PDAM</option>
+                        <option value="well" @selected(old('water_source', $property->water_source)=='well')>Sumur</option>
+                        <option value="jetpump" @selected(old('water_source', $property->water_source)=='jetpump')>Jetpump</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Furnishing</label>
-                    <input name="furnishing" value="{{ old('furnishing', $property->furnishing) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="furnishing"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="unfurnished" @selected(old('furnishing', $property->furnishing)=='unfurnished')>Unfurnished</option>
+                        <option value="semi" @selected(old('furnishing', $property->furnishing)=='semi')>Semi Furnished</option>
+                        <option value="furnished" @selected(old('furnishing', $property->furnishing)=='furnished')>Furnished</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Orientasi</label>
-                    <input name="orientation" value="{{ old('orientation', $property->orientation) }}"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="orientation"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="north" @selected(old('orientation', $property->orientation)=='north')>Utara</option>
+                        <option value="south" @selected(old('orientation', $property->orientation)=='south')>Selatan</option>
+                        <option value="east" @selected(old('orientation', $property->orientation)=='east')>Timur</option>
+                        <option value="west" @selected(old('orientation', $property->orientation)=='west')>Barat</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tahun Bangun</label>
                     <input name="year_built" value="{{ old('year_built', $property->year_built) }}" type="number"
@@ -146,19 +212,20 @@
                         class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upload tambahan gambar.</p>
                 </div>
-            </div>
-
-            <div class="mt-4 flex items-center gap-6">
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="checkbox" name="is_published" value="1" class="h-4 w-4 rounded border-gray-300"
-                        @checked(old('is_published', $property->is_published)) />
-                    Published
-                </label>
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="checkbox" name="is_featured" value="1" class="h-4 w-4 rounded border-gray-300"
-                        @checked(old('is_featured', $property->is_featured)) />
-                    Featured
-                </label>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_published" value="1" @checked(old('is_published', $property->is_published))
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Terbitkan Properti</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $property->is_featured))
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Properti Unggulan</span>
+                    </label>
+                </div>
             </div>
 
             <div class="mt-6 flex items-center gap-3">
@@ -171,4 +238,3 @@
         </form>
     </div>
 @endsection
-

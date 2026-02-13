@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -11,7 +12,11 @@ class PropertyController extends Controller
 {
     public function index(): View
     {
-        $properties = Property::with(['images'])->latest()->get();
+        $properties = Property::with(['images'])
+            ->where('is_published', true)
+            ->where('is_approved', true)
+            ->latest()
+            ->get();
 
         return view('frontend.property.index', [
             'title' => 'Properties',
@@ -19,15 +24,26 @@ class PropertyController extends Controller
         ]);
     }
 
-    public function show(string $permalink): View
+    public function show(string $permalink): View|RedirectResponse
     {
         $property = Property::with(['images', 'features', 'specifications', 'nearby', 'agent', 'category'])
-            ->where('slug', $permalink)
-            ->orWhere('id', $permalink)
+            ->where('is_published', true)
+            ->where('is_approved', true)
+            ->where(function ($q) use ($permalink) {
+                $q->where('slug', $permalink)->orWhere('id', $permalink);
+            })
             ->firstOrFail();
+
+        if (filled($property->slug) && $permalink !== $property->slug) {
+            return redirect()
+                ->route('property.show', $property->slug)
+                ->setStatusCode(301);
+        }
 
         $relatedProperties = Property::with(['images'])
             ->whereKeyNot($property->getKey())
+            ->where('is_published', true)
+            ->where('is_approved', true)
             ->latest()
             ->take(6)
             ->get();
@@ -41,7 +57,9 @@ class PropertyController extends Controller
 
     public function search(Request $request): View
     {
-        $query = Property::with(['images']);
+        $query = Property::with(['images'])
+            ->where('is_published', true)
+            ->where('is_approved', true);
 
         if ($request->has('q') && !empty($request->q)) {
             $query->where(function($q) use ($request) {

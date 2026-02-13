@@ -46,9 +46,14 @@
                                     </p>
                                 </div>
 
-                                <span class="absolute top-0 right-2 z-10 mt-3 ml-3 inline-flex select-none rounded-sm bg-[#1f93ff] px-2 py-1 text-xs font-semibold text-white">
-                                    {{ $property->type ?? 'Residential' }}
-                                </span>
+                    <span class="absolute top-0 right-2 z-10 mt-3 ml-3 inline-flex select-none rounded-sm bg-[#1f93ff] px-2 py-1 text-xs font-semibold text-white">
+                        {{ $property->type ?? 'Residential' }}
+                    </span>
+                    @if(!$property->is_approved)
+                        <span class="absolute top-0 left-2 z-10 mt-3 inline-flex select-none rounded-sm bg-yellow-500 px-2 py-1 text-xs font-semibold text-white">
+                            Pending Approval
+                        </span>
+                    @endif
                                 <span class="absolute top-0 left-0 z-10 mt-3 ml-3 inline-flex select-none rounded-lg bg-transparent px-3 py-2 text-lg font-medium text-white">
                                     <i class="fa fa-star"></i>
                                 </span>
@@ -58,6 +63,13 @@
                                 <h2 class="line-clamp-1 text-2xl font-medium text-gray-800 md:text-lg" title="{{ $property->title }}">
                                     {{ $property->title }}
                                 </h2>
+                                @if(($property->listingCategories ?? collect())->count() > 0)
+                                    <div class="mt-2 flex flex-wrap gap-1">
+                                        @foreach($property->listingCategories->sortBy('sort_order')->take(3) as $cat)
+                                            <span class="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">{{ $cat->name }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
 
                                 <p class="text-primary mt-2 inline-block whitespace-nowrap rounded-xl font-semibold leading-tight">
                                     <span class="text-sm uppercase">Rp</span>
@@ -123,4 +135,3 @@
         </div>
     </div>
 @endsection
-

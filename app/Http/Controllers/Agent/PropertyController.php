@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Models\PropertyListingCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ class PropertyController extends Controller
     public function index(): View
     {
         $properties = Property::where('user_id', Auth::id())
+            ->with(['images', 'category', 'listingCategories'])
             ->latest()
             ->get();
 
@@ -36,6 +38,7 @@ class PropertyController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug'],
             'category_id' => ['nullable', 'integer'],
             'agent_id' => ['nullable', 'integer'],
             'price' => ['nullable', 'numeric'],
@@ -72,8 +75,18 @@ class PropertyController extends Controller
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_approved'] = false;
+        $data['approved_at'] = null;
+        $data['approved_by'] = null;
 
         $property = Property::create($data);
+
+        $defaultCategoryId = PropertyListingCategory::query()
+            ->where('slug', 'properti-baru')
+            ->value('id');
+        if ($defaultCategoryId) {
+            $property->listingCategories()->syncWithoutDetaching([$defaultCategoryId]);
+        }
 
         if ($request->hasFile('images')) {
             $files = $request->file('images');
@@ -106,6 +119,7 @@ class PropertyController extends Controller
     public function edit(Property $property): View
     {
         $this->authorizeProperty($property);
+        $property->load('listingCategories');
 
         return view('agent.pages.property.edit', [
             'title' => 'Edit Property',
@@ -119,6 +133,7 @@ class PropertyController extends Controller
 
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug,' . $property->id],
             'category_id' => ['nullable', 'integer'],
             'agent_id' => ['nullable', 'integer'],
             'price' => ['nullable', 'numeric'],
@@ -155,6 +170,9 @@ class PropertyController extends Controller
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_approved'] = false;
+        $data['approved_at'] = null;
+        $data['approved_by'] = null;
 
         $property->update($data);
 

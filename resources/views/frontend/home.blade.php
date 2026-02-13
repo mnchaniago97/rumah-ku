@@ -60,12 +60,11 @@
                 </div>
                 
                 @if($ads1Banners->count() > 1)
-                    <button id="ads1-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10 hidden">
-                        <i class="fa fa-chevron-left text-sm"></i>
-                    </button>
-                    <button id="ads1-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10 hidden">
-                        <i class="fa fa-chevron-right text-sm"></i>
-                    </button>
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" id="ads1-dots">
+                        @foreach($ads1Banners as $index => $banner)
+                            <button class="w-2 h-2 rounded-full transition {{ $index === 0 ? 'bg-white' : 'bg-white/50' }}" data-index="{{ $index }}"></button>
+                        @endforeach
+                    </div>
                 @endif
             </div>
         </div>
@@ -92,7 +91,7 @@
         {{-- Carousel Container --}}
         <div id="reco-carousel" class="relative">
             <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" id="reco-scroll">
-                @forelse($featuredProperties as $property)
+                @forelse($recommendedProperties as $property)
                     <div class="flex-shrink-0 w-[280px] snap-start">
                         @include('frontend.components.property-card', ['property' => $property])
                     </div>
@@ -126,10 +125,10 @@
                 </div>
                 
                 @if($ads2Banners->count() > 1)
-                    <button id="ads2-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10 hidden">
+                    <button id="ads2-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
                         <i class="fa fa-chevron-left text-sm"></i>
                     </button>
-                    <button id="ads2-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10 hidden">
+                    <button id="ads2-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
                         <i class="fa fa-chevron-right text-sm"></i>
                     </button>
                 @endif
@@ -145,7 +144,7 @@
     <section class="max-w-[1200px] mx-auto px-4 py-8">
         <h3 class="text-lg font-semibold mb-4">Properti Pilihan Kami</h3>
         <div class="grid md:grid-cols-2 gap-6">
-            @forelse($featuredProperties as $property)
+            @forelse($ourChoiceProperties as $property)
                 @include('frontend.components.project-card', ['property' => $property])
             @empty
                 @for($i = 0; $i < 4; $i++)
@@ -178,7 +177,7 @@
     <section class="max-w-[1200px] mx-auto px-4 py-8">
         <h3 class="text-lg font-semibold mb-4">Properti Populer</h3>
         <div class="grid md:grid-cols-3 gap-4">
-            @forelse($latestProperties as $property)
+            @forelse($popularProperties as $property)
                 @include('frontend.components.property-card', ['property' => $property])
             @empty
                 @for($i = 0; $i < 6; $i++)
@@ -226,9 +225,13 @@
     <section class="max-w-[1200px] mx-auto px-4 py-8">
         <h3 class="text-lg font-semibold mb-6">Apa kata mereka?</h3>
         <div class="grid md:grid-cols-3 gap-4">
-            @include('frontend.components.testimonial')
-            @include('frontend.components.testimonial')
-            @include('frontend.components.testimonial')
+            @forelse(($testimonials ?? collect())->take(3) as $testimonial)
+                @include('frontend.components.testimonial', ['testimonial' => $testimonial])
+            @empty
+                @include('frontend.components.testimonial')
+                @include('frontend.components.testimonial')
+                @include('frontend.components.testimonial')
+            @endforelse
         </div>
     </section>
 
@@ -236,12 +239,16 @@
     <section class="max-w-[1200px] mx-auto px-4 py-8">
         <div class="flex justify-between mb-4">
             <h3 class="text-lg font-semibold">Info Properti</h3>
-            <button class="text-sm text-blue-600 hover:text-blue-700">Lihat lainnya</button>
+            <a href="{{ route('articles') }}" class="text-sm text-blue-600 hover:text-blue-700">Lihat lainnya</a>
         </div>
         <div class="grid md:grid-cols-4 gap-4">
-            @for($i = 0; $i < 4; $i++)
-                @include('frontend.components.article-card')
-            @endfor
+            @forelse(($articles ?? collect())->take(4) as $article)
+                @include('frontend.components.article-card', ['article' => $article])
+            @empty
+                @for($i = 0; $i < 4; $i++)
+                    @include('frontend.components.article-card')
+                @endfor
+            @endforelse
         </div>
     </section>
 
@@ -264,6 +271,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            function updateScrollButtons(container, prevButton, nextButton) {
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                prevButton.style.display = container.scrollLeft > 0 ? 'flex' : 'none';
+                nextButton.style.display = container.scrollLeft < maxScroll - 10 ? 'flex' : 'none';
+            }
+
             // Hero Banner Carousel
             const heroSlides = document.getElementById('hero-slides');
             const heroPrev = document.getElementById('hero-prev');
@@ -323,23 +336,21 @@
                 });
 
                 // Hide/show buttons based on scroll position
-                scrollContainer.addEventListener('scroll', () => {
-                    const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-                    prevBtn.style.display = scrollContainer.scrollLeft > 0 ? 'flex' : 'none';
-                    nextBtn.style.display = scrollContainer.scrollLeft < maxScroll - 10 ? 'flex' : 'none';
-                });
-
-                // Initial button state
-                prevBtn.style.display = 'none';
+                const updateRecoButtons = () => updateScrollButtons(scrollContainer, prevBtn, nextBtn);
+                scrollContainer.addEventListener('scroll', updateRecoButtons);
+                window.addEventListener('resize', updateRecoButtons);
+                window.addEventListener('load', updateRecoButtons);
+                requestAnimationFrame(updateRecoButtons);
             }
 
             // Ads1 Banner Carousel
             const ads1Scroll = document.getElementById('ads1-scroll');
             const ads1Prev = document.getElementById('ads1-prev');
             const ads1Next = document.getElementById('ads1-next');
-            const ads1Width = (ads1Scroll?.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
 
             if (ads1Scroll && ads1Prev && ads1Next) {
+                const ads1Width = (ads1Scroll.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
+
                 ads1Next.addEventListener('click', () => {
                     ads1Scroll.scrollBy({ left: ads1Width, behavior: 'smooth' });
                 });
@@ -349,23 +360,21 @@
                 });
 
                 // Hide/show buttons based on scroll position
-                ads1Scroll.addEventListener('scroll', () => {
-                    const maxScroll = ads1Scroll.scrollWidth - ads1Scroll.clientWidth;
-                    ads1Prev.style.display = ads1Scroll.scrollLeft > 0 ? 'flex' : 'none';
-                    ads1Next.style.display = ads1Scroll.scrollLeft < maxScroll - 10 ? 'flex' : 'none';
-                });
-
-                // Initial button state
-                ads1Prev.style.display = 'none';
+                const updateAds1Buttons = () => updateScrollButtons(ads1Scroll, ads1Prev, ads1Next);
+                ads1Scroll.addEventListener('scroll', updateAds1Buttons);
+                window.addEventListener('resize', updateAds1Buttons);
+                window.addEventListener('load', updateAds1Buttons);
+                requestAnimationFrame(updateAds1Buttons);
             }
 
             // Ads2 Banner Carousel
             const ads2Scroll = document.getElementById('ads2-scroll');
             const ads2Prev = document.getElementById('ads2-prev');
             const ads2Next = document.getElementById('ads2-next');
-            const ads2Width = (ads2Scroll?.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
 
             if (ads2Scroll && ads2Prev && ads2Next) {
+                const ads2Width = (ads2Scroll.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
+
                 ads2Next.addEventListener('click', () => {
                     ads2Scroll.scrollBy({ left: ads2Width, behavior: 'smooth' });
                 });
@@ -375,15 +384,13 @@
                 });
 
                 // Hide/show buttons based on scroll position
-                ads2Scroll.addEventListener('scroll', () => {
-                    const maxScroll = ads2Scroll.scrollWidth - ads2Scroll.clientWidth;
-                    ads2Prev.style.display = ads2Scroll.scrollLeft > 0 ? 'flex' : 'none';
-                    ads2Next.style.display = ads2Scroll.scrollLeft < maxScroll - 10 ? 'flex' : 'none';
-                });
-
-                // Initial button state
-                ads2Prev.style.display = 'none';
+                const updateAds2Buttons = () => updateScrollButtons(ads2Scroll, ads2Prev, ads2Next);
+                ads2Scroll.addEventListener('scroll', updateAds2Buttons);
+                window.addEventListener('resize', updateAds2Buttons);
+                window.addEventListener('load', updateAds2Buttons);
+                requestAnimationFrame(updateAds2Buttons);
             }
         });
     </script>
 @endsection
+

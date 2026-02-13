@@ -2,13 +2,30 @@ import ApexCharts from "apexcharts";
 
 // ===== chartOne
 const chart01 = () => {
+  const dashboardData = window.__DASHBOARD_DATA__?.chartOne;
+  const series = dashboardData?.series ?? [
+    {
+      name: "Sales",
+      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+    },
+  ];
+  const categories = dashboardData?.categories ?? [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   const chartOneOptions = {
-    series: [
-      {
-        name: "Sales",
-        data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
-      },
-    ],
+    series,
     colors: ["#465fff"],
     chart: {
       fontFamily: "Outfit, sans-serif",
@@ -35,20 +52,7 @@ const chart01 = () => {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories,
       axisBorder: {
         show: false,
       },

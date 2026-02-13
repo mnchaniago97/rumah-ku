@@ -9,6 +9,14 @@ const map01 = () => {
       selector: "#mapOne",
       map: "world",
       zoomButtons: false,
+      zoomOnScroll: false,
+      draggable: false,
+      focusOn: {
+        // Padang, Sumatera Barat
+        coords: [-0.95, 100.35],
+        scale: 10,
+        animate: false,
+      },
 
       regionStyle: {
         initial: {
@@ -22,16 +30,16 @@ const map01 = () => {
       },
       markers: [
         {
-          name: "Egypt",
-          coords: [26.8206, 30.8025],
+          name: "Padang",
+          coords: [-0.95, 100.35],
         },
         {
-          name: "United Kingdom",
-          coords: [55.3781, 3.436],
+          name: "Bukittinggi",
+          coords: [-0.3056, 100.3692],
         },
         {
-          name: "United States",
-          coords: [37.0902, -95.7129],
+          name: "Payakumbuh",
+          coords: [-0.2231, 100.6310],
         },
       ],
 
@@ -50,12 +58,7 @@ const map01 = () => {
         selectedHover: {},
       },
 
-      onRegionTooltipShow: function (tooltip, code) {
-        if (code === "EG") {
-          tooltip.selector.innerHTML =
-            tooltip.text() + " <b>(Hello Russia)</b>";
-        }
-      },
+      onRegionTooltipShow: function () {},
     });
   }
 };

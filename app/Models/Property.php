@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 class Property extends Model
@@ -44,6 +45,9 @@ class Property extends Model
         'year_built',
         'is_featured',
         'is_published',
+        'is_approved',
+        'approved_at',
+        'approved_by',
         'published_at',
     ];
 
@@ -61,26 +65,34 @@ class Property extends Model
         'longitude' => 'decimal:7',
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
+        'is_approved' => 'boolean',
+        'approved_at' => 'datetime',
         'published_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
-        static::creating(function (Property $property): void {
-            if (blank($property->slug) && filled($property->title)) {
-                $base = Str::slug($property->title);
-                $base = $base !== '' ? $base : Str::random(8);
-
-                $slug = $base;
-                $suffix = 1;
-
-                while (static::where('slug', $slug)->exists()) {
-                    $slug = "{$base}-{$suffix}";
-                    $suffix++;
-                }
-
-                $property->slug = $slug;
+        static::saving(function (Property $property): void {
+            if (filled($property->slug) || blank($property->title)) {
+                return;
             }
+
+            $base = Str::slug($property->title);
+            $base = $base !== '' ? $base : Str::random(8);
+
+            $slug = $base;
+            $suffix = 1;
+
+            while (
+                static::where('slug', $slug)
+                    ->when($property->exists, fn ($q) => $q->where('id', '!=', $property->id))
+                    ->exists()
+            ) {
+                $slug = "{$base}-{$suffix}";
+                $suffix++;
+            }
+
+            $property->slug = $slug;
         });
     }
 
@@ -102,6 +114,12 @@ class Property extends Model
     public function images(): HasMany
     {
         return $this->hasMany(PropertyImage::class);
+    }
+
+    public function listingCategories(): BelongsToMany
+    {
+        return $this->belongsToMany(PropertyListingCategory::class, 'property_listing_category_property')
+            ->withTimestamps();
     }
 
     public function features(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

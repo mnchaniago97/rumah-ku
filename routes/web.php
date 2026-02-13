@@ -1,9 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Frontend\ArticleController as FrontendArticleController;
 use App\Http\Controllers\Frontend\HomeController;
@@ -52,11 +48,3 @@ Route::get('/signin', function () {
 Route::get('/signup', function () {
     return redirect()->route('register');
 })->name('signup');
-
-// Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('properties', AdminPropertyController::class);
-    Route::resource('categories', CategoryController::class);
-    Route::resource('banners', BannerController::class);
-    Route::resource('users', UserController::class);
-});

@@ -2,17 +2,34 @@ import ApexCharts from "apexcharts";
 
 // ===== chartThree
 const chart03 = () => {
+  const dashboardData = window.__DASHBOARD_DATA__?.chartThree;
+  const series = dashboardData?.series ?? [
+    {
+      name: "Sales",
+      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
+    },
+    {
+      name: "Revenue",
+      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
+    },
+  ];
+  const categories = dashboardData?.categories ?? [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   const chartThreeOptions = {
-    series: [
-      {
-        name: "Sales",
-        data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-      },
-      {
-        name: "Revenue",
-        data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-      },
-    ],
+    series,
     legend: {
       show: false,
       position: "top",
@@ -68,20 +85,7 @@ const chart03 = () => {
     },
     xaxis: {
       type: "category",
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories,
       axisBorder: {
         show: false,
       },

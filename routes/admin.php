@@ -15,6 +15,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('properties', PropertyController::class);
+    Route::patch('properties/{property}/approve', [PropertyController::class, 'approve'])->name('properties.approve');
+    Route::patch('properties/{property}/reject', [PropertyController::class, 'reject'])->name('properties.reject');
     Route::delete('properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('properties.images.destroy');
     Route::resource('categories', CategoryController::class);
     Route::resource('banners', BannerController::class);

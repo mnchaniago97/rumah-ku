@@ -15,6 +15,18 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
                 </div>
                 <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Slug (Permalink)</label>
+                    <input name="slug" value="{{ old('slug') }}" placeholder="otomatis dari judul jika kosong"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Contoh: rumah-minimalis-jakarta (tanpa spasi).</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori Listing (Home)</label>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-800/30 dark:text-gray-300">
+                        Ditentukan oleh Admin saat proses persetujuan. Jika tidak ada pilihan, otomatis masuk kategori <span class="font-semibold">Properti Baru</span>.
+                    </div>
+                </div>
+                <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
                     <input name="price" value="{{ old('price') }}" type="number"
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
@@ -22,22 +34,31 @@
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Periode Harga</label>
                     <select name="price_period"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
                         <option value="">-</option>
-                        <option value="one_time">Sekali</option>
-                        <option value="monthly">Bulanan</option>
-                        <option value="yearly">Tahunan</option>
+                        <option value="one_time" {{ old('price_period')=='one_time'?'selected':'' }}>Sekali</option>
+                        <option value="monthly" {{ old('price_period')=='monthly'?'selected':'' }}>Bulanan</option>
+                        <option value="yearly" {{ old('price_period')=='yearly'?'selected':'' }}>Tahunan</option>
                     </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                    <input name="status" value="{{ old('status') }}" placeholder="published/draft"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="status"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="dijual" {{ old('status')=='dijual'?'selected':'' }}>Dijual</option>
+                        <option value="disewakan" {{ old('status')=='disewakan'?'selected':'' }}>Disewakan</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Properti</label>
-                    <input name="type" value="{{ old('type') }}" placeholder="rumah/apartemen/villa"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="type"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="Rumah" {{ old('type')=='Rumah'?'selected':'' }}>Rumah</option>
+                        <option value="Apartemen" {{ old('type')=='Apartemen'?'selected':'' }}>Apartemen</option>
+                        <option value="Villa" {{ old('type')=='Villa'?'selected':'' }}>Villa</option>
+                        <option value="Ruko" {{ old('type')=='Ruko'?'selected':'' }}>Ruko</option>
+                        <option value="Tanah" {{ old('type')=='Tanah'?'selected':'' }}>Tanah</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kota</label>
@@ -101,29 +122,66 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sertifikat</label>
-                    <input name="certificate" value="{{ old('certificate') }}" placeholder="SHM/SHGB"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="certificate"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="shm" {{ old('certificate')=='shm'?'selected':'' }}>SHM</option>
+                        <option value="shgb" {{ old('certificate')=='shgb'?'selected':'' }}>SHGB</option>
+                        <option value="girik" {{ old('certificate')=='girik'?'selected':'' }}>Girik</option>
+                        <option value="ajb" {{ old('certificate')=='ajb'?'selected':'' }}>AJB</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Listrik</label>
-                    <input name="electricity" value="{{ old('electricity') }}" placeholder="2200 VA"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="electricity"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="450" {{ old('electricity')=='450'?'selected':'' }}>450 VA</option>
+                        <option value="900" {{ old('electricity')=='900'?'selected':'' }}>900 VA</option>
+                        <option value="1300" {{ old('electricity')=='1300'?'selected':'' }}>1300 VA</option>
+                        <option value="2200" {{ old('electricity')=='2200'?'selected':'' }}>2200 VA</option>
+                        <option value="3500" {{ old('electricity')=='3500'?'selected':'' }}>3500 VA</option>
+                        <option value="4400" {{ old('electricity')=='4400'?'selected':'' }}>4400 VA</option>
+                        <option value="5500" {{ old('electricity')=='5500'?'selected':'' }}>5500 VA</option>
+                        <option value="6600" {{ old('electricity')=='6600'?'selected':'' }}>6600 VA</option>
+                        <option value="7700" {{ old('electricity')=='7700'?'selected':'' }}>7700 VA</option>
+                        <option value="10600" {{ old('electricity')=='10600'?'selected':'' }}>10600 VA</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sumber Air</label>
-                    <input name="water_source" value="{{ old('water_source') }}" placeholder="PDAM/Sumur"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="water_source"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="pdam" {{ old('water_source')=='pdam'?'selected':'' }}>PDAM</option>
+                        <option value="well" {{ old('water_source')=='well'?'selected':'' }}>Sumur</option>
+                        <option value="jetpump" {{ old('water_source')=='jetpump'?'selected':'' }}>Jetpump</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Furnishing</label>
-                    <input name="furnishing" value="{{ old('furnishing') }}" placeholder="unfurnished/semi/furnished"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="furnishing"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="unfurnished" {{ old('furnishing')=='unfurnished'?'selected':'' }}>Unfurnished</option>
+                        <option value="semi" {{ old('furnishing')=='semi'?'selected':'' }}>Semi Furnished</option>
+                        <option value="furnished" {{ old('furnishing')=='furnished'?'selected':'' }}>Furnished</option>
+                    </select>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Orientasi</label>
-                    <input name="orientation" value="{{ old('orientation') }}" placeholder="Timur/Barat"
-                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <select name="orientation"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="north" {{ old('orientation')=='north'?'selected':'' }}>Utara</option>
+                        <option value="south" {{ old('orientation')=='south'?'selected':'' }}>Selatan</option>
+                        <option value="east" {{ old('orientation')=='east'?'selected':'' }}>Timur</option>
+                        <option value="west" {{ old('orientation')=='west'?'selected':'' }}>Barat</option>
+                    </select>
                 </div>
+
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tahun Bangun</label>
                     <input name="year_built" value="{{ old('year_built') }}" type="number"
@@ -145,17 +203,20 @@
                         class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Bisa upload lebih dari satu gambar.</p>
                 </div>
-            </div>
-
-            <div class="mt-4 flex items-center gap-6">
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="checkbox" name="is_published" value="1" class="h-4 w-4 rounded border-gray-300" />
-                    Published
-                </label>
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <input type="checkbox" name="is_featured" value="1" class="h-4 w-4 rounded border-gray-300" />
-                    Featured
-                </label>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Terbitkan Properti</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Properti Unggulan</span>
+                    </label>
+                </div>
             </div>
 
             <div class="mt-6 flex items-center gap-3">
@@ -168,4 +229,3 @@
         </form>
     </div>
 @endsection
-

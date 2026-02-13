@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Models\PropertyListingCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -14,7 +16,7 @@ class PropertyController extends Controller
 {
     public function index(): View
     {
-        $properties = Property::with(['images', 'category', 'user'])->latest()->get();
+        $properties = Property::with(['images', 'category', 'user', 'listingCategories'])->latest()->get();
 
         return view('admin.pages.property.index', [
             'title' => 'Properties',
@@ -26,6 +28,7 @@ class PropertyController extends Controller
     {
         return view('admin.pages.property.create', [
             'title' => 'Create Property',
+            'listingCategories' => PropertyListingCategory::active()->orderBy('sort_order')->orderBy('name')->get(),
         ]);
     }
 
@@ -33,6 +36,7 @@ class PropertyController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug'],
             'category_id' => ['nullable', 'integer'],
             'agent_id' => ['nullable', 'integer'],
             'price' => ['nullable', 'numeric'],
@@ -61,13 +65,35 @@ class PropertyController extends Controller
             'orientation' => ['nullable', 'string', 'max:30'],
             'year_built' => ['nullable', 'integer'],
             'description' => ['nullable', 'string'],
+            'listing_category_ids' => ['nullable', 'array'],
+            'listing_category_ids.*' => ['integer', 'exists:property_listing_categories,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $listingCategoryIds = collect($data['listing_category_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['listing_category_ids']);
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
         
         $property = Property::create($data);
+
+        if (count($listingCategoryIds) === 0) {
+            $defaultCategoryId = PropertyListingCategory::query()
+                ->where('slug', 'properti-baru')
+                ->value('id');
+            if ($defaultCategoryId) {
+                $listingCategoryIds = [$defaultCategoryId];
+            }
+        }
+
+        if (count($listingCategoryIds) > 0) {
+            $property->listingCategories()->sync($listingCategoryIds);
+        }
 
         if ($request->hasFile('images')) {
             $files = $request->file('images');
@@ -93,7 +119,7 @@ class PropertyController extends Controller
 
     public function show(Property $property): View
     {
-        $property->load(['images', 'category', 'agent', 'user', 'features', 'nearby', 'specifications', 'videos', 'documents', 'projects']);
+        $property->load(['images', 'category', 'agent', 'user', 'listingCategories', 'features', 'nearby', 'specifications', 'videos', 'documents', 'projects']);
 
         return view('admin.pages.property.show', [
             'title' => 'Property Detail',
@@ -103,9 +129,12 @@ class PropertyController extends Controller
 
     public function edit(Property $property): View
     {
+        $property->load('listingCategories');
+
         return view('admin.pages.property.edit', [
             'title' => 'Edit Property',
             'property' => $property,
+            'listingCategories' => PropertyListingCategory::active()->orderBy('sort_order')->orderBy('name')->get(),
         ]);
     }
 
@@ -113,6 +142,7 @@ class PropertyController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug,' . $property->id],
             'category_id' => ['nullable', 'integer'],
             'agent_id' => ['nullable', 'integer'],
             'price' => ['nullable', 'numeric'],
@@ -141,13 +171,24 @@ class PropertyController extends Controller
             'orientation' => ['nullable', 'string', 'max:30'],
             'year_built' => ['nullable', 'integer'],
             'description' => ['nullable', 'string'],
+            'listing_category_ids' => ['nullable', 'array'],
+            'listing_category_ids.*' => ['integer', 'exists:property_listing_categories,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $listingCategoryIds = collect($data['listing_category_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['listing_category_ids']);
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
 
         $property->update($data);
+
+        $property->listingCategories()->sync($listingCategoryIds);
 
         if ($request->hasFile('images')) {
             $startIndex = $property->images()->max('sort_order') ?? 0;
@@ -176,5 +217,31 @@ class PropertyController extends Controller
         return redirect()
             ->route('admin.properties.index')
             ->with('success', 'Property deleted.');
+    }
+
+    public function approve(Property $property): RedirectResponse
+    {
+        $property->update([
+            'is_approved' => true,
+            'approved_at' => now(),
+            'approved_by' => Auth::id(),
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Property disetujui.');
+    }
+
+    public function reject(Property $property): RedirectResponse
+    {
+        $property->update([
+            'is_approved' => false,
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Property ditolak / perlu revisi.');
     }
 }

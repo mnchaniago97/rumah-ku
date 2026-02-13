@@ -15,6 +15,12 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
                 </div>
                 <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Slug (Permalink)</label>
+                    <input name="slug" value="{{ old('slug') }}" placeholder="otomatis dari judul jika kosong"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Contoh: rumah-minimalis-jakarta (tanpa spasi).</p>
+                </div>
+                <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
                     <input name="price" value="{{ old('price') }}" type="number"
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
@@ -164,6 +170,39 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi</label>
                     <textarea name="description" rows="4"
                         class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">{{ old('description') }}</textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Terbitkan Properti</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}
+                            class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500" />
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Properti Unggulan</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori Listing (Home)</label>
+                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                        @foreach(($listingCategories ?? collect()) as $cat)
+                            <label class="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 dark:border-gray-800 dark:text-gray-200">
+                                <input
+                                    type="checkbox"
+                                    name="listing_category_ids[]"
+                                    value="{{ $cat->id }}"
+                                    @checked(in_array($cat->id, old('listing_category_ids', [])))
+                                    class="h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                                />
+                                <span>{{ $cat->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kategori ini menentukan properti tampil di section halaman Home (Rekomendasi, Pilihan Kami, Populer, dll).</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Jika tidak dipilih, otomatis masuk kategori <span class="font-semibold">Properti Baru</span>.</p>
                 </div>
                 <div class="md:col-span-2">
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar Properti</label>

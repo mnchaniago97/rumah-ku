@@ -30,10 +30,18 @@
                         <span class="rounded-full bg-gray-100 px-2 py-0.5 dark:bg-white/10">
                             {{ $property->category?->name ?? 'Tanpa Kategori' }}
                         </span>
+                        @foreach(($property->listingCategories ?? collect())->sortBy('sort_order')->take(2) as $cat)
+                            <span class="rounded-full bg-blue-50 px-2 py-0.5 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                                {{ $cat->name }}
+                            </span>
+                        @endforeach
                         @if ($property->is_published)
                             <span class="rounded-full bg-green-50 px-2 py-0.5 text-green-600 dark:bg-green-500/10 dark:text-green-400">Published</span>
                         @else
                             <span class="rounded-full bg-gray-100 px-2 py-0.5 dark:bg-white/10">Draft</span>
+                        @endif
+                        @if (!$property->is_approved)
+                            <span class="rounded-full bg-yellow-50 px-2 py-0.5 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300">Pending Approval</span>
                         @endif
                     </div>
 

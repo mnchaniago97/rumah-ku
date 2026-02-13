@@ -2,8 +2,13 @@ import ApexCharts from "apexcharts";
 
 // ===== chartTwo
 const chart02 = () => {
+  const value =
+    window.__DASHBOARD_DATA__?.chartTwo?.value !== undefined
+      ? window.__DASHBOARD_DATA__.chartTwo.value
+      : 75.55;
+
   const chartTwoOptions = {
-    series: [75.55],
+    series: [value],
     colors: ["#465FFF"],
     chart: {
       fontFamily: "Outfit, sans-serif",

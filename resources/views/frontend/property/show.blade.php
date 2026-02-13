@@ -28,6 +28,58 @@
             $property->province,
         ])->filter()->implode(', ');
 
+        $mapsQuery = null;
+        if (filled($property->latitude) && filled($property->longitude)) {
+            $mapsQuery = $property->latitude . ',' . $property->longitude;
+        } elseif (filled($addressText)) {
+            $mapsQuery = $addressText;
+        }
+
+        $mapsEmbedSrc = $mapsQuery
+            ? 'https://www.google.com/maps?q=' . urlencode((string) $mapsQuery) . '&z=15&output=embed'
+            : null;
+        $mapsOpenUrl = $mapsQuery
+            ? 'https://www.google.com/maps?q=' . urlencode((string) $mapsQuery)
+            : null;
+
+        $formatValue = function (string $field, mixed $value): mixed {
+            if (!filled($value)) {
+                return null;
+            }
+
+            $raw = is_string($value) ? trim($value) : $value;
+
+            $labelize = function (string $text): string {
+                $text = str_replace(['_', '-'], ' ', $text);
+                $text = preg_replace('/\s+/', ' ', $text) ?? $text;
+                return ucwords(strtolower($text));
+            };
+
+            return match ($field) {
+                'certificate' => strtoupper((string) $raw),
+                'water_source' => match (strtolower((string) $raw)) {
+                    'pdam' => 'PDAM',
+                    'well' => 'Sumur',
+                    'jetpump' => 'Jetpump',
+                    default => $labelize((string) $raw),
+                },
+                'furnishing' => match (strtolower((string) $raw)) {
+                    'unfurnished' => 'Unfurnished',
+                    'semi' => 'Semi Furnished',
+                    'furnished' => 'Furnished',
+                    default => $labelize((string) $raw),
+                },
+                'orientation' => match (strtolower((string) $raw)) {
+                    'north' => 'Utara',
+                    'south' => 'Selatan',
+                    'east' => 'Timur',
+                    'west' => 'Barat',
+                    default => $labelize((string) $raw),
+                },
+                default => $raw,
+            };
+        };
+
         $specPairs = collect([
             ['label' => 'Tipe', 'value' => $property->type],
             ['label' => 'Status', 'value' => $property->status ? ucwords($property->status) : null],
@@ -35,11 +87,11 @@
             ['label' => 'Kamar Mandi', 'value' => $property->bathrooms ? $property->bathrooms . ' KM' : null],
             ['label' => 'Luas Tanah', 'value' => $property->land_area ? $property->land_area . ' m²' : null],
             ['label' => 'Luas Bangunan', 'value' => $property->building_area ? $property->building_area . ' m²' : null],
-            ['label' => 'Sertifikat', 'value' => $property->certificate],
+            ['label' => 'Sertifikat', 'value' => $formatValue('certificate', $property->certificate)],
             ['label' => 'Listrik', 'value' => $property->electricity],
-            ['label' => 'Sumber Air', 'value' => $property->water_source],
-            ['label' => 'Furnishing', 'value' => $property->furnishing],
-            ['label' => 'Hadap', 'value' => $property->orientation],
+            ['label' => 'Sumber Air', 'value' => $formatValue('water_source', $property->water_source)],
+            ['label' => 'Furnishing', 'value' => $formatValue('furnishing', $property->furnishing)],
+            ['label' => 'Hadap', 'value' => $formatValue('orientation', $property->orientation)],
             ['label' => 'Tahun Dibangun', 'value' => $property->year_built],
         ])->filter(fn ($row) => filled($row['value']))->values();
 
@@ -56,21 +108,21 @@
                 <div class="lg:col-span-8">
                     <!-- Gallery -->
                     <div class="rounded-2xl bg-white shadow-sm overflow-hidden">
-                        <div class="grid grid-cols-1 gap-2 p-2 md:grid-cols-12">
+                        <div class="grid grid-cols-1 gap-3 p-3 md:grid-cols-12">
                             <div class="md:col-span-9">
-                                <div class="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-100">
+                                <div class="relative h-[240px] overflow-hidden rounded-xl bg-gray-100 sm:h-[360px] md:h-[420px] lg:h-[460px]">
                                     <img id="property-main-image"
                                         src="{{ $mainImage->path }}"
                                         alt="{{ $mainImage->alt ?? $property->title }}"
                                         class="h-full w-full object-cover">
 
-                                    <button type="button" id="property-gallery-prev"
-                                        class="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-700 hover:bg-white"
+                                    <button type="button" id="property-gallery-prev" @disabled($images->count() <= 1)
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                                         aria-label="Sebelumnya">
                                         <i class="fa fa-chevron-left"></i>
                                     </button>
-                                    <button type="button" id="property-gallery-next"
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-700 hover:bg-white"
+                                    <button type="button" id="property-gallery-next" @disabled($images->count() <= 1)
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                                         aria-label="Berikutnya">
                                         <i class="fa fa-chevron-right"></i>
                                     </button>
@@ -78,15 +130,14 @@
                             </div>
 
                             <div class="md:col-span-3">
-                                <div class="grid grid-cols-4 gap-2 md:grid-cols-1">
+                                <div class="grid grid-cols-4 gap-2 md:grid-cols-1 md:h-[420px] md:overflow-auto md:pr-1 lg:h-[460px]">
                                     @foreach ($images->take(5) as $idx => $img)
                                         <button type="button"
-                                            class="property-thumb aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 ring-2 {{ $img->path === $mainImage->path ? 'ring-blue-600' : 'ring-transparent hover:ring-blue-300' }}"
+                                            class="property-thumb aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 ring-2 ring-offset-2 ring-offset-white {{ $img->path === $mainImage->path ? 'ring-blue-600' : 'ring-transparent hover:ring-blue-300' }} md:aspect-auto md:h-24 lg:h-[100px]"
                                             data-src="{{ $img->path }}"
                                             data-index="{{ $idx }}"
                                             aria-label="Thumbnail {{ $idx + 1 }}">
-                                            <img src="{{ $img->path }}" alt="Thumbnail"
-                                                class="h-full w-full object-cover">
+                                            <img src="{{ $img->path }}" alt="Thumbnail" class="h-full w-full object-cover">
                                         </button>
                                     @endforeach
                                 </div>
@@ -204,14 +255,33 @@
                     <!-- Location -->
                     <div class="mt-4 rounded-2xl bg-white p-5 shadow-sm">
                         <h2 class="text-base font-semibold text-gray-900">Lokasi Properti</h2>
-                        <div class="mt-3 rounded-2xl border border-gray-100 bg-gray-100 p-6 text-center text-sm text-gray-500">
-                            Peta lokasi (placeholder)
-                            <div class="mt-3">
-                                <button type="button" class="rounded-lg border border-blue-600 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
-                                    Lihat Perkiraan Lokasi
-                                </button>
+                        @if($mapsEmbedSrc)
+                            <div class="mt-3 overflow-hidden rounded-2xl border border-gray-100 bg-white">
+                                <div class="aspect-[16/9] bg-gray-100">
+                                    <iframe
+                                        src="{{ $mapsEmbedSrc }}"
+                                        class="h-full w-full"
+                                        style="border:0;"
+                                        allowfullscreen=""
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                </div>
+                                <div class="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fa fa-map-marker mr-1"></i>
+                                        {{ $mapsQuery }}
+                                    </p>
+                                    <a href="{{ $mapsOpenUrl }}" target="_blank" rel="noopener"
+                                        class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                                        Buka Google Maps
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="mt-3 rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center text-sm text-gray-500">
+                                Lokasi belum tersedia untuk properti ini.
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Recommendations -->
@@ -338,4 +408,3 @@
         });
     </script>
 @endsection
-

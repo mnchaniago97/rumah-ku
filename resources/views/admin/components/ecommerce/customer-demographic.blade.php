@@ -23,10 +23,10 @@
     <div class="flex justify-between">
         <div>
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                Customers Demographic
+                Sebaran Kota
             </h3>
             <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-                Number of customer based on country
+                Jumlah properti berdasarkan kota (hanya yang terbit & disetujui).
             </p>
         </div>
 
@@ -43,15 +43,18 @@
         @foreach($countriesList as $country)
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-full max-w-8 items-center rounded-full">
-                        <img src="{{ $country['flag'] }}" alt="{{ strtolower($country['name']) }}" />
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </div>
                     <div>
                         <p class="text-theme-sm font-semibold text-gray-800 dark:text-white/90">
                             {{ $country['name'] }}
                         </p>
                         <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
-                            {{ $country['customers'] }} Customers
+                            {{ $country['customers'] }} {{ $country['label'] ?? 'Properti' }}
                         </span>
                     </div>
                 </div>
