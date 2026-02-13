@@ -226,7 +226,7 @@ class DashboardController extends Controller
             ],
         ];
 
-        return view('admin.pages.dashboard.ecommerce', [
+        return view('admin.pages.dashboard.dashboard', [
             'title' => 'Dashboard',
             'metricCards' => $metricCards,
             'approvalSummary' => $approvalSummary,

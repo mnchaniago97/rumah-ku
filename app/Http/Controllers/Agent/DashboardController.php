@@ -9,7 +9,7 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        return view('agent.pages.dashboard.ecommerce', [
+        return view('agent.pages.dashboard.dashboard', [
             'title' => 'Dashboard',
         ]);
     }
