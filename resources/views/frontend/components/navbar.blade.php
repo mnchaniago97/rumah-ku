@@ -45,7 +45,7 @@
                     <a href="{{ route('properties') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Properti</a>
                     <a href="{{ route('rumah-subsidi') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Subsidi</a>
                     <a href="{{ route('sewa') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Sewa</a>
-                    <a href="{{ route('projects') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Proyek</a>
+                    <a href="{{ route('projects') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Perumahan Baru</a>
                     <a href="{{ route('aset-lelang-bank') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Aset Bank</a>
                     <a href="{{ route('agents') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Agen</a>
                     <a href="{{ route('articles') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Artikel</a>

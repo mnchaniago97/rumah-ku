@@ -43,7 +43,7 @@
             </div>
 
             {{-- SEARCH --}}
-            <div class="mt-8 max-w-4xl">
+            <div class="mt-8 max-w-4xl mb-6">
                 <form action="{{ route('sewa') }}" method="GET"
                     class="bg-white rounded-2xl shadow-xl p-4">
                     <div class="grid md:grid-cols-12 gap-3">
