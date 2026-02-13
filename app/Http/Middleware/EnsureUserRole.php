@@ -13,7 +13,7 @@ class EnsureUserRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string $roles): Response
     {
         $user = $request->user();
 
@@ -21,7 +21,9 @@ class EnsureUserRole
             return redirect()->route('login');
         }
 
-        if ($user->role !== $role) {
+        $rolesArray = explode(',', $roles);
+        
+        if (!in_array($user->role, $rolesArray)) {
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }

@@ -205,6 +205,30 @@
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Jika tidak dipilih, otomatis masuk kategori <span class="font-semibold">Properti Baru</span>.</p>
                 </div>
                 <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Fasilitas</label>
+                    @if(($features ?? collect())->count() > 0)
+                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                            @foreach(($features ?? collect()) as $feature)
+                                <label class="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 dark:border-gray-800 dark:text-gray-200">
+                                    <input
+                                        type="checkbox"
+                                        name="feature_ids[]"
+                                        value="{{ $feature->id }}"
+                                        @checked(in_array($feature->id, old('feature_ids', [])))
+                                        class="h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                                    />
+                                    <span>{{ $feature->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Pilih fasilitas yang tersedia pada properti ini.</p>
+                    @else
+                        <div class="rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                            Data fasilitas belum ada. Tambahkan data fasilitas di tabel <code class="font-mono">features</code> (seed) terlebih dahulu.
+                        </div>
+                    @endif
+                </div>
+                <div class="md:col-span-2">
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar Properti</label>
                     <input type="file" name="images[]" multiple accept="image/*"
                         class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />

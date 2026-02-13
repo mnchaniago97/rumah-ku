@@ -36,6 +36,7 @@ return new class extends Migration
             ['name' => 'Properti Populer', 'slug' => 'properti-populer', 'is_active' => true, 'sort_order' => 2],
             ['name' => 'Rekomendasi', 'slug' => 'rekomendasi', 'is_active' => true, 'sort_order' => 3],
             ['name' => 'Pilihan Kami', 'slug' => 'pilihan-kami', 'is_active' => true, 'sort_order' => 4],
+            ['name' => 'Rumah Subsidi', 'slug' => 'rumah-subsidi', 'is_active' => true, 'sort_order' => 5],
         ];
 
         $existingSlugs = DB::table('property_listing_categories')

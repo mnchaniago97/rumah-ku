@@ -1,12 +1,12 @@
 <section class="bg-gray-50 py-6">
     <div class="max-w-[1200px] mx-auto px-4">
         <div class="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
-            <a href="{{ route('properties') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
+            <button type="button" data-open-property-inquiry class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
                     <i class="fa fa-search text-lg"></i>
                 </div>
                 <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-blue-600">Carikan Properti</span>
-            </a>
+            </button>
             <a href="{{ route('advertise') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white transition">
                     <i class="fa fa-bullhorn text-lg"></i>

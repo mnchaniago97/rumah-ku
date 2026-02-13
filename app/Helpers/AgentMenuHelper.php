@@ -26,6 +26,11 @@ class AgentMenuHelper
                         'icon' => 'home',
                     ],
                     [
+                        'name' => 'Rumah Subsidi',
+                        'path' => route('agent.rumah-subsidi.index', [], false),
+                        'icon' => 'home-subsidi',
+                    ],
+                    [
                         'name' => 'Users',
                         'path' => route('agent.users.index', [], false),
                         'icon' => 'user',

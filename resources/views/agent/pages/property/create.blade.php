@@ -26,6 +26,30 @@
                         Ditentukan oleh Admin saat proses persetujuan. Jika tidak ada pilihan, otomatis masuk kategori <span class="font-semibold">Properti Baru</span>.
                     </div>
                 </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Fasilitas</label>
+                    @if(($features ?? collect())->count() > 0)
+                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                            @foreach(($features ?? collect()) as $feature)
+                                <label class="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 dark:border-gray-800 dark:text-gray-200">
+                                    <input
+                                        type="checkbox"
+                                        name="feature_ids[]"
+                                        value="{{ $feature->id }}"
+                                        @checked(in_array($feature->id, old('feature_ids', [])))
+                                        class="h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                                    />
+                                    <span>{{ $feature->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Pilih fasilitas yang tersedia pada properti ini.</p>
+                    @else
+                        <div class="rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                            Data fasilitas belum ada. Silakan hubungi admin untuk mengisi data fasilitas.
+                        </div>
+                    @endif
+                </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
                     <input name="price" value="{{ old('price') }}" type="number"

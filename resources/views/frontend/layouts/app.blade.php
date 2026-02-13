@@ -14,5 +14,6 @@
     @yield('content')
     
     @include('frontend.components.footer')
+    @include('frontend.components.property-inquiry-modal')
 </body>
 </html>

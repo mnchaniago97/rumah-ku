@@ -43,7 +43,10 @@
                 <div class="flex items-center gap-1">
                     <a href="{{ route('home') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Beranda</a>
                     <a href="{{ route('properties') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Properti</a>
+                    <a href="{{ route('rumah-subsidi') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Subsidi</a>
+                    <a href="{{ route('sewa') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Sewa</a>
                     <a href="{{ route('projects') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Proyek</a>
+                    <a href="{{ route('aset-lelang-bank') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Aset Bank</a>
                     <a href="{{ route('agents') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Agen</a>
                     <a href="{{ route('articles') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Artikel</a>
                     <a href="{{ route('about') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Tentang</a>
@@ -51,7 +54,9 @@
                 </div>
 
                 <div class="flex items-center gap-4 text-sm">
-                    <a href="{{ route('properties') }}" class="hover:text-white">Carikan Saya Properti</a>
+                    <button type="button" data-open-property-inquiry class="hover:text-white">
+                        Carikan Saya Properti
+                    </button>
                     <a href="{{ route('agents') }}" class="hover:text-white">Agen</a>
                 </div>
             </div>

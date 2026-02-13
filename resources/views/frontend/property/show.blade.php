@@ -237,6 +237,29 @@
                         </div>
                     </div>
 
+                    <!-- Facilities -->
+                    @if ($property->features && $property->features->count() > 0)
+                        <div class="mt-4 rounded-2xl bg-white p-5 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-900">Fasilitas</h2>
+                            <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                                @foreach ($property->features as $feature)
+                                    <div class="flex items-center gap-3 rounded-xl border border-gray-100 p-3">
+                                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                                            @if (!empty($feature->icon))
+                                                <i class="{{ $feature->icon }}"></i>
+                                            @else
+                                                <i class="fa fa-check"></i>
+                                            @endif
+                                        </div>
+                                        <div class="text-sm font-semibold text-gray-800">
+                                            {{ $feature->name }}
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Nearby -->
                     @if ($property->nearby && $property->nearby->count() > 0)
                         <div class="mt-4 rounded-2xl bg-white p-5 shadow-sm">

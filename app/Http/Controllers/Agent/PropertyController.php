@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\Feature;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\PropertyListingCategory;
@@ -31,6 +32,7 @@ class PropertyController extends Controller
     {
         return view('agent.pages.property.create', [
             'title' => 'Create Property',
+            'features' => Feature::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -67,8 +69,17 @@ class PropertyController extends Controller
             'orientation' => ['nullable', 'string', 'max:30'],
             'year_built' => ['nullable', 'integer'],
             'description' => ['nullable', 'string'],
+            'feature_ids' => ['nullable', 'array'],
+            'feature_ids.*' => ['integer', 'exists:features,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $featureIds = collect($data['feature_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['feature_ids']);
 
         $data['user_id'] = Auth::id();
         unset($data['agent_id']);
@@ -86,6 +97,10 @@ class PropertyController extends Controller
             ->value('id');
         if ($defaultCategoryId) {
             $property->listingCategories()->syncWithoutDetaching([$defaultCategoryId]);
+        }
+
+        if (count($featureIds) > 0) {
+            $property->features()->sync($featureIds);
         }
 
         if ($request->hasFile('images')) {
@@ -119,11 +134,12 @@ class PropertyController extends Controller
     public function edit(Property $property): View
     {
         $this->authorizeProperty($property);
-        $property->load('listingCategories');
+        $property->load(['listingCategories', 'features']);
 
         return view('agent.pages.property.edit', [
             'title' => 'Edit Property',
             'property' => $property,
+            'features' => Feature::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -162,8 +178,17 @@ class PropertyController extends Controller
             'orientation' => ['nullable', 'string', 'max:30'],
             'year_built' => ['nullable', 'integer'],
             'description' => ['nullable', 'string'],
+            'feature_ids' => ['nullable', 'array'],
+            'feature_ids.*' => ['integer', 'exists:features,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $featureIds = collect($data['feature_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['feature_ids']);
 
         $data['user_id'] = Auth::id();
         unset($data['agent_id']);
@@ -175,6 +200,7 @@ class PropertyController extends Controller
         $data['approved_by'] = null;
 
         $property->update($data);
+        $property->features()->sync($featureIds);
 
         if ($request->hasFile('images')) {
             $startIndex = $property->images()->max('sort_order') ?? 0;

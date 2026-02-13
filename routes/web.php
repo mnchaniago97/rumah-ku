@@ -2,8 +2,13 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Frontend\ArticleController as FrontendArticleController;
+use App\Http\Controllers\Frontend\AsetLelangBankController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PerumahanBaruController;
+use App\Http\Controllers\Frontend\PropertyInquiryController;
 use App\Http\Controllers\Frontend\PropertyController as FrontendPropertyController;
+use App\Http\Controllers\Frontend\RumahSubsidiController;
+use App\Http\Controllers\Frontend\SewaController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend Routes
@@ -13,13 +18,19 @@ Route::get('/property/{permalink}', [FrontendPropertyController::class, 'show'])
 Route::get('/search', [FrontendPropertyController::class, 'search'])->name('search');
 Route::get('/articles', [FrontendArticleController::class, 'index'])->name('articles');
 Route::get('/articles/{slug}', [FrontendArticleController::class, 'show'])->name('articles.show');
+Route::get('/aset-lelang-bank', [AsetLelangBankController::class, 'index'])->name('aset-lelang-bank');
+Route::post('/carikan-properti', [PropertyInquiryController::class, 'store'])->name('property-inquiries.store');
 
 // Static Pages
 Route::view('/about', 'frontend.about')->name('about');
 Route::view('/contact', 'frontend.contact')->name('contact');
-Route::view('/projects', 'frontend.projects')->name('projects');
+Route::redirect('/projects', '/perumahan-baru')->name('projects');
+Route::get('/rumah-subsidi', [RumahSubsidiController::class, 'index'])->name('rumah-subsidi');
+Route::get('/sewa', [SewaController::class, 'index'])->name('sewa');
+Route::get('/perumahan-baru', [PerumahanBaruController::class, 'index'])->name('perumahan-baru');
 Route::view('/agents', 'frontend.agents')->name('agents');
 Route::view('/calculator', 'frontend.calculator')->name('calculator');
+Route::view('/eligibility', 'frontend.eligibility')->name('eligibility');
 Route::view('/advertise', 'frontend.advertise')->name('advertise');
 Route::view('/discounted', 'frontend.discounted')->name('discounted');
 Route::view('/takeover', 'frontend.takeover')->name('takeover');

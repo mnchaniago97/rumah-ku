@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Feature;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\PropertyListingCategory;
@@ -16,7 +17,12 @@ class PropertyController extends Controller
 {
     public function index(): View
     {
-        $properties = Property::with(['images', 'category', 'user', 'listingCategories'])->latest()->get();
+        $properties = Property::with(['images', 'category', 'user', 'listingCategories'])
+            ->whereDoesntHave('listingCategories', function ($query) {
+                $query->where('slug', 'rumah-subsidi');
+            })
+            ->latest()
+            ->get();
 
         return view('admin.pages.property.index', [
             'title' => 'Properties',
@@ -28,7 +34,12 @@ class PropertyController extends Controller
     {
         return view('admin.pages.property.create', [
             'title' => 'Create Property',
-            'listingCategories' => PropertyListingCategory::active()->orderBy('sort_order')->orderBy('name')->get(),
+            'listingCategories' => PropertyListingCategory::active()
+                ->where('slug', '!=', 'rumah-subsidi')
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(),
+            'features' => Feature::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -67,6 +78,8 @@ class PropertyController extends Controller
             'description' => ['nullable', 'string'],
             'listing_category_ids' => ['nullable', 'array'],
             'listing_category_ids.*' => ['integer', 'exists:property_listing_categories,id'],
+            'feature_ids' => ['nullable', 'array'],
+            'feature_ids.*' => ['integer', 'exists:features,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
 
@@ -75,7 +88,21 @@ class PropertyController extends Controller
             ->unique()
             ->values()
             ->all();
+        
+        // Prevent rumah-subsidi category from being added via regular property form
+        $subsidiCategoryId = PropertyListingCategory::where('slug', 'rumah-subsidi')->value('id');
+        if ($subsidiCategoryId) {
+            $listingCategoryIds = array_values(array_diff($listingCategoryIds, [$subsidiCategoryId]));
+        }
+        
         unset($data['listing_category_ids']);
+
+        $featureIds = collect($data['feature_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['feature_ids']);
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
@@ -93,6 +120,10 @@ class PropertyController extends Controller
 
         if (count($listingCategoryIds) > 0) {
             $property->listingCategories()->sync($listingCategoryIds);
+        }
+
+        if (count($featureIds) > 0) {
+            $property->features()->sync($featureIds);
         }
 
         if ($request->hasFile('images')) {
@@ -129,12 +160,17 @@ class PropertyController extends Controller
 
     public function edit(Property $property): View
     {
-        $property->load('listingCategories');
+        $property->load(['listingCategories', 'features']);
 
         return view('admin.pages.property.edit', [
             'title' => 'Edit Property',
             'property' => $property,
-            'listingCategories' => PropertyListingCategory::active()->orderBy('sort_order')->orderBy('name')->get(),
+            'listingCategories' => PropertyListingCategory::active()
+                ->where('slug', '!=', 'rumah-subsidi')
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(),
+            'features' => Feature::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -173,6 +209,8 @@ class PropertyController extends Controller
             'description' => ['nullable', 'string'],
             'listing_category_ids' => ['nullable', 'array'],
             'listing_category_ids.*' => ['integer', 'exists:property_listing_categories,id'],
+            'feature_ids' => ['nullable', 'array'],
+            'feature_ids.*' => ['integer', 'exists:features,id'],
             'images.*' => ['nullable', 'image', 'max:4096'],
         ]);
 
@@ -181,7 +219,21 @@ class PropertyController extends Controller
             ->unique()
             ->values()
             ->all();
+        
+        // Prevent rumah-subsidi category from being added via regular property form
+        $subsidiCategoryId = PropertyListingCategory::where('slug', 'rumah-subsidi')->value('id');
+        if ($subsidiCategoryId) {
+            $listingCategoryIds = array_values(array_diff($listingCategoryIds, [$subsidiCategoryId]));
+        }
+        
         unset($data['listing_category_ids']);
+
+        $featureIds = collect($data['feature_ids'] ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        unset($data['feature_ids']);
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
@@ -189,6 +241,7 @@ class PropertyController extends Controller
         $property->update($data);
 
         $property->listingCategories()->sync($listingCategoryIds);
+        $property->features()->sync($featureIds);
 
         if ($request->hasFile('images')) {
             $startIndex = $property->images()->max('sort_order') ?? 0;

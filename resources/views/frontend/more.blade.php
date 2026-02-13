@@ -10,7 +10,7 @@
 
             {{-- All Shortcut Links --}}
             <div class="grid md:grid-cols-3 gap-6 mb-10">
-                <a href="{{ route('properties') }}" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group">
+                <button type="button" data-open-property-inquiry class="w-full text-left bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-600 transition">
                             <i class="fas fa-search text-2xl text-blue-600 group-hover:text-white"></i>
@@ -20,7 +20,7 @@
                             <p class="text-sm text-gray-500">Bantuan mencari properti sesuai kebutuhan</p>
                         </div>
                     </div>
-                </a>
+                </button>
 
                 <a href="{{ route('advertise') }}" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group">
                     <div class="flex items-center gap-4">

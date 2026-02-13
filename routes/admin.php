@@ -5,13 +5,15 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PropertyInquiryController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
+use App\Http\Controllers\Admin\RumahSubsidiController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('properties', PropertyController::class);
@@ -26,5 +28,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('testimonials', TestimonialController::class);
     Route::resource('articles', ArticleController::class);
     Route::resource('users', UserController::class);
+    Route::resource('property-inquiries', PropertyInquiryController::class)
+        ->only(['index', 'show', 'update', 'destroy']);
+
+});
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('rumah-subsidi', RumahSubsidiController::class);
 
 });

@@ -15,7 +15,7 @@
                 <p class="mt-4 text-sm text-gray-600">
                     Kalkulasikan cicilan KPR Anda dengan simulasi bunga dan tenor yang sesuai.
                 </p>
-                <a href="#" class="mt-4 inline-block text-sm font-medium text-blue-600 hover:text-blue-700">
+                <a href="{{ route('calculator') }}" class="mt-4 inline-block text-sm font-medium text-blue-600 hover:text-blue-700">
                     Coba Sekarang →
                 </a>
             </div>
@@ -34,7 +34,7 @@
                 <p class="mt-4 text-sm text-gray-600">
                     Periksa kelayakan properti sebelum Anda memutuskan untuk membeli.
                 </p>
-                <a href="#" class="mt-4 inline-block text-sm font-medium text-green-600 hover:text-green-700">
+                <a href="{{ route('eligibility') }}" class="mt-4 inline-block text-sm font-medium text-green-600 hover:text-green-700">
                     Coba Sekarang →
                 </a>
             </div>
@@ -53,7 +53,7 @@
                 <p class="mt-4 text-sm text-gray-600">
                     Ajukan pertanyaan kepada agent kami untuk informasi lebih lanjut.
                 </p>
-                <a href="#" class="mt-4 inline-block text-sm font-medium text-purple-600 hover:text-purple-700">
+                <a href="{{ route('agents') }}" class="mt-4 inline-block text-sm font-medium text-purple-600 hover:text-purple-700">
                     Tanya Sekarang →
                 </a>
             </div>

@@ -1,6 +1,35 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('content')
+    @php
+        /** @var \App\Models\Property $property */
+        $normalizeImage = function (?string $path) {
+            if (blank($path)) {
+                return null;
+            }
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/')) {
+                return $path;
+            }
+            return '/storage/' . ltrim($path, '/');
+        };
+
+        $addressText = collect([$property->address, $property->city, $property->province])
+            ->filter()
+            ->implode(', ');
+
+        $mapsQuery = null;
+        if (filled($property->latitude) && filled($property->longitude)) {
+            $mapsQuery = $property->latitude . ',' . $property->longitude;
+        } elseif (filled($addressText)) {
+            $mapsQuery = $addressText;
+        }
+
+        $mapsEmbedSrc = $mapsQuery ? 'https://www.google.com/maps?q=' . urlencode((string) $mapsQuery) . '&z=15&output=embed' : null;
+        $mapsOpenUrl = $mapsQuery ? 'https://www.google.com/maps?q=' . urlencode((string) $mapsQuery) : null;
+
+        $frontendUrl = route('property.show', $property->slug ?: $property->getKey());
+    @endphp
+
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
@@ -11,6 +40,10 @@
                 <a href="{{ route('admin.properties.index') }}"
                     class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
                     Kembali
+                </a>
+                <a href="{{ $frontendUrl }}" target="_blank" rel="noopener"
+                    class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                    <i class="fa fa-arrow-up-right-from-square mr-2"></i> Lihat di User
                 </a>
                 @if(!$property->is_approved)
                     <form action="{{ route('admin.properties.approve', $property) }}" method="POST">
@@ -47,7 +80,7 @@
             <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
                 @foreach($property->images->sortBy('sort_order') as $image)
                     <div class="relative aspect-square overflow-hidden rounded-lg group">
-                        <img src="{{ $image->path }}" alt="{{ $property->title }}" class="h-full w-full object-cover">
+                        <img src="{{ $normalizeImage($image->path ?? null) }}" alt="{{ $property->title }}" class="h-full w-full object-cover" loading="lazy">
                         @if($image->is_primary)
                             <span class="absolute bottom-2 left-2 rounded bg-brand-500 px-2 py-1 text-xs text-white">Primary</span>
                         @endif
@@ -106,6 +139,23 @@
                         @endforelse
                     </dd>
                 </div>
+                <div class="md:col-span-3">
+                    <dt class="text-xs text-gray-500 dark:text-gray-400">Fasilitas</dt>
+                    <dd class="mt-1 flex flex-wrap gap-2 text-sm font-medium text-gray-900 dark:text-white">
+                        @forelse(($property->features ?? collect()) as $feature)
+                            <span class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                                @if(!empty($feature->icon))
+                                    <i class="{{ $feature->icon }}"></i>
+                                @else
+                                    <i class="fa fa-check"></i>
+                                @endif
+                                {{ $feature->name }}
+                            </span>
+                        @empty
+                            <span class="text-gray-500">-</span>
+                        @endforelse
+                    </dd>
+                </div>
                 <div>
                     <dt class="text-xs text-gray-500 dark:text-gray-400">Approval</dt>
                     <dd class="text-sm font-medium text-gray-900 dark:text-white">
@@ -127,11 +177,18 @@
 
         <!-- Location -->
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
-            <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Lokasi</h3>
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lokasi</h3>
+                @if($mapsOpenUrl)
+                    <a href="{{ $mapsOpenUrl }}" target="_blank" rel="noopener" class="text-sm font-semibold text-brand-500 hover:underline">
+                        Buka Maps
+                    </a>
+                @endif
+            </div>
             <dl class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="md:col-span-2">
                     <dt class="text-xs text-gray-500 dark:text-gray-400">Alamat</dt>
-                    <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ $property->address ?? '-' }}</dd>
+                    <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ $addressText ?: '-' }}</dd>
                 </div>
                 <div>
                     <dt class="text-xs text-gray-500 dark:text-gray-400">Kota</dt>
@@ -146,6 +203,12 @@
                     <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ $property->postal_code ?? '-' }}</dd>
                 </div>
             </dl>
+
+            @if($mapsEmbedSrc)
+                <div class="mt-5 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800">
+                    <iframe src="{{ $mapsEmbedSrc }}" class="h-72 w-full" loading="lazy"></iframe>
+                </div>
+            @endif
         </div>
 
         <!-- Specifications -->
@@ -322,3 +385,4 @@
         @endif
     </div>
 @endsection
+
