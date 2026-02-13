@@ -1,0 +1,174 @@
+@extends('agent.layouts.app')
+
+@section('content')
+    <div class="space-y-6">
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Edit Property</h1>
+
+        <form action="{{ route('agent.properties.update', $property) }}" method="POST" enctype="multipart/form-data"
+            class="rounded-xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Judul</label>
+                    <input name="title" value="{{ old('title', $property->title) }}" required
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
+                    <input name="price" value="{{ old('price', $property->price) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Periode Harga</label>
+                    <select name="price_period"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                        <option value="">-</option>
+                        <option value="one_time" @selected(old('price_period', $property->price_period) === 'one_time')>Sekali</option>
+                        <option value="monthly" @selected(old('price_period', $property->price_period) === 'monthly')>Bulanan</option>
+                        <option value="yearly" @selected(old('price_period', $property->price_period) === 'yearly')>Tahunan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                    <input name="status" value="{{ old('status', $property->status) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Properti</label>
+                    <input name="type" value="{{ old('type', $property->type) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kota</label>
+                    <input name="city" value="{{ old('city', $property->city) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Provinsi</label>
+                    <input name="province" value="{{ old('province', $property->province) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kode Pos</label>
+                    <input name="postal_code" value="{{ old('postal_code', $property->postal_code) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Latitude</label>
+                    <input name="latitude" value="{{ old('latitude', $property->latitude) }}" type="number" step="0.0000001"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Longitude</label>
+                    <input name="longitude" value="{{ old('longitude', $property->longitude) }}" type="number" step="0.0000001"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kamar Tidur</label>
+                    <input name="bedrooms" value="{{ old('bedrooms', $property->bedrooms) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kamar Mandi</label>
+                    <input name="bathrooms" value="{{ old('bathrooms', $property->bathrooms) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Lantai</label>
+                    <input name="floors" value="{{ old('floors', $property->floors) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Carport</label>
+                    <input name="carports" value="{{ old('carports', $property->carports) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Garasi</label>
+                    <input name="garages" value="{{ old('garages', $property->garages) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Luas Tanah (LT)</label>
+                    <input name="land_area" value="{{ old('land_area', $property->land_area) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Luas Bangunan (LB)</label>
+                    <input name="building_area" value="{{ old('building_area', $property->building_area) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sertifikat</label>
+                    <input name="certificate" value="{{ old('certificate', $property->certificate) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Listrik</label>
+                    <input name="electricity" value="{{ old('electricity', $property->electricity) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sumber Air</label>
+                    <input name="water_source" value="{{ old('water_source', $property->water_source) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Furnishing</label>
+                    <input name="furnishing" value="{{ old('furnishing', $property->furnishing) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Orientasi</label>
+                    <input name="orientation" value="{{ old('orientation', $property->orientation) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tahun Bangun</label>
+                    <input name="year_built" value="{{ old('year_built', $property->year_built) }}" type="number"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat</label>
+                    <input name="address" value="{{ old('address', $property->address) }}"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi</label>
+                    <textarea name="description" rows="4"
+                        class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">{{ old('description', $property->description) }}</textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tambah Gambar</label>
+                    <input type="file" name="images[]" multiple accept="image/*"
+                        class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upload tambahan gambar.</p>
+                </div>
+            </div>
+
+            <div class="mt-4 flex items-center gap-6">
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                    <input type="checkbox" name="is_published" value="1" class="h-4 w-4 rounded border-gray-300"
+                        @checked(old('is_published', $property->is_published)) />
+                    Published
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                    <input type="checkbox" name="is_featured" value="1" class="h-4 w-4 rounded border-gray-300"
+                        @checked(old('is_featured', $property->is_featured)) />
+                    Featured
+                </label>
+            </div>
+
+            <div class="mt-6 flex items-center gap-3">
+                <button type="submit"
+                    class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
+                    Simpan
+                </button>
+                <a href="{{ route('agent.properties.index') }}" class="text-sm text-gray-600 hover:underline dark:text-gray-300">Batal</a>
+            </div>
+        </form>
+    </div>
+@endsection
+

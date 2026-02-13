@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Http\Controllers\Agent;
+
+use App\Http\Controllers\Controller;
+use Illuminate\View\View;
+
+class DashboardController extends Controller
+{
+    public function index(): View
+    {
+        return view('agent.pages.dashboard.ecommerce', [
+            'title' => 'Dashboard',
+        ]);
+    }
+}
+
+

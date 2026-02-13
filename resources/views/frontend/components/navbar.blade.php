@@ -1,0 +1,60 @@
+<nav class="sticky top-0 z-50">
+    <!-- Top Bar -->
+    <div class="bg-blue-800 text-white shadow-sm">
+        <div class="max-w-[1200px] mx-auto px-4">
+            <div class="flex h-14 items-center justify-between">
+                <!-- Logo -->
+                <a href="{{ route('home') }}" class="flex items-center gap-2 text-lg font-extrabold tracking-tight">
+                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
+                        <i class="fa fa-house"></i>
+                    </span>
+                    Rumah Ku
+                </a>
+
+                <!-- Actions (Desktop) -->
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="{{ route('calculator') }}" class="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-blue-800 hover:bg-white/90">
+                        <i class="fa fa-calculator"></i>
+                        KPR
+                    </a>
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-white/90 hover:text-white">
+                        <i class="fa fa-user"></i>
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/15">
+                        Daftar
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center rounded-md bg-white/10 p-2 text-white/90 hover:bg-white/15">
+                        <i class="fa fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar (Desktop Menu) -->
+    <div class="hidden md:block bg-blue-700/95 text-white/90 border-t border-white/10">
+        <div class="max-w-[1200px] mx-auto px-4">
+            <div class="flex h-11 items-center justify-between">
+                <div class="flex items-center gap-1">
+                    <a href="{{ route('home') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Beranda</a>
+                    <a href="{{ route('properties') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Properti</a>
+                    <a href="{{ route('projects') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Proyek</a>
+                    <a href="{{ route('agents') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Agen</a>
+                    <a href="{{ route('articles') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Artikel</a>
+                    <a href="{{ route('about') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Tentang</a>
+                    <a href="{{ route('contact') }}" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white">Kontak</a>
+                </div>
+
+                <div class="flex items-center gap-4 text-sm">
+                    <a href="{{ route('properties') }}" class="hover:text-white">Carikan Saya Properti</a>
+                    <a href="{{ route('agents') }}" class="hover:text-white">Agen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
