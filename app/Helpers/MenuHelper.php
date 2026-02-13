@@ -25,11 +25,19 @@ class MenuHelper
                         'path' => route('admin.properties.index', [], false),
                         'icon' => 'home',
                     ],
-                    [
-                        'name' => 'Rumah Subsidi',
-                        'path' => route('admin.rumah-subsidi.index', [], false),
-                        'icon' => 'home-subsidi',
-                    ],
+                    ...(
+                        auth()->check() && (auth()->user()->role ?? null) === 'admin'
+                            ? [[
+                                'name' => 'Rumah Subsidi',
+                                'path' => route('admin.rumah-subsidi.index', [], false),
+                                'icon' => 'home-subsidi',
+                            ], [
+                                'name' => 'Sewa',
+                                'path' => route('admin.sewa.index', [], false),
+                                'icon' => 'rent',
+                            ]]
+                            : []
+                    ),
                     [
                         'name' => 'Categories',
                         'path' => route('admin.categories.index', [], false),
@@ -92,6 +100,7 @@ class MenuHelper
             'file' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.66667 2.5H12.5L16.6667 6.66667V17.5H6.66667C5.74619 17.5 5 16.7538 5 15.8333V4.16667C5 3.24619 5.74619 2.5 6.66667 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 2.5V6.66667H16.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 10H14.1667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7.5 13.3333H14.1667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
             'search' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
             'home-subsidi' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 8.33333L10 3.33334L16.5 8.33333V15.8333C16.5 16.2936 16.1269 16.6667 15.6667 16.6667H4.33333C3.8731 16.6667 3.5 16.2936 3.5 15.8333V8.33333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 16.6667V11.6667H12.5V16.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.5H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
+            'rent' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 8.33333L10 3.33334L16.5 8.33333V15.8333C16.5 16.2936 16.1269 16.6667 15.6667 16.6667H4.33333C3.8731 16.6667 3.5 16.2936 3.5 15.8333V8.33333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 12.4H12.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7.3 14.9H10.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
         ];
 
         return $icons[$name] ?? $icons['dashboard'];

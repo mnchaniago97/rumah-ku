@@ -15,7 +15,10 @@ class SewaController extends Controller
         $baseQuery = Property::with(['images', 'listingCategories', 'agent'])
             ->where('is_published', true)
             ->where('is_approved', true)
-            ->where('status', 'disewakan');
+            ->where('status', 'disewakan')
+            ->whereHas('listingCategories', function ($query) {
+                $query->where('slug', 'sewa');
+            });
 
         $query = clone $baseQuery;
 
@@ -65,7 +68,16 @@ class SewaController extends Controller
 
         $properties = $query->latest()->paginate(12)->withQueryString();
 
-        $typeOptions = collect(['Rumah', 'Apartemen', 'Villa', 'Ruko', 'Tanah'])->values();
+        $typeOptions = (clone $baseQuery)
+            ->whereNotNull('type')
+            ->where('type', '!=', '')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
+
+        if ($typeOptions->isEmpty()) {
+            $typeOptions = collect(['Rumah', 'Apartemen', 'Kost', 'Villa', 'Ruko', 'Kantor', 'Tanah'])->values();
+        }
 
         $cityOptions = (clone $baseQuery)
             ->whereNotNull('city')
@@ -100,11 +112,27 @@ class SewaController extends Controller
             ];
         });
 
+        $takeLatestByTypes = function (array $types) use ($baseQuery) {
+            $types = array_values(array_filter(array_map('strtolower', $types)));
+            if (count($types) === 0) {
+                return collect();
+            }
+
+            return (clone $baseQuery)
+                ->whereNotNull('type')
+                ->where('type', '!=', '')
+                ->whereIn(DB::raw('LOWER(type)'), $types)
+                ->latest()
+                ->take(8)
+                ->get();
+        };
+
         $recommendedProperties = (clone $baseQuery)->latest()->take(8)->get();
-        $houseRentals = (clone $baseQuery)->where('type', 'Rumah')->latest()->take(8)->get();
-        $apartmentRentals = (clone $baseQuery)->where('type', 'Apartemen')->latest()->take(8)->get();
-        $shopRentals = (clone $baseQuery)->where('type', 'Ruko')->latest()->take(8)->get();
-        $villaRentals = (clone $baseQuery)->where('type', 'Villa')->latest()->take(8)->get();
+        $houseRentals = $takeLatestByTypes(['Rumah']);
+        $apartmentRentals = $takeLatestByTypes(['Apartemen']);
+        $kostRentals = $takeLatestByTypes(['Kost', 'Kos', 'Kos-kosan', 'Kost-kosan']);
+        $businessRentals = $takeLatestByTypes(['Ruko', 'Kantor', 'Gudang', 'Pabrik', 'Ruang Usaha', 'Toko']);
+        $villaRentals = $takeLatestByTypes(['Villa']);
 
         return view('frontend.sewa', [
             'title' => 'Properti Disewa',
@@ -115,7 +143,8 @@ class SewaController extends Controller
             'recommendedProperties' => $recommendedProperties,
             'houseRentals' => $houseRentals,
             'apartmentRentals' => $apartmentRentals,
-            'shopRentals' => $shopRentals,
+            'kostRentals' => $kostRentals,
+            'businessRentals' => $businessRentals,
             'villaRentals' => $villaRentals,
         ]);
     }

@@ -16,7 +16,23 @@
     };
 
     $formatRupiah = fn($v) => filled($v) && is_numeric($v) ? 'Rp ' . number_format($v,0,',','.') : 'Hubungi Kami';
-    $makeWhatsApp = fn($p) => ($ph = preg_replace('/\D+/','',$p->agent?->phone ?? '')) ? "https://wa.me/$ph" : null;
+    $formatPhone = function (?string $phone) {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+        if ($digits === '') return null;
+        if (str_starts_with($digits, '0')) {
+            $digits = '62' . substr($digits, 1);
+        } elseif (str_starts_with($digits, '8')) {
+            $digits = '62' . $digits;
+        }
+        return '+' . $digits;
+    };
+
+    $makeWhatsApp = function ($p) use ($formatPhone) {
+        $formatted = $formatPhone($p->agent?->phone ?? null);
+        if (!$formatted) return null;
+        $digits = preg_replace('/\D+/', '', $formatted);
+        return $digits ? "https://wa.me/$digits" : null;
+    };
 
     $filtersActive = request()->filled('q')
         || request()->filled('city')
@@ -150,14 +166,15 @@
             <a href="{{ route('sewa') }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
         </div>
 
-        <div class="mt-4 flex gap-4 overflow-x-auto pb-2">
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($houseRentals ?? collect()) as $property)
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?house';
-                    $wa = $property->agent?->phone ? 'https://wa.me/'.preg_replace('/\D+/','',$property->agent->phone) : null;
+                    $wa = $makeWhatsApp($property);
+                    $waNumber = $formatPhone($property->agent?->phone ?? null);
                 @endphp
 
-                <div class="min-w-[270px] bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
                     <div class="aspect-[4/3]">
                         <img src="{{ $img }}" class="w-full h-full object-cover">
                     </div>
@@ -174,10 +191,13 @@
                         </div>
 
                         @if($wa)
-                        <a href="{{ $wa }}" target="_blank"
-                            class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
-                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                        </a>
+                            <a href="{{ $wa }}" target="_blank" rel="noopener"
+                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+                            @if($waNumber)
+                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -202,13 +222,15 @@
             </a>
         </div>
 
-        <div class="mt-6 flex gap-4 overflow-x-auto">
-            @foreach(($apartmentRentals ?? collect()) as $property)
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            @foreach(($apartmentRentals ?? collect())->merge($kostRentals ?? collect())->take(8) as $property)
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?apartment';
+                    $wa = $makeWhatsApp($property);
+                    $waNumber = $formatPhone($property->agent?->phone ?? null);
                 @endphp
 
-                <div class="min-w-[260px] bg-white text-gray-900 rounded-2xl overflow-hidden">
+                <div class="bg-white text-gray-900 rounded-2xl overflow-hidden shadow ring-1 ring-black/5">
                     <div class="aspect-[4/3]">
                         <img src="{{ $img }}" class="w-full h-full object-cover">
                     </div>
@@ -219,6 +241,16 @@
                         <div class="text-sm font-semibold line-clamp-2 mt-1">
                             {{ $property->title }}
                         </div>
+
+                        @if($wa)
+                            <a href="{{ $wa }}" target="_blank" rel="noopener"
+                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+                            @if($waNumber)
+                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
+                            @endif
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -236,9 +268,49 @@
             <a href="{{ route('sewa',['type'=>'Ruko']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
         </div>
 
-        <div class="mt-6 text-center py-16 bg-white rounded-2xl border border-dashed">
-            <p class="text-gray-500">Belum ada properti di area ini.</p>
-        </div>
+        @if(($businessRentals ?? collect())->count() > 0)
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach(($businessRentals ?? collect()) as $property)
+                    @php
+                        $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?shop';
+                        $wa = $makeWhatsApp($property);
+                        $waNumber = $formatPhone($property->agent?->phone ?? null);
+                    @endphp
+
+                    <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                        <div class="aspect-[4/3]">
+                            <img src="{{ $img }}" class="w-full h-full object-cover">
+                        </div>
+
+                        <div class="p-4">
+                            <div class="text-blue-700 font-bold text-sm">
+                                Rp {{ number_format($property->price,0,',','.') }}
+                            </div>
+                            <div class="mt-1 text-sm font-semibold line-clamp-2">
+                                {{ $property->title }}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                <i class="fa fa-map-marker mr-1"></i>{{ $property->city }}
+                            </div>
+
+                            @if($wa)
+                                <a href="{{ $wa }}" target="_blank" rel="noopener"
+                                    class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
+                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                </a>
+                                @if($waNumber)
+                                    <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="mt-6 text-center py-16 bg-white rounded-2xl border border-dashed">
+                <p class="text-gray-500">Belum ada properti di area ini.</p>
+            </div>
+        @endif
     </section>
 
 
@@ -252,13 +324,15 @@
             <a href="{{ route('sewa',['type'=>'Villa']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
         </div>
 
-        <div class="mt-4 flex gap-4 overflow-x-auto pb-2">
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($villaRentals ?? collect()) as $property)
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?villa';
+                    $wa = $makeWhatsApp($property);
+                    $waNumber = $formatPhone($property->agent?->phone ?? null);
                 @endphp
 
-                <div class="min-w-[270px] bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
                     <div class="aspect-[4/3]">
                         <img src="{{ $img }}" class="w-full h-full object-cover">
                     </div>
@@ -269,6 +343,16 @@
                         <div class="text-sm font-semibold line-clamp-2 mt-1">
                             {{ $property->title }}
                         </div>
+
+                        @if($wa)
+                            <a href="{{ $wa }}" target="_blank" rel="noopener"
+                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </a>
+                            @if($waNumber)
+                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
+                            @endif
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -286,7 +370,7 @@
             <a href="#" class="text-blue-700 text-sm font-semibold">Selengkapnya</a>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6 mt-4">
+        <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($articles ?? collect()) as $post)
                 <a href="#" class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
                     <img src="{{ $post->image ?? 'https://source.unsplash.com/400x300/?real-estate' }}"
@@ -306,4 +390,3 @@
 </div>
 
 @endsection
-
