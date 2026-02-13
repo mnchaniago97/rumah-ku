@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PropertyInquiryController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
 use App\Http\Controllers\Admin\RumahSubsidiController;
+use App\Http\Controllers\Admin\SewaController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -35,5 +36,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('rumah-subsidi', RumahSubsidiController::class);
+    Route::resource('sewa', SewaController::class);
 
 });

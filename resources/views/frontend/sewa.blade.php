@@ -1,241 +1,309 @@
 @extends('frontend.layouts.app')
 
-@push('styles')
-<style>
-    .filter-checkbox:checked + label {
-        background-color: #16a34a;
-        border-color: #16a34a;
-        color: white;
-    }
-</style>
-@endpush
-
 @section('content')
-<!-- Page Header -->
-<section class="bg-gray-100 dark:bg-gray-900 py-8">
-    <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Properti Disewa</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Temukan rumah, kos, ruko, villa, apartemen dan lainnya untuk disewa</p>
-    </div>
-</section>
+@php
+    $fallbackImages = collect([
+        '/assets/admin/images/product/product-01.jpg',
+        '/assets/admin/images/product/product-02.jpg',
+        '/assets/admin/images/product/product-03.jpg',
+        '/assets/admin/images/product/product-04.jpg',
+    ]);
 
-<!-- Content Section -->
-<section class="py-8">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar Filters -->
-            <aside class="w-full lg:w-1/4">
-                <form action="{{ route('sewa') }}" method="GET" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filter Pencarian</h3>
-                    
-                    <!-- Tipe Properti -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Tipe Properti</h4>
-                        <div class="space-y-2">
-                            @foreach(['Rumah' => 'Rumah', 'Apartemen' => 'Apartemen', 'Villa' => 'Villa', 'Ruko' => 'Ruko'] as $value => $label)
-                                <div class="flex items-center">
-                                    <input type="radio" name="type" value="{{ $value }}" id="type-{{ $value }}"
-                                        class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                                        {{ request('type') === $value ? 'checked' : '' }}>
-                                    <label for="type-{{ $value }}" class="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                                        {{ $label }}
-                                    </label>
-                                </div>
-                            @endforeach
+    $normalizeImage = function (?string $path) {
+        if (blank($path)) return null;
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/')) return $path;
+        return '/storage/' . ltrim($path, '/');
+    };
+
+    $formatRupiah = fn($v) => filled($v) && is_numeric($v) ? 'Rp ' . number_format($v,0,',','.') : 'Hubungi Kami';
+    $makeWhatsApp = fn($p) => ($ph = preg_replace('/\D+/','',$p->agent?->phone ?? '')) ? "https://wa.me/$ph" : null;
+
+    $filtersActive = request()->filled('q')
+        || request()->filled('city')
+        || request()->filled('type');
+@endphp
+
+<div class="bg-gray-50">
+
+    {{-- HERO --}}
+    <div class="relative">
+        <div class="absolute inset-0">
+            <img src="/assets/admin/images/product/product-03.jpg" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-700/70"></div>
+        </div>
+
+        <div class="relative max-w-[1200px] mx-auto px-4 pt-16 pb-24">
+            <div class="max-w-2xl text-white">
+                <h1 class="text-4xl font-extrabold leading-tight">
+                    Investasi Masa Depan Dimulai dari Properti yang Tepat
+                </h1>
+                <p class="mt-3 text-white/90">
+                    Temukan rumah, apartemen, villa, dan ruang usaha terbaik dengan mudah.
+                </p>
+            </div>
+
+            {{-- SEARCH --}}
+            <div class="mt-8 max-w-4xl">
+                <form action="{{ route('sewa') }}" method="GET"
+                    class="bg-white rounded-2xl shadow-xl p-4">
+                    <div class="grid md:grid-cols-12 gap-3">
+                        <div class="md:col-span-5">
+                            <input name="q" value="{{ request('q') }}"
+                                placeholder="Lokasi, keyword, area"
+                                class="h-12 w-full rounded-xl border border-gray-200 px-4 text-sm focus:ring-2 focus:ring-blue-600">
                         </div>
-                    </div>
-
-                    <!-- Kisaran Harga -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Kisaran Harga</h4>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Min (Rp)</label>
-                                <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="500rb"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Max (Rp)</label>
-                                <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="5jt"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
+                        <div class="md:col-span-3">
+                            <select name="city"
+                                class="h-12 w-full rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                <option value="">Semua Kota</option>
+                                @foreach(($cityOptions ?? collect()) as $city)
+                                    <option value="{{ $city }}" @selected(request('city')==$city)>{{ $city }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </div>
-
-                    <!-- Kamar -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Kamar</h4>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Kamar Tidur</label>
-                                <select name="bedrooms" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Semua</option>
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <option value="{{ $i }}" {{ request('bedrooms') == $i ? 'selected' : '' }}>{{ $i }} KT</option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-500 dark:text-gray-400">Kamar Mandi</label>
-                                <select name="bathrooms" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Semua</option>
-                                    @for($i = 1; $i <= 4; $i++)
-                                        <option value="{{ $i }}" {{ request('bathrooms') == $i ? 'selected' : '' }}>{{ $i }} KM</option>
-                                    @endfor
-                                </select>
-                            </div>
+                        <div class="md:col-span-2">
+                            <select name="type"
+                                class="h-12 w-full rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                <option value="">Tipe</option>
+                                @foreach(($typeOptions ?? collect()) as $t)
+                                    <option value="{{ $t }}" @selected(request('type')==$t)>{{ $t }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </div>
-
-                    <!-- Fasilitas -->
-                    <div class="mb-6">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Fasilitas</h4>
-                        <div class="space-y-2">
-                            @foreach([
-                                'ac' => 'AC',
-                                'furnished' => 'Furnished',
-                                'carport' => 'Carport',
-                                'garage' => 'Garasi',
-                                'garden' => 'Taman',
-                                'pool' => 'Kolam Renang',
-                                'security' => 'Security 24 Jam',
-                                'cctv' => 'CCTV'
-                            ] as $value => $label)
-                                <div class="flex items-center">
-                                    <input type="checkbox" name="facilities[]" value="{{ $value }}" id="facility-{{ $value }}"
-                                        class="hidden">
-                                    <label for="facility-{{ $value }}" 
-                                        class="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
-                                        <span class="w-4 h-4 border border-gray-300 rounded flex items-center justify-center">
-                                            <i class="fa fa-check text-xs opacity-0"></i>
-                                        </span>
-                                        {{ $label }}
-                                    </label>
-                                </div>
-                            @endforeach
+                        <div class="md:col-span-2">
+                            <button class="h-12 w-full rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800">
+                                Cari
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                            Terapkan
-                        </button>
-                        <a href="{{ route('sewa') }}" class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-300 transition-colors text-center">
-                            Reset
-                        </a>
                     </div>
                 </form>
-            </aside>
+            </div>
 
-            <!-- Property Listings -->
-            <div class="w-full lg:w-3/4">
-                <div class="flex justify-between items-center mb-6">
-                    <p class="text-gray-600 dark:text-gray-400">
-                        Menampilkan <span class="font-semibold text-gray-900 dark:text-white">{{ $properties->count() }}</span> 
-                        dari <span class="font-semibold text-gray-900 dark:text-white">{{ $properties->total() }}</span> properti
-                    </p>
-                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        <option value="latest">Terbaru</option>
-                        <option value="price_low">Harga: Termurah</option>
-                        <option value="price_high">Harga: Termahal</option>
-                    </select>
-                </div>
+            {{-- SHORTCUT --}}
+            <div class="mt-10 grid grid-cols-4 md:grid-cols-8 gap-4">
+                @php
+                    $shortcuts = [
+                        ['Rumah','fa-house'],
+                        ['Apartemen','fa-building'],
+                        ['Villa','fa-umbrella-beach'],
+                        ['Ruko','fa-store'],
+                        ['Tanah','fa-mountain'],
+                        ['Bulanan','fa-calendar'],
+                        ['Tahunan','fa-calendar-check'],
+                        ['Bantuan','fa-headset'],
+                    ];
+                @endphp
 
-                @if($properties->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        @foreach($properties as $property)
-                            @php
-                                $primaryImage = $property->images->sortBy('sort_order')->firstWhere('is_primary', true)
-                                    ?? $property->images->sortBy('sort_order')->first();
-                                $imageUrl = $primaryImage 
-                                    ? Storage::url(str_replace('/storage/', '', $primaryImage->path))
-                                    : 'https://ui-avatars.com/api/?name=' . urlencode($property->title) . '&background=random&color=fff&size=512';
-                            @endphp
-                            <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                                <div class="relative">
-                                    <img src="{{ $imageUrl }}" alt="{{ $property->title }}" 
-                                        class="w-full h-48 object-cover">
-                                    <div class="absolute top-3 left-3">
-                                        <span class="bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded">
-                                            {{ $property->type ?? 'Rumah' }}
-                                        </span>
-                                    </div>
-                                    <div class="absolute bottom-3 left-3">
-                                        <span class="bg-white/90 text-gray-800 text-xs font-semibold px-2 py-1 rounded flex items-center gap-1">
-                                            <i class="fa fa-camera"></i> {{ $property->images->count() }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="p-4">
-                                    <h3 class="font-semibold text-gray-900 dark:text-white text-lg line-clamp-1" title="{{ $property->title }}">
-                                        {{ $property->title }}
-                                    </h3>
-                                    <p class="text-green-600 font-bold text-lg mt-1">
-                                        Rp {{ number_format($property->price, 0, ',', '.') }}
-                                        <span class="text-xs font-normal text-gray-500">/bulan</span>
-                                    </p>
-                                    <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mt-2">
-                                        <i class="fa fa-map-marker"></i>
-                                        <span class="line-clamp-1">{{ $property->city ?? $property->address ?? '-' }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-4 mt-3 text-gray-600 dark:text-gray-300">
-                                        <span class="flex items-center gap-1 text-sm">
-                                            <i class="fa fa-bed"></i> {{ $property->bedrooms ?? 0 }} KT
-                                        </span>
-                                        <span class="flex items-center gap-1 text-sm">
-                                            <i class="fa fa-bath"></i> {{ $property->bathrooms ?? 0 }} KM
-                                        </span>
-                                        <span class="flex items-center gap-1 text-sm">
-                                            <i class="fa fa-expand"></i> {{ $property->building_area ?? $property->land_area ?? 0 }} m²
-                                        </span>
-                                    </div>
-                                    <a href="{{ route('property.show', $property->permalink ?? $property->id) }}" 
-                                        class="block mt-4 text-center bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                                        Lihat Detail
-                                    </a>
-                                </div>
-                            </article>
-                        @endforeach
+                @foreach($shortcuts as $s)
+                    <div class="text-center text-white">
+                        <div class="mx-auto mb-2 h-14 w-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur hover:bg-white/30">
+                            <i class="fa {{ $s[1] }}"></i>
+                        </div>
+                        <div class="text-xs font-semibold">{{ $s[0] }}</div>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="mt-8">
-                        {{ $properties->links() }}
-                    </div>
-                @else
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
-                        <i class="fa fa-home text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Tidak Ada Properti Tersedia</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-4">Maaf, tidak ada properti yang tersedia untuk disewa saat ini.</p>
-                        <a href="{{ route('rumah-subsidi') }}" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                            Lihat Rumah Subsidi
-                        </a>
-                    </div>
-                @endif
+                @endforeach
             </div>
         </div>
+
+        <div class="absolute bottom-0 left-0 right-0 h-10 bg-gray-50 rounded-t-[30px]"></div>
     </div>
-</section>
+
+
+ <div class="bg-gray-50">
+<div class="max-w-[1200px] mx-auto px-4 py-10 space-y-14">
+
+    {{-- ========================= --}}
+    {{-- KOTA POPULER --}}
+    {{-- ========================= --}}
+    <section>
+        <div class="flex items-end justify-between">
+            <div>
+                <h2 class="text-xl font-bold">Kota Populer Untuk Sewa Hunian</h2>
+                <p class="text-sm text-gray-500">Pilih kota favoritmu.</p>
+            </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            @foreach(($popularCities ?? collect()) as $row)
+                <a href="{{ route('sewa',['city'=>$row['city']]) }}"
+                    class="group relative overflow-hidden rounded-2xl">
+                    <img src="{{ $row['image'] ?? 'https://source.unsplash.com/400x300/?city' }}"
+                        class="h-28 w-full object-cover group-hover:scale-105 transition">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60"></div>
+                    <div class="absolute bottom-2 left-3 text-white">
+                        <div class="font-bold">{{ $row['city'] }}</div>
+                        <div class="text-xs">{{ $row['total'] ?? 0 }} listing</div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+
+
+    {{-- ========================= --}}
+    {{-- REKOMENDASI RUMAH --}}
+    {{-- ========================= --}}
+    <section>
+        <div class="flex justify-between items-end">
+            <h2 class="text-xl font-bold">Rekomendasi Sewa Rumah</h2>
+            <a href="{{ route('sewa') }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
+        </div>
+
+        <div class="mt-4 flex gap-4 overflow-x-auto pb-2">
+            @foreach(($houseRentals ?? collect()) as $property)
+                @php
+                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?house';
+                    $wa = $property->agent?->phone ? 'https://wa.me/'.preg_replace('/\D+/','',$property->agent->phone) : null;
+                @endphp
+
+                <div class="min-w-[270px] bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                    <div class="aspect-[4/3]">
+                        <img src="{{ $img }}" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="p-4">
+                        <div class="text-blue-700 font-bold text-sm">
+                            Rp {{ number_format($property->price,0,',','.') }}
+                        </div>
+                        <div class="mt-1 text-sm font-semibold line-clamp-2">
+                            {{ $property->title }}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <i class="fa fa-map-marker mr-1"></i>{{ $property->city }}
+                        </div>
+
+                        @if($wa)
+                        <a href="{{ $wa }}" target="_blank"
+                            class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+
+
+    {{-- ========================= --}}
+    {{-- KOST & APARTEMEN --}}
+    {{-- ========================= --}}
+    <section class="rounded-3xl p-6 bg-gradient-to-r from-blue-800 to-indigo-700 text-white">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold">Sewa Kost & Apartemen</h2>
+                <p class="text-sm text-white/80">Hunian praktis dekat pusat kota.</p>
+            </div>
+            <a href="{{ route('sewa',['type'=>'Apartemen']) }}"
+                class="bg-white text-blue-800 px-4 py-2 rounded-xl text-sm font-semibold">
+                Lihat Semua
+            </a>
+        </div>
+
+        <div class="mt-6 flex gap-4 overflow-x-auto">
+            @foreach(($apartmentRentals ?? collect()) as $property)
+                @php
+                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?apartment';
+                @endphp
+
+                <div class="min-w-[260px] bg-white text-gray-900 rounded-2xl overflow-hidden">
+                    <div class="aspect-[4/3]">
+                        <img src="{{ $img }}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="font-bold text-blue-700 text-sm">
+                            Rp {{ number_format($property->price,0,',','.') }}
+                        </div>
+                        <div class="text-sm font-semibold line-clamp-2 mt-1">
+                            {{ $property->title }}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+
+
+    {{-- ========================= --}}
+    {{-- RUKO --}}
+    {{-- ========================= --}}
+    <section>
+        <div class="flex justify-between items-end">
+            <h2 class="text-xl font-bold">Sewa Ruko dan Ruang Usaha Terbaik untuk Bisnis</h2>
+            <a href="{{ route('sewa',['type'=>'Ruko']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
+        </div>
+
+        <div class="mt-6 text-center py-16 bg-white rounded-2xl border border-dashed">
+            <p class="text-gray-500">Belum ada properti di area ini.</p>
+        </div>
+    </section>
+
+
+
+    {{-- ========================= --}}
+    {{-- VILLA --}}
+    {{-- ========================= --}}
+    <section>
+        <div class="flex justify-between items-end">
+            <h2 class="text-xl font-bold">Sewa Villa Nyaman dan Strategis untuk Liburan</h2>
+            <a href="{{ route('sewa',['type'=>'Villa']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
+        </div>
+
+        <div class="mt-4 flex gap-4 overflow-x-auto pb-2">
+            @foreach(($villaRentals ?? collect()) as $property)
+                @php
+                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?villa';
+                @endphp
+
+                <div class="min-w-[270px] bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                    <div class="aspect-[4/3]">
+                        <img src="{{ $img }}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="font-bold text-blue-700 text-sm">
+                            Rp {{ number_format($property->price,0,',','.') }}
+                        </div>
+                        <div class="text-sm font-semibold line-clamp-2 mt-1">
+                            {{ $property->title }}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+
+
+    {{-- ========================= --}}
+    {{-- INFO PROPERTI / ARTIKEL --}}
+    {{-- ========================= --}}
+    <section>
+        <div class="flex justify-between items-end">
+            <h2 class="text-xl font-bold">Info Properti</h2>
+            <a href="#" class="text-blue-700 text-sm font-semibold">Selengkapnya</a>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mt-4">
+            @foreach(($articles ?? collect()) as $post)
+                <a href="#" class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
+                    <img src="{{ $post->image ?? 'https://source.unsplash.com/400x300/?real-estate' }}"
+                        class="h-40 w-full object-cover">
+                    <div class="p-4">
+                        <div class="font-semibold line-clamp-2">{{ $post->title }}</div>
+                        <p class="text-sm text-gray-500 mt-2 line-clamp-2">
+                            {{ $post->excerpt ?? '' }}
+                        </p>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+</div>
+</div>
+
 @endsection
 
-@push('scripts')
-<script>
-    // Toggle checkbox styling
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const label = this.nextElementSibling;
-            const checkmark = label.querySelector('.fa-check');
-            if (this.checked) {
-                label.classList.add('bg-green-600', 'border-green-600', 'text-white');
-                label.classList.remove('border-gray-300', 'text-gray-700', 'dark:text-gray-300');
-                checkmark.classList.remove('opacity-0');
-            } else {
-                label.classList.remove('bg-green-600', 'border-green-600', 'text-white');
-                label.classList.add('border-gray-300', 'text-gray-700', 'dark:text-gray-300');
-                checkmark.classList.add('opacity-0');
-            }
-        });
-    });
-</script>
-@endpush
