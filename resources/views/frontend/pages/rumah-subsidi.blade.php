@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="sm:col-span-6">
+                                    <div class="sm:col-span-6 mb-5 sm:mb-0">
                                         <label class="sr-only">Kota</label>
                                         <select name="city"
                                             class="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10">
@@ -330,4 +330,3 @@
         </div>
     </div>
 @endsection
-

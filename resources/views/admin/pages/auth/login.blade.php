@@ -165,8 +165,8 @@
                     <!-- ===== Common Grid Shape Start ===== -->
                     <x-common.common-grid-shape/>
                     <div class="flex max-w-xs flex-col items-center">
-                        <a href="/" class="mb-4 block">
-                            <img src="/assets/admin/images/logo/auth-logo.svg" alt="Logo" />
+                        <a href="/" class="mb-4 inline-flex">
+                            <img src="/assets/admin/images/logo/logo_rumahku.svg" alt="RumahKu" class="h-10 w-auto" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
                             Free and Open-Source Tailwind CSS Admin Dashboard Template
