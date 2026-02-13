@@ -15,7 +15,7 @@ class ArticleController extends Controller
             ->orderByDesc('id')
             ->paginate(12);
 
-        return view('frontend.articles', [
+        return view('frontend.pages.articles', [
             'title' => 'Info Properti',
             'articles' => $articles,
         ]);
@@ -34,11 +34,10 @@ class ArticleController extends Controller
             ->take(6)
             ->get();
 
-        return view('frontend.articles-show', [
+        return view('frontend.pages.articles-show', [
             'title' => $article->title,
             'article' => $article,
             'latestArticles' => $latest,
         ]);
     }
 }
-

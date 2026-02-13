@@ -28,7 +28,8 @@
     };
 
     $makeWhatsApp = function ($p) use ($formatPhone) {
-        $formatted = $formatPhone($p->agent?->phone ?? null);
+        $sourcePhone = $p->whatsapp_phone ?? $p->agent?->phone ?? $p->user?->phone ?? null;
+        $formatted = $formatPhone($sourcePhone);
         if (!$formatted) return null;
         $digits = preg_replace('/\D+/', '', $formatted);
         return $digits ? "https://wa.me/$digits" : null;
@@ -98,25 +99,33 @@
             {{-- SHORTCUT --}}
             <div class="mt-10 grid grid-cols-4 md:grid-cols-8 gap-4">
                 @php
+                    $baseParams = array_filter([
+                        'q' => request('q'),
+                        'city' => request('city'),
+                    ], fn ($v) => filled($v));
+
                     $shortcuts = [
-                        ['Rumah','fa-house'],
-                        ['Apartemen','fa-building'],
-                        ['Villa','fa-umbrella-beach'],
-                        ['Ruko','fa-store'],
-                        ['Tanah','fa-mountain'],
-                        ['Bulanan','fa-calendar'],
-                        ['Tahunan','fa-calendar-check'],
-                        ['Bantuan','fa-headset'],
+                        ['label' => 'Rumah', 'icon' => 'fa-house', 'params' => ['type' => 'Rumah']],
+                        ['label' => 'Apartemen', 'icon' => 'fa-building', 'params' => ['type' => 'Apartemen']],
+                        ['label' => 'Villa', 'icon' => 'fa-umbrella-beach', 'params' => ['type' => 'Villa']],
+                        ['label' => 'Ruko', 'icon' => 'fa-store', 'params' => ['type' => 'Ruko']],
+                        ['label' => 'Tanah', 'icon' => 'fa-mountain', 'params' => ['type' => 'Tanah']],
+                        ['label' => 'Bulanan', 'icon' => 'fa-calendar', 'params' => ['period' => 'bulan']],
+                        ['label' => 'Tahunan', 'icon' => 'fa-calendar-check', 'params' => ['period' => 'tahun']],
+                        ['label' => 'Bantuan', 'icon' => 'fa-headset', 'href' => route('contact')],
                     ];
                 @endphp
 
                 @foreach($shortcuts as $s)
-                    <div class="text-center text-white">
-                        <div class="mx-auto mb-2 h-14 w-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur hover:bg-white/30">
-                            <i class="fa {{ $s[1] }}"></i>
+                    @php
+                        $href = $s['href'] ?? route('sewa', array_filter(array_merge($baseParams, $s['params'] ?? []), fn ($v) => filled($v)));
+                    @endphp
+                    <a href="{{ $href }}" class="text-center text-white group">
+                        <div class="mx-auto mb-2 h-14 w-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur group-hover:bg-white/30">
+                            <i class="fa {{ $s['icon'] }}"></i>
                         </div>
-                        <div class="text-xs font-semibold">{{ $s[0] }}</div>
-                    </div>
+                        <div class="text-xs font-semibold">{{ $s['label'] }}</div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -124,9 +133,7 @@
         <div class="absolute bottom-0 left-0 right-0 h-10 bg-gray-50 rounded-t-[30px]"></div>
     </div>
 
-
- <div class="bg-gray-50">
-<div class="max-w-[1200px] mx-auto px-4 py-10 space-y-14">
+    <div class="max-w-[1200px] mx-auto px-4 py-10 space-y-14">
 
     {{-- ========================= --}}
     {{-- KOTA POPULER --}}
@@ -143,7 +150,7 @@
             @foreach(($popularCities ?? collect()) as $row)
                 <a href="{{ route('sewa',['city'=>$row['city']]) }}"
                     class="group relative overflow-hidden rounded-2xl">
-                    <img src="{{ $row['image'] ?? 'https://source.unsplash.com/400x300/?city' }}"
+                    <img src="{{ $normalizeImage($row['image'] ?? null) ?? 'https://source.unsplash.com/400x300/?city' }}"
                         class="h-28 w-full object-cover group-hover:scale-105 transition">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60"></div>
                     <div class="absolute bottom-2 left-3 text-white">
@@ -171,7 +178,7 @@
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?house';
                     $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->agent?->phone ?? null);
+                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
                 @endphp
 
                 <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
@@ -227,7 +234,7 @@
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?apartment';
                     $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->agent?->phone ?? null);
+                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
                 @endphp
 
                 <div class="bg-white text-gray-900 rounded-2xl overflow-hidden shadow ring-1 ring-black/5">
@@ -274,7 +281,7 @@
                     @php
                         $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?shop';
                         $wa = $makeWhatsApp($property);
-                        $waNumber = $formatPhone($property->agent?->phone ?? null);
+                        $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
                     @endphp
 
                     <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
@@ -329,7 +336,7 @@
                 @php
                     $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?villa';
                     $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->agent?->phone ?? null);
+                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
                 @endphp
 
                 <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">

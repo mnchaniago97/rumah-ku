@@ -17,9 +17,7 @@ class SewaController extends Controller
     public function index(): View
     {
         $properties = Property::with(['images', 'listingCategories'])
-            ->whereHas('listingCategories', function ($query) {
-                $query->where('slug', 'sewa');
-            })
+            ->where('status', 'disewakan')
             ->latest()
             ->get();
 
@@ -58,6 +56,7 @@ class SewaController extends Controller
             'city' => ['required', 'string', 'max:100'],
             'province' => ['nullable', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:20'],
+            'whatsapp_phone' => ['nullable', 'string', 'max:50'],
             'latitude' => ['nullable', 'numeric'],
             'longitude' => ['nullable', 'numeric'],
             'bedrooms' => ['nullable', 'integer'],
@@ -116,7 +115,7 @@ class SewaController extends Controller
     {
         $sewa->load(['images', 'listingCategories']);
 
-        if (!$sewa->listingCategories->contains('slug', 'sewa')) {
+        if (strtolower(trim((string) $sewa->status)) !== 'disewakan') {
             abort(404);
         }
         
@@ -130,7 +129,7 @@ class SewaController extends Controller
     {
         $sewa->load(['images', 'listingCategories', 'user', 'category', 'agent', 'features', 'specifications']);
 
-        if (!$sewa->listingCategories->contains('slug', 'sewa')) {
+        if (strtolower(trim((string) $sewa->status)) !== 'disewakan') {
             abort(404);
         }
 
@@ -143,7 +142,7 @@ class SewaController extends Controller
     public function update(Request $request, Property $sewa): RedirectResponse
     {
         $sewa->load(['listingCategories']);
-        if (!$sewa->listingCategories->contains('slug', 'sewa')) {
+        if (strtolower(trim((string) $sewa->status)) !== 'disewakan') {
             abort(404);
         }
 
@@ -156,6 +155,7 @@ class SewaController extends Controller
             'city' => ['required', 'string', 'max:100'],
             'province' => ['nullable', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:20'],
+            'whatsapp_phone' => ['nullable', 'string', 'max:50'],
             'latitude' => ['nullable', 'numeric'],
             'longitude' => ['nullable', 'numeric'],
             'bedrooms' => ['nullable', 'integer'],
@@ -214,7 +214,7 @@ class SewaController extends Controller
     public function destroy(Property $sewa): RedirectResponse
     {
         $sewa->load(['images', 'listingCategories']);
-        if (!$sewa->listingCategories->contains('slug', 'sewa')) {
+        if (strtolower(trim((string) $sewa->status)) !== 'disewakan') {
             abort(404);
         }
 

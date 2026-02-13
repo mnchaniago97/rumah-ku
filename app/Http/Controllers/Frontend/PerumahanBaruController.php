@@ -70,7 +70,7 @@ class PerumahanBaruController extends Controller
             ->take(4)
             ->get();
 
-        return view('frontend.perumahan-baru', [
+        return view('frontend.pages.perumahan-baru', [
             'title' => 'Perumahan Baru',
             'properties' => $properties,
             'cityOptions' => $cityOptions,
@@ -85,4 +85,3 @@ class PerumahanBaruController extends Controller
         ]);
     }
 }
-

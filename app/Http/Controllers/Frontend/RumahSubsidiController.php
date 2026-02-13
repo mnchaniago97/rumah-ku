@@ -72,7 +72,7 @@ class RumahSubsidiController extends Controller
             ->take(4)
             ->get();
 
-        return view('frontend.rumah-subsidi', [
+        return view('frontend.pages.rumah-subsidi', [
             'title' => 'Rumah Subsidi',
             'properties' => $properties,
             'cityOptions' => $cityOptions,

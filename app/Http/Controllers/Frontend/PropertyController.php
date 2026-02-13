@@ -15,10 +15,14 @@ class PropertyController extends Controller
         $properties = Property::with(['images'])
             ->where('is_published', true)
             ->where('is_approved', true)
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'disewakan');
+            })
             ->latest()
             ->get();
 
-        return view('frontend.property.index', [
+        return view('frontend.pages.property.index', [
             'title' => 'Properties',
             'properties' => $properties,
         ]);
@@ -40,26 +44,46 @@ class PropertyController extends Controller
                 ->setStatusCode(301);
         }
 
-        $relatedProperties = Property::with(['images'])
+        $relatedQuery = Property::with(['images'])
             ->whereKeyNot($property->getKey())
             ->where('is_published', true)
             ->where('is_approved', true)
-            ->latest()
-            ->take(6)
-            ->get();
+            ->when(
+                strtolower(trim((string) $property->status)) === 'disewakan',
+                fn ($q) => $q->where('status', 'disewakan'),
+                fn ($q) => $q->where(function ($qq) {
+                    $qq->whereNull('status')
+                        ->orWhere('status', '!=', 'disewakan');
+                })
+            );
 
-        return view('frontend.property.show', [
+        $relatedProperties = $relatedQuery->latest()->take(6)->get();
+
+        return view('frontend.pages.property.show', [
             'title' => 'Property Detail',
             'property' => $property,
             'relatedProperties' => $relatedProperties,
         ]);
     }
 
-    public function search(Request $request): View
+    public function search(Request $request): View|RedirectResponse
     {
+        if ($request->filled('status') && strtolower(trim((string) $request->status)) === 'disewakan') {
+            return redirect()->route('sewa', array_filter([
+                'q' => $request->q,
+                'type' => $request->type,
+            ]));
+        }
+
         $query = Property::with(['images'])
             ->where('is_published', true)
-            ->where('is_approved', true);
+            ->where('is_approved', true)
+            ->when(!$request->filled('status'), function ($q) {
+                $q->where(function ($qq) {
+                    $qq->whereNull('status')
+                        ->orWhere('status', '!=', 'disewakan');
+                });
+            });
 
         if ($request->has('q') && !empty($request->q)) {
             $query->where(function($q) use ($request) {
@@ -80,7 +104,7 @@ class PropertyController extends Controller
 
         $properties = $query->latest()->get();
 
-        return view('frontend.property.index', [
+        return view('frontend.pages.property.index', [
             'title' => 'Search Results',
             'properties' => $properties,
         ]);

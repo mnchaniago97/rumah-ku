@@ -61,7 +61,7 @@ class AsetLelangBankController extends Controller
             ->orderBy('city')
             ->pluck('city');
 
-        return view('frontend.aset-lelang-bank', [
+        return view('frontend.pages.aset-lelang-bank', [
             'title' => 'Aset Lelang Bank',
             'properties' => $properties,
             'cityOptions' => $cityOptions,
@@ -75,4 +75,3 @@ class AsetLelangBankController extends Controller
         ]);
     }
 }
-

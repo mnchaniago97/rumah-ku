@@ -22,20 +22,20 @@ Route::get('/aset-lelang-bank', [AsetLelangBankController::class, 'index'])->nam
 Route::post('/carikan-properti', [PropertyInquiryController::class, 'store'])->name('property-inquiries.store');
 
 // Static Pages
-Route::view('/about', 'frontend.about')->name('about');
-Route::view('/contact', 'frontend.contact')->name('contact');
+Route::view('/about', 'frontend.pages.about')->name('about');
+Route::view('/contact', 'frontend.pages.contact')->name('contact');
 Route::redirect('/projects', '/perumahan-baru')->name('projects');
 Route::get('/rumah-subsidi', [RumahSubsidiController::class, 'index'])->name('rumah-subsidi');
 Route::get('/sewa', [SewaController::class, 'index'])->name('sewa');
 Route::get('/perumahan-baru', [PerumahanBaruController::class, 'index'])->name('perumahan-baru');
-Route::view('/agents', 'frontend.agents')->name('agents');
-Route::view('/calculator', 'frontend.calculator')->name('calculator');
-Route::view('/eligibility', 'frontend.eligibility')->name('eligibility');
-Route::view('/advertise', 'frontend.advertise')->name('advertise');
-Route::view('/discounted', 'frontend.discounted')->name('discounted');
-Route::view('/takeover', 'frontend.takeover')->name('takeover');
-Route::view('/forum', 'frontend.forum')->name('forum');
-Route::view('/more', 'frontend.more')->name('more');
+Route::view('/agents', 'frontend.pages.agents')->name('agents');
+Route::view('/calculator', 'frontend.pages.calculator')->name('calculator');
+Route::view('/eligibility', 'frontend.pages.eligibility')->name('eligibility');
+Route::view('/advertise', 'frontend.pages.advertise')->name('advertise');
+Route::view('/discounted', 'frontend.pages.discounted')->name('discounted');
+Route::view('/takeover', 'frontend.pages.takeover')->name('takeover');
+Route::view('/forum', 'frontend.pages.forum')->name('forum');
+Route::view('/more', 'frontend.pages.more')->name('more');
 
 // Auth Routes
 Route::view('/login', 'admin.pages.auth.login')->name('login');

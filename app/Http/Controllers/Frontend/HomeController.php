@@ -87,7 +87,7 @@ class HomeController extends Controller
         $ads3Banners = Banner::active()->byPosition('home')->byLocation('ads_3')->orderBy('sort_order')->get();
         $bottomBanners = Banner::active()->byPosition('home')->byLocation('bottom')->orderBy('sort_order')->get();
         
-        return view('frontend.home', [
+        return view('frontend.pages.home', [
             'title' => 'Rumah Ku - Temukan Rumah Impian Anda',
             'recommendedProperties' => $recommendedProperties,
             'ourChoiceProperties' => $ourChoiceProperties,

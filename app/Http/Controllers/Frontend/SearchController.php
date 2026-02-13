@@ -10,7 +10,7 @@ class SearchController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('frontend.search', [
+        return view('frontend.pages.search', [
             'title' => 'Search',
             'query' => $request->input('q'),
         ]);

@@ -24,6 +24,7 @@ class Property extends Model
         'city',
         'province',
         'postal_code',
+        'whatsapp_phone',
         'latitude',
         'longitude',
         'price',

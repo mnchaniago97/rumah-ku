@@ -67,6 +67,14 @@
         </div>
 
         <div class="md:col-span-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">No WhatsApp</label>
+            <input name="whatsapp_phone" value="{{ old('whatsapp_phone', $property?->whatsapp_phone ?? '') }}"
+                placeholder="Contoh: 08123456789 atau +628123456789"
+                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-green-500 focus:outline-hidden focus:ring-3 focus:ring-green-500/10 dark:border-gray-800 dark:text-white" />
+            <p class="mt-1 text-xs text-gray-500">Nomor ini dipakai untuk tombol WhatsApp di halaman sewa (frontend).</p>
+        </div>
+
+        <div class="md:col-span-2">
             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat</label>
             <input name="address" value="{{ old('address', $property?->address ?? '') }}" placeholder="Jl. Raya Contoh No. 123"
                 class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-green-500 focus:outline-hidden focus:ring-3 focus:ring-green-500/10 dark:border-gray-800 dark:text-white" />

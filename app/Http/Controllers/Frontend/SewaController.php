@@ -15,10 +15,7 @@ class SewaController extends Controller
         $baseQuery = Property::with(['images', 'listingCategories', 'agent'])
             ->where('is_published', true)
             ->where('is_approved', true)
-            ->where('status', 'disewakan')
-            ->whereHas('listingCategories', function ($query) {
-                $query->where('slug', 'sewa');
-            });
+            ->where('status', 'disewakan');
 
         $query = clone $baseQuery;
 
@@ -134,7 +131,7 @@ class SewaController extends Controller
         $businessRentals = $takeLatestByTypes(['Ruko', 'Kantor', 'Gudang', 'Pabrik', 'Ruang Usaha', 'Toko']);
         $villaRentals = $takeLatestByTypes(['Villa']);
 
-        return view('frontend.sewa', [
+        return view('frontend.pages.sewa', [
             'title' => 'Properti Disewa',
             'properties' => $properties,
             'typeOptions' => $typeOptions,

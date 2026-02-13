@@ -4,12 +4,12 @@
     <div class="space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Property</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Kelola listing property.</p>
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Properti Dijual</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Kelola listing properti dijual.</p>
             </div>
             <a href="{{ route('admin.properties.create') }}"
                 class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
-                + Tambah Property
+                + Tambah Properti
             </a>
         </div>
 

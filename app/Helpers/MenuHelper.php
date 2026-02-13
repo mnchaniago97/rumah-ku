@@ -21,7 +21,7 @@ class MenuHelper
                 'title' => 'Manage',
                 'items' => [
                     [
-                        'name' => 'Properties',
+                        'name' => 'Properti Dijual',
                         'path' => route('admin.properties.index', [], false),
                         'icon' => 'home',
                     ],

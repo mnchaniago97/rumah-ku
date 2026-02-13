@@ -21,11 +21,15 @@ class PropertyController extends Controller
             ->whereDoesntHave('listingCategories', function ($query) {
                 $query->where('slug', 'rumah-subsidi');
             })
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'disewakan');
+            })
             ->latest()
             ->get();
 
         return view('admin.pages.property.index', [
-            'title' => 'Properties',
+            'title' => 'Properti Dijual',
             'properties' => $properties,
         ]);
     }
