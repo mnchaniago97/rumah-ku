@@ -1,4 +1,4 @@
-<nav class="sticky top-0 z-50">
+<nav class="sticky top-0 z-50" x-data="{ mobileOpen: false }">
     <!-- Top Bar -->
     <div class="bg-blue-800 text-white shadow-sm">
         <div class="max-w-[1200px] mx-auto px-4">
@@ -28,9 +28,50 @@
 
                 <!-- Mobile menu button -->
                 <div class="flex md:hidden">
-                    <button type="button" class="inline-flex items-center justify-center rounded-md bg-white/10 p-2 text-white/90 hover:bg-white/15">
+                    <button
+                        type="button"
+                        class="inline-flex items-center justify-center rounded-md bg-white/10 p-2 text-white/90 hover:bg-white/15"
+                        aria-label="Buka menu"
+                        aria-controls="mobile-menu"
+                        :aria-expanded="mobileOpen"
+                        @click="mobileOpen = !mobileOpen"
+                    >
                         <i class="fa fa-bars text-lg"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="md:hidden bg-blue-800 text-white border-t border-white/10" x-cloak x-show="mobileOpen" x-transition>
+        <div class="max-w-[1200px] mx-auto px-4 py-3" id="mobile-menu" @click.outside="mobileOpen = false">
+            <div class="space-y-1">
+                <a href="{{ route('home') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Beranda</a>
+                <a href="{{ route('properties') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Properti</a>
+                <a href="{{ route('rumah-subsidi') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Subsidi</a>
+                <a href="{{ route('sewa') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Sewa</a>
+                <a href="{{ route('projects') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Perumahan Baru</a>
+                <a href="{{ route('aset-lelang-bank') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Aset Bank</a>
+                <a href="{{ route('agents') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Agen</a>
+                <a href="{{ route('articles') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Artikel</a>
+                <a href="{{ route('about') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Tentang</a>
+                <a href="{{ route('contact') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Kontak</a>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                <a href="{{ route('calculator') }}" class="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-800 hover:bg-white/90" @click="mobileOpen = false">
+                    <i class="fa fa-calculator"></i>
+                    KPR
+                </a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-white/90 hover:text-white" @click="mobileOpen = false">
+                        <i class="fa fa-user"></i>
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/15" @click="mobileOpen = false">
+                        Daftar
+                    </a>
                 </div>
             </div>
         </div>

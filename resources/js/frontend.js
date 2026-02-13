@@ -1,2 +1,6 @@
-/* Frontend JavaScript - Tailwind CSS - No jQuery/Bootstrap needed */
-console.log('Frontend JS loaded');
+import Alpine from 'alpinejs';
+import persist from '@alpinejs/persist';
+
+Alpine.plugin(persist);
+window.Alpine = Alpine;
+Alpine.start();
