@@ -15,8 +15,12 @@ use Illuminate\View\View;
 
 class PropertyController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $q = trim((string) $request->query('q', ''));
+        $escaped = addcslashes($q, '\\%_');
+        $like = '%' . $escaped . '%';
+
         $properties = Property::with(['images', 'category', 'user', 'listingCategories'])
             ->whereDoesntHave('listingCategories', function ($query) {
                 $query->where('slug', 'rumah-subsidi');
@@ -24,6 +28,15 @@ class PropertyController extends Controller
             ->where(function ($query) {
                 $query->whereNull('status')
                     ->orWhere('status', '!=', 'disewakan');
+            })
+            ->when($q !== '', function ($query) use ($like) {
+                $query->where(function ($query) use ($like) {
+                    $query->where('title', 'like', $like)
+                        ->orWhere('slug', 'like', $like)
+                        ->orWhere('address', 'like', $like)
+                        ->orWhere('city', 'like', $like)
+                        ->orWhere('province', 'like', $like);
+                });
             })
             ->latest()
             ->get();

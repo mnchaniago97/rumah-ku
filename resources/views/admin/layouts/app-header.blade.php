@@ -53,10 +53,10 @@
                 <img src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" class="h-9 w-auto" />
             </a>
 
-            <!-- Frontend Home -->
+            <!-- Home -->
             <a href="{{ route('home') }}" target="_blank" rel="noopener"
                 class="flex xl:hidden items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-                aria-label="Frontend Home">
+                aria-label="Home">
                 <i class="fa-solid fa-house"></i>
             </a>
 
@@ -71,16 +71,16 @@
                 </svg>
             </button>
 
-            <!-- Frontend Home (desktop) -->
+            <!-- Home (desktop) -->
             <a href="{{ route('home') }}" target="_blank" rel="noopener"
                 class="hidden xl:inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-white/[0.03] dark:hover:text-white">
                 <i class="fa-solid fa-house"></i>
-                <span>Frontend Home</span>
+                <span>Home</span>
             </a>
 
             <!-- Search Bar (desktop only) -->
             <div class="hidden xl:block">
-                <form>
+                <form action="{{ route('admin.properties.index') }}" method="GET">
                     <div class="relative">
                         <span class="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                             <!-- Search Icon -->
@@ -91,9 +91,9 @@
                                     fill="" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Search or type command..."
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari properti / kota..."
                             class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]" />
-                        <button
+                        <button type="submit"
                             class="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
                             <span> ⌘ </span>
                             <span> K </span>
