@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" role="img" aria-label="RumahKu">
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" role="img" aria-label="Rumah IO">
   <g fill="none" fill-rule="evenodd">
     <!-- Icon -->
     <rect x="0" y="0" width="48" height="48" rx="12" fill="#1D4ED8"/>
@@ -7,7 +7,7 @@
     <!-- Wordmark -->
     <text x="62" y="31" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\""
           font-size="22" font-weight="800" fill="#111827" letter-spacing="0.2">
-      RumahKu
+      Rumah IO
     </text>
   </g>
 </svg>

@@ -46,7 +46,7 @@
 
             {{-- Benefits --}}
             <div class="bg-white rounded-xl p-8 shadow-sm mb-10">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Keunggulan pasang iklan di Rumah Ku</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Keunggulan pasang iklan di Rumah IO</h3>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -90,7 +90,7 @@
             {{-- CTA --}}
             <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white text-center">
                 <h3 class="text-2xl font-bold mb-3">Siap memasang iklan?</h3>
-                <p class="text-blue-100 mb-6">Bergabunglah dengan ribuan agen dan pemilik properti yang sukses di Rumah Ku</p>
+                <p class="text-blue-100 mb-6">Bergabunglah dengan ribuan agen dan pemilik properti yang sukses di Rumah IO</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('register') }}" class="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
                         Daftar Sekarang

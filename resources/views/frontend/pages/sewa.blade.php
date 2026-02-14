@@ -35,9 +35,10 @@
         return $digits ? "https://wa.me/$digits" : null;
     };
 
-    $filtersActive = request()->filled('q')
-        || request()->filled('city')
-        || request()->filled('type');
+    $listingMode = (bool)($listingMode ?? false);
+    $activeShortcut = $activeShortcut ?? null;
+    $forcedType = $forcedType ?? null;
+    $forcedPeriod = $forcedPeriod ?? null;
 @endphp
 
 <div class="bg-gray-50">
@@ -55,13 +56,13 @@
                     Investasi Masa Depan Dimulai dari Properti yang Tepat
                 </h1>
                 <p class="mt-3 text-white/90">
-                    Temukan rumah, apartemen, villa, dan ruang usaha terbaik dengan mudah.
+                    Temukan rumah, kost, villa, dan ruang usaha terbaik dengan mudah.
                 </p>
             </div>
 
             {{-- SEARCH --}}
             <div class="mt-8 max-w-4xl mb-6">
-                <form action="{{ route('sewa') }}" method="GET"
+                <form action="{{ url()->current() }}" method="GET"
                     class="bg-white rounded-2xl shadow-xl p-4">
                     <div class="grid md:grid-cols-12 gap-3">
                         <div class="md:col-span-5">
@@ -79,13 +80,20 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <select name="type"
-                                class="h-12 w-full rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-600">
-                                <option value="">Tipe</option>
-                                @foreach(($typeOptions ?? collect()) as $t)
-                                    <option value="{{ $t }}" @selected(request('type')==$t)>{{ $t }}</option>
-                                @endforeach
-                            </select>
+                            @if(filled($forcedType))
+                                <select disabled
+                                    class="h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:ring-2 focus:ring-blue-600">
+                                    <option>{{ $forcedType }}</option>
+                                </select>
+                            @else
+                                <select name="type"
+                                    class="h-12 w-full rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                    <option value="">Tipe</option>
+                                    @foreach(($typeOptions ?? collect()) as $t)
+                                        <option value="{{ $t }}" @selected(request('type')==$t)>{{ $t }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
                         </div>
                         <div class="md:col-span-2">
                             <button class="h-12 w-full rounded-xl bg-blue-700 text-white font-semibold hover:bg-blue-800">
@@ -105,20 +113,23 @@
                     ], fn ($v) => filled($v));
 
                     $shortcuts = [
-                        ['label' => 'Rumah', 'icon' => 'fa-house', 'params' => ['type' => 'Rumah']],
-                        ['label' => 'Apartemen', 'icon' => 'fa-building', 'params' => ['type' => 'Apartemen']],
-                        ['label' => 'Villa', 'icon' => 'fa-umbrella-beach', 'params' => ['type' => 'Villa']],
-                        ['label' => 'Ruko', 'icon' => 'fa-store', 'params' => ['type' => 'Ruko']],
-                        ['label' => 'Tanah', 'icon' => 'fa-mountain', 'params' => ['type' => 'Tanah']],
-                        ['label' => 'Bulanan', 'icon' => 'fa-calendar', 'params' => ['period' => 'bulan']],
-                        ['label' => 'Tahunan', 'icon' => 'fa-calendar-check', 'params' => ['period' => 'tahun']],
-                        ['label' => 'Bantuan', 'icon' => 'fa-headset', 'href' => route('contact')],
+                        ['label' => 'Rumah', 'icon' => 'fa-house', 'shortcut' => 'rumah'],
+                        ['label' => 'Kost', 'icon' => 'fa-building', 'shortcut' => 'kost'],
+                        ['label' => 'Villa', 'icon' => 'fa-umbrella-beach', 'shortcut' => 'villa'],
+                        ['label' => 'Ruko', 'icon' => 'fa-store', 'shortcut' => 'ruko'],
+                        ['label' => 'Tanah', 'icon' => 'fa-mountain', 'shortcut' => 'tanah'],
+                        ['label' => 'Bulanan', 'icon' => 'fa-calendar', 'shortcut' => 'bulanan'],
+                        ['label' => 'Tahunan', 'icon' => 'fa-calendar-check', 'shortcut' => 'tahunan'],
+                        ['label' => 'Bantuan', 'icon' => 'fa-headset', 'shortcut' => 'bantuan'],
                     ];
                 @endphp
 
                 @foreach($shortcuts as $s)
                     @php
-                        $href = $s['href'] ?? route('sewa', array_filter(array_merge($baseParams, $s['params'] ?? []), fn ($v) => filled($v)));
+                        $href = route('sewa.shortcut', $s['shortcut']);
+                        if (count($baseParams)) {
+                            $href .= '?' . http_build_query($baseParams);
+                        }
                     @endphp
                     <a href="{{ $href }}" class="text-center text-white group">
                         <div class="mx-auto mb-2 h-14 w-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur group-hover:bg-white/30">
@@ -133,7 +144,146 @@
         <div class="absolute bottom-0 left-0 right-0 h-10 bg-gray-50 rounded-t-[30px]"></div>
     </div>
 
-    <div class="max-w-[1200px] mx-auto px-4 py-10 space-y-14">
+    <div class="max-w-[1200px] mx-auto px-4 py-10 {{ $listingMode ? '' : 'space-y-14' }}">
+
+    @if($listingMode)
+        <div class="grid gap-6 lg:grid-cols-12">
+            <aside class="lg:col-span-3">
+                <form action="{{ url()->current() }}" method="GET" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-extrabold text-gray-900">Filter</h2>
+                        @php
+                            $baseClearHref = $activeShortcut
+                                ? route('sewa.shortcut', $activeShortcut)
+                                : route('sewa');
+                        @endphp
+                        <a href="{{ $baseClearHref }}" class="text-xs font-semibold text-blue-700 hover:text-blue-800">Reset</a>
+                    </div>
+
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-700">Keyword</label>
+                            <input name="q" value="{{ request('q') }}" placeholder="Lokasi / keyword"
+                                class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm focus:ring-2 focus:ring-blue-600">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-gray-700">Kota</label>
+                            <select name="city"
+                                class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                <option value="">Semua Kota</option>
+                                @foreach(($cityOptions ?? collect()) as $city)
+                                    <option value="{{ $city }}" @selected(request('city')==$city)>{{ $city }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-gray-700">Tipe</label>
+                            @if(filled($forcedType))
+                                <select disabled
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-100 px-3 text-sm text-gray-700">
+                                    <option>{{ $forcedType }}</option>
+                                </select>
+                            @else
+                                <select name="type"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                    <option value="">Semua Tipe</option>
+                                    @foreach(($typeOptions ?? collect()) as $t)
+                                        <option value="{{ $t }}" @selected(request('type')==$t)>{{ $t }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-gray-700">Periode</label>
+                            @if(filled($forcedPeriod))
+                                <input type="hidden" name="period" value="{{ $forcedPeriod }}">
+                                <select disabled
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-100 px-3 text-sm text-gray-700">
+                                    <option>{{ $forcedPeriod === 'bulan' ? 'Bulanan' : 'Tahunan' }}</option>
+                                </select>
+                            @else
+                                <select name="period"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                                    <option value="">Semua</option>
+                                    <option value="bulan" @selected(request('period')==='bulan')>Bulanan</option>
+                                    <option value="tahun" @selected(request('period')==='tahun')>Tahunan</option>
+                                </select>
+                            @endif
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-700">Min Harga</label>
+                                <input name="min_price" type="number" inputmode="numeric" value="{{ request('min_price') }}"
+                                    placeholder="0"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-700">Max Harga</label>
+                                <input name="max_price" type="number" inputmode="numeric" value="{{ request('max_price') }}"
+                                    placeholder="0"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-700">K. Tidur</label>
+                                <input name="bedrooms" type="number" min="0" inputmode="numeric" value="{{ request('bedrooms') }}"
+                                    placeholder="0"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-700">K. Mandi</label>
+                                <input name="bathrooms" type="number" min="0" inputmode="numeric" value="{{ request('bathrooms') }}"
+                                    placeholder="0"
+                                    class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:ring-2 focus:ring-blue-600">
+                            </div>
+                        </div>
+
+                        <button class="h-11 w-full rounded-xl bg-blue-700 text-sm font-semibold text-white hover:bg-blue-800">
+                            Terapkan Filter
+                        </button>
+                    </div>
+                </form>
+            </aside>
+
+            <main class="lg:col-span-9">
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-gray-900">
+                            {{ filled($forcedType) ? 'Sewa ' . $forcedType : 'Properti Disewa' }}
+                            @if(filled($forcedPeriod))
+                                <span class="text-gray-500 font-semibold">({{ $forcedPeriod === 'bulan' ? 'Bulanan' : 'Tahunan' }})</span>
+                            @endif
+                        </h2>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Menampilkan {{ ($properties ?? null)?->total() ?? 0 }} properti.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @forelse(($properties ?? collect()) as $property)
+                        @include('frontend.components.property-card', ['property' => $property, 'wrapLink' => false, 'showWhatsApp' => true, 'showPricePeriod' => true])
+                    @empty
+                        <div class="col-span-full rounded-2xl border border-dashed bg-white p-10 text-center text-sm text-gray-500">
+                            Tidak ada properti yang cocok dengan filter ini.
+                        </div>
+                    @endforelse
+                </div>
+
+                @if(($properties ?? null) && method_exists($properties, 'links'))
+                    <div class="mt-8">
+                        {{ $properties->onEachSide(1)->links() }}
+                    </div>
+                @endif
+            </main>
+        </div>
+    @else
 
     {{-- ========================= --}}
     {{-- KOTA POPULER --}}
@@ -175,39 +325,7 @@
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($houseRentals ?? collect()) as $property)
-                @php
-                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?house';
-                    $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
-                @endphp
-
-                <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
-                    <div class="aspect-[4/3]">
-                        <img src="{{ $img }}" class="w-full h-full object-cover">
-                    </div>
-
-                    <div class="p-4">
-                        <div class="text-blue-700 font-bold text-sm">
-                            Rp {{ number_format($property->price,0,',','.') }}
-                        </div>
-                        <div class="mt-1 text-sm font-semibold line-clamp-2">
-                            {{ $property->title }}
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1">
-                            <i class="fa fa-map-marker mr-1"></i>{{ $property->city }}
-                        </div>
-
-                        @if($wa)
-                            <a href="{{ $wa }}" target="_blank" rel="noopener"
-                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
-                            @if($waNumber)
-                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+                @include('frontend.components.property-card', ['property' => $property, 'wrapLink' => false, 'showWhatsApp' => true, 'showPricePeriod' => true])
             @endforeach
         </div>
     </section>
@@ -215,51 +333,23 @@
 
 
     {{-- ========================= --}}
-    {{-- KOST & APARTEMEN --}}
+    {{-- KOST --}}
     {{-- ========================= --}}
     <section class="rounded-3xl p-6 bg-gradient-to-r from-blue-800 to-indigo-700 text-white">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-bold">Sewa Kost & Apartemen</h2>
+                <h2 class="text-xl font-bold">Sewa Kost</h2>
                 <p class="text-sm text-white/80">Hunian praktis dekat pusat kota.</p>
             </div>
-            <a href="{{ route('sewa',['type'=>'Apartemen']) }}"
+            <a href="{{ route('sewa.shortcut','kost') }}"
                 class="bg-white text-blue-800 px-4 py-2 rounded-xl text-sm font-semibold">
                 Lihat Semua
             </a>
         </div>
 
         <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach(($apartmentRentals ?? collect())->merge($kostRentals ?? collect())->take(8) as $property)
-                @php
-                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?apartment';
-                    $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
-                @endphp
-
-                <div class="bg-white text-gray-900 rounded-2xl overflow-hidden shadow ring-1 ring-black/5">
-                    <div class="aspect-[4/3]">
-                        <img src="{{ $img }}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <div class="font-bold text-blue-700 text-sm">
-                            Rp {{ number_format($property->price,0,',','.') }}
-                        </div>
-                        <div class="text-sm font-semibold line-clamp-2 mt-1">
-                            {{ $property->title }}
-                        </div>
-
-                        @if($wa)
-                            <a href="{{ $wa }}" target="_blank" rel="noopener"
-                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
-                            @if($waNumber)
-                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+            @foreach(($kostRentals ?? collect())->take(8) as $property)
+                @include('frontend.components.property-card', ['property' => $property, 'wrapLink' => false, 'showWhatsApp' => true, 'showPricePeriod' => true])
             @endforeach
         </div>
     </section>
@@ -272,45 +362,13 @@
     <section>
         <div class="flex justify-between items-end">
             <h2 class="text-xl font-bold">Sewa Ruko dan Ruang Usaha Terbaik untuk Bisnis</h2>
-            <a href="{{ route('sewa',['type'=>'Ruko']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
+            <a href="{{ route('sewa.shortcut','ruko') }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
         </div>
 
         @if(($businessRentals ?? collect())->count() > 0)
             <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach(($businessRentals ?? collect()) as $property)
-                    @php
-                        $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?shop';
-                        $wa = $makeWhatsApp($property);
-                        $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
-                    @endphp
-
-                    <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
-                        <div class="aspect-[4/3]">
-                            <img src="{{ $img }}" class="w-full h-full object-cover">
-                        </div>
-
-                        <div class="p-4">
-                            <div class="text-blue-700 font-bold text-sm">
-                                Rp {{ number_format($property->price,0,',','.') }}
-                            </div>
-                            <div class="mt-1 text-sm font-semibold line-clamp-2">
-                                {{ $property->title }}
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">
-                                <i class="fa fa-map-marker mr-1"></i>{{ $property->city }}
-                            </div>
-
-                            @if($wa)
-                                <a href="{{ $wa }}" target="_blank" rel="noopener"
-                                    class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
-                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                                </a>
-                                @if($waNumber)
-                                    <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
-                                @endif
-                            @endif
-                        </div>
-                    </div>
+                    @include('frontend.components.property-card', ['property' => $property, 'wrapLink' => false, 'showWhatsApp' => true, 'showPricePeriod' => true])
                 @endforeach
             </div>
         @else
@@ -328,40 +386,12 @@
     <section>
         <div class="flex justify-between items-end">
             <h2 class="text-xl font-bold">Sewa Villa Nyaman dan Strategis untuk Liburan</h2>
-            <a href="{{ route('sewa',['type'=>'Villa']) }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
+            <a href="{{ route('sewa.shortcut','villa') }}" class="text-blue-700 text-sm font-semibold">Lihat Semua</a>
         </div>
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($villaRentals ?? collect()) as $property)
-                @php
-                    $img = optional($property->images->first())->path ?? 'https://source.unsplash.com/400x300/?villa';
-                    $wa = $makeWhatsApp($property);
-                    $waNumber = $formatPhone($property->whatsapp_phone ?? $property->agent?->phone ?? $property->user?->phone ?? null);
-                @endphp
-
-                <div class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
-                    <div class="aspect-[4/3]">
-                        <img src="{{ $img }}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <div class="font-bold text-blue-700 text-sm">
-                            Rp {{ number_format($property->price,0,',','.') }}
-                        </div>
-                        <div class="text-sm font-semibold line-clamp-2 mt-1">
-                            {{ $property->title }}
-                        </div>
-
-                        @if($wa)
-                            <a href="{{ $wa }}" target="_blank" rel="noopener"
-                                class="mt-3 flex justify-center items-center gap-2 bg-green-600 text-white h-10 rounded-xl font-semibold">
-                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                            </a>
-                            @if($waNumber)
-                                <div class="mt-2 text-center text-xs text-gray-500">WA: {{ $waNumber }}</div>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+                @include('frontend.components.property-card', ['property' => $property, 'wrapLink' => false, 'showWhatsApp' => true, 'showPricePeriod' => true])
             @endforeach
         </div>
     </section>
@@ -374,14 +404,14 @@
     <section>
         <div class="flex justify-between items-end">
             <h2 class="text-xl font-bold">Info Properti</h2>
-            <a href="#" class="text-blue-700 text-sm font-semibold">Selengkapnya</a>
+            <a href="{{ route('articles') }}" class="text-blue-700 text-sm font-semibold">Selengkapnya</a>
         </div>
 
         <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach(($articles ?? collect()) as $post)
-                <a href="#" class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden">
-                    <img src="{{ $post->image ?? 'https://source.unsplash.com/400x300/?real-estate' }}"
-                        class="h-40 w-full object-cover">
+                <a href="{{ route('articles.show', $post->slug) }}" class="bg-white rounded-2xl shadow ring-1 ring-black/5 overflow-hidden hover:shadow-md transition">
+                    <img src="{{ $post->image ? Storage::url($post->image) : 'https://source.unsplash.com/400x300/?real-estate&sig=' . $post->id }}"
+                        class="h-40 w-full object-cover" alt="{{ $post->title }}">
                     <div class="p-4">
                         <div class="font-semibold line-clamp-2">{{ $post->title }}</div>
                         <p class="text-sm text-gray-500 mt-2 line-clamp-2">
@@ -392,6 +422,8 @@
             @endforeach
         </div>
     </section>
+
+    @endif
 
 </div>
 </div>

@@ -16,6 +16,16 @@
 
   $formatInt = fn ($v) => number_format((int)($v ?? 0), 0, ',', '.');
 
+  $mode = (string)($counts['mode'] ?? 'admin');
+
+  $firstSubText = $mode === 'agent'
+    ? ('Terbit: ' . $formatInt($counts['published_total'] ?? 0) . ' · Draft: ' . $formatInt($counts['draft_total'] ?? 0))
+    : ('Users: ' . $formatInt($counts['users_total'] ?? 0) . ' · Agents: ' . $formatInt($counts['agents_total'] ?? 0));
+
+  $secondSubText = $mode === 'agent'
+    ? ('Rumah subsidi: ' . $formatInt($counts['rumah_subsidi_total'] ?? 0) . ' · Pending: ' . $formatInt($counts['pending_total'] ?? 0))
+    : ('Artikel: ' . $formatInt($counts['articles_published_total'] ?? 0) . ' · Banner aktif: ' . $formatInt($counts['banners_active_total'] ?? 0));
+
   $badgeClasses = function (bool $positive): string {
     $base = 'flex items-center gap-1 rounded-full py-0.5 pl-2 pr-2.5 text-sm font-medium';
     return $positive
@@ -51,7 +61,7 @@
           <span class="text-sm text-gray-500 dark:text-gray-400">{{ $first['label'] ?? 'Total Properti' }}</span>
           <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $formatInt($first['value'] ?? 0) }}</h4>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Users: {{ $formatInt($counts['users_total'] ?? 0) }} · Agents: {{ $formatInt($counts['agents_total'] ?? 0) }}
+            {{ $firstSubText }}
           </p>
         </div>
 
@@ -103,7 +113,7 @@
           <span class="text-sm text-gray-500 dark:text-gray-400">{{ $second['label'] ?? 'Pending Approval' }}</span>
           <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ $formatInt($second['value'] ?? 0) }}</h4>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Artikel: {{ $formatInt($counts['articles_published_total'] ?? 0) }} · Banner aktif: {{ $formatInt($counts['banners_active_total'] ?? 0) }}
+            {{ $secondSubText }}
           </p>
         </div>
 

@@ -12,12 +12,14 @@ class PerumahanBaruController extends Controller
 {
     public function index(Request $request): View
     {
+        $listingSlug = 'properti-baru';
+
         $baseQuery = Property::with(['images', 'agent', 'listingCategories'])
             ->where('is_published', true)
             ->where('is_approved', true);
 
         $query = (clone $baseQuery)
-            ->whereHas('listingCategories', fn ($q) => $q->where('slug', 'perumahan-baru'));
+            ->whereHas('listingCategories', fn ($q) => $q->where('slug', $listingSlug));
 
         $q = trim((string) $request->query('q', ''));
         if ($q !== '') {
@@ -45,7 +47,7 @@ class PerumahanBaruController extends Controller
             ->withQueryString();
 
         $cityOptions = (clone $baseQuery)
-            ->whereHas('listingCategories', fn ($q) => $q->where('slug', 'perumahan-baru'))
+            ->whereHas('listingCategories', fn ($q) => $q->where('slug', $listingSlug))
             ->whereNotNull('city')
             ->where('city', '!=', '')
             ->distinct()

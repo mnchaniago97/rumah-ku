@@ -1,15 +1,19 @@
 <?php
 
 use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\AgentApplicationController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ForumCommentController;
+use App\Http\Controllers\Admin\ForumPostController;
 use App\Http\Controllers\Admin\PropertyInquiryController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
 use App\Http\Controllers\Admin\RumahSubsidiController;
 use App\Http\Controllers\Admin\SewaController;
+use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +25,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])
     Route::patch('properties/{property}/approve', [PropertyController::class, 'approve'])->name('properties.approve');
     Route::patch('properties/{property}/reject', [PropertyController::class, 'reject'])->name('properties.reject');
     Route::delete('properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('properties.images.destroy');
-    Route::resource('categories', CategoryController::class);
     Route::resource('banners', BannerController::class);
     Route::resource('agents', AgentController::class)->only(['index', 'show']);
     Route::patch('agents/{agent}/approve', [AgentController::class, 'approve'])->name('agents.approve');
@@ -35,7 +38,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('agent-applications', [AgentApplicationController::class, 'index'])->name('agent-applications.index');
+    Route::get('agent-applications/{agentApplication}', [AgentApplicationController::class, 'show'])->name('agent-applications.show');
+    Route::patch('agent-applications/{agentApplication}/approve', [AgentApplicationController::class, 'approve'])->name('agent-applications.approve');
+    Route::patch('agent-applications/{agentApplication}/reject', [AgentApplicationController::class, 'reject'])->name('agent-applications.reject');
+    Route::patch('agents/{agent}/type', [AgentController::class, 'updateType'])->name('agents.type');
+    Route::patch('agents/{agent}/verify', [AgentController::class, 'verify'])->name('agents.verify');
+    Route::patch('agents/{agent}/unverify', [AgentController::class, 'unverify'])->name('agents.unverify');
+    Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['show']);
+
     Route::resource('rumah-subsidi', RumahSubsidiController::class);
     Route::resource('sewa', SewaController::class);
+
+    Route::resource('forum-posts', ForumPostController::class);
+    Route::resource('forum-comments', ForumCommentController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+
+    Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('site-settings.edit');
+    Route::put('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
 
 });

@@ -160,7 +160,7 @@
 
             {{-- Apps --}}
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 text-white text-center">
-                <h2 class="text-2xl font-bold mb-3">Download Aplikasi Rumah Ku</h2>
+                <h2 class="text-2xl font-bold mb-3">Download Aplikasi Rumah IO</h2>
                 <p class="text-blue-100 mb-6">Dapatkan kemudahan mencari properti di mana saja, kapan saja</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="#" class="inline-flex items-center gap-3 px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition">

@@ -6,7 +6,13 @@ class AgentMenuHelper
 {
     public static function getMenuGroups(): array
     {
-        return [
+        $user = auth()->user();
+        $agentType = $user?->agent_type;
+
+        $defaultRumahSubsidi = $agentType === \App\Models\AgentApplication::TYPE_PROPERTY_AGENT;
+        $canRumahSubsidi = $user ? $user->canAgentFeature('rumah_subsidi', $defaultRumahSubsidi) : false;
+
+        $groups = [
             [
                 'title' => 'Main',
                 'items' => [
@@ -18,27 +24,32 @@ class AgentMenuHelper
                 ],
             ],
             [
-                'title' => 'Manage',
+                'title' => 'Properti',
                 'items' => [
                     [
-                        'name' => 'Properties',
+                        'name' => 'Properti',
                         'path' => route('agent.properties.index', [], false),
                         'icon' => 'home',
                     ],
                     [
+                        'name' => 'Sewa',
+                        'path' => route('agent.sewa.index', [], false),
+                        'icon' => 'rent',
+                    ],
+                    ...($canRumahSubsidi ? [[
                         'name' => 'Rumah Subsidi',
                         'path' => route('agent.rumah-subsidi.index', [], false),
                         'icon' => 'home-subsidi',
-                    ],
-                    [
-                        'name' => 'Users',
-                        'path' => route('agent.users.index', [], false),
-                        'icon' => 'user',
-                    ],
+                    ]] : []),
+                ],
+            ],
+            [
+                'title' => 'Akun',
+                'items' => [
                     ...(
                         auth()->check()
                             ? [[
-                                'name' => 'My Profile',
+                                'name' => 'Profil Saya',
                                 'path' => route('agent.users.show', ['user' => auth()->id()], false),
                                 'icon' => 'user',
                             ]]
@@ -47,6 +58,10 @@ class AgentMenuHelper
                 ],
             ],
         ];
+
+        return array_values(array_filter($groups, function ($group) {
+            return !empty($group['items'] ?? []);
+        }));
     }
 
     public static function getIconSvg(string $name): string

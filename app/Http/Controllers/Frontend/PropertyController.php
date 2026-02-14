@@ -10,27 +10,108 @@ use Illuminate\View\View;
 
 class PropertyController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $properties = Property::with(['images'])
+        $baseQuery = Property::with(['images'])
             ->where('is_published', true)
             ->where('is_approved', true)
             ->where(function ($query) {
                 $query->whereNull('status')
                     ->orWhere('status', '!=', 'disewakan');
-            })
-            ->latest()
-            ->get();
+            });
+
+        $query = clone $baseQuery;
+
+        if ($request->filled('q')) {
+            $q = trim((string) $request->q);
+            $query->where(function ($qq) use ($q) {
+                $qq->where('title', 'like', '%' . $q . '%')
+                    ->orWhere('address', 'like', '%' . $q . '%')
+                    ->orWhere('city', 'like', '%' . $q . '%')
+                    ->orWhere('province', 'like', '%' . $q . '%');
+            });
+        }
+
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->filled('bedrooms')) {
+            $query->where('bedrooms', '>=', $request->bedrooms);
+        }
+
+        if ($request->filled('bathrooms')) {
+            $query->where('bathrooms', '>=', $request->bathrooms);
+        }
+
+        if ($request->filled('min_land_area')) {
+            $query->where('land_area', '>=', $request->min_land_area);
+        }
+        if ($request->filled('max_land_area')) {
+            $query->where('land_area', '<=', $request->max_land_area);
+        }
+
+        $sort = strtolower(trim((string) $request->get('sort', '')));
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'area_asc':
+                $query->orderBy('land_area', 'asc');
+                break;
+            case 'area_desc':
+                $query->orderBy('land_area', 'desc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        $properties = $query->paginate(12)->withQueryString();
+
+        $typeOptions = (clone $baseQuery)
+            ->whereNotNull('type')
+            ->where('type', '!=', '')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
+
+        if ($typeOptions->isEmpty()) {
+            $typeOptions = collect(['Rumah', 'Apartemen', 'Kost', 'Villa', 'Ruko', 'Kantor', 'Tanah'])->values();
+        }
+
+        $cityOptions = (clone $baseQuery)
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
 
         return view('frontend.pages.property.index', [
             'title' => 'Properties',
             'properties' => $properties,
+            'typeOptions' => $typeOptions,
+            'cityOptions' => $cityOptions,
         ]);
     }
 
     public function show(string $permalink): View|RedirectResponse
     {
-        $property = Property::with(['images', 'features', 'specifications', 'nearby', 'agent', 'category'])
+        $property = Property::with(['images', 'features', 'specifications', 'nearby', 'agent', 'category', 'user'])
             ->where('is_published', true)
             ->where('is_approved', true)
             ->where(function ($q) use ($permalink) {
@@ -75,38 +156,10 @@ class PropertyController extends Controller
             ]));
         }
 
-        $query = Property::with(['images'])
-            ->where('is_published', true)
-            ->where('is_approved', true)
-            ->when(!$request->filled('status'), function ($q) {
-                $q->where(function ($qq) {
-                    $qq->whereNull('status')
-                        ->orWhere('status', '!=', 'disewakan');
-                });
-            });
-
-        if ($request->has('q') && !empty($request->q)) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->q . '%')
-                  ->orWhere('address', 'like', '%' . $request->q . '%')
-                  ->orWhere('city', 'like', '%' . $request->q . '%')
-                  ->orWhere('province', 'like', '%' . $request->q . '%');
-            });
-        }
-
-        if ($request->has('type') && !empty($request->type)) {
-            $query->where('type', $request->type);
-        }
-
-        if ($request->has('status') && !empty($request->status)) {
-            $query->where('status', $request->status);
-        }
-
-        $properties = $query->latest()->get();
-
-        return view('frontend.pages.property.index', [
-            'title' => 'Search Results',
-            'properties' => $properties,
-        ]);
+        return redirect()->route('properties', array_filter([
+            'q' => $request->q,
+            'type' => $request->type,
+            'city' => $request->city,
+        ]));
     }
 }

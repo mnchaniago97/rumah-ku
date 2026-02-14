@@ -85,8 +85,8 @@
             ['label' => 'Status', 'value' => $property->status ? ucwords($property->status) : null],
             ['label' => 'Kamar Tidur', 'value' => $property->bedrooms ? $property->bedrooms . ' KT' : null],
             ['label' => 'Kamar Mandi', 'value' => $property->bathrooms ? $property->bathrooms . ' KM' : null],
-            ['label' => 'Luas Tanah', 'value' => $property->land_area ? $property->land_area . ' m²' : null],
-            ['label' => 'Luas Bangunan', 'value' => $property->building_area ? $property->building_area . ' m²' : null],
+            ['label' => 'Luas Tanah', 'value' => $property->land_area ? $property->land_area . ' m&sup2;' : null],
+            ['label' => 'Luas Bangunan', 'value' => $property->building_area ? $property->building_area . ' m&sup2;' : null],
             ['label' => 'Sertifikat', 'value' => $formatValue('certificate', $property->certificate)],
             ['label' => 'Listrik', 'value' => $property->electricity],
             ['label' => 'Sumber Air', 'value' => $formatValue('water_source', $property->water_source)],
@@ -95,10 +95,62 @@
             ['label' => 'Tahun Dibangun', 'value' => $property->year_built],
         ])->filter(fn ($row) => filled($row['value']))->values();
 
-        $whatsAppPhone = preg_replace('/\\D+/', '', (string) ($property->agent?->phone ?? ''));
-        $whatsAppLink = $whatsAppPhone ? "https://wa.me/{$whatsAppPhone}" : null;
+        $normalizePhoneDigits = function (?string $value): ?string {
+            $digits = preg_replace('/\\D+/', '', (string) $value);
+            if ($digits === '') return null;
 
-        $agentPhoto = $property->agent?->photo ?: null;
+            if (str_starts_with($digits, '00')) {
+                $digits = substr($digits, 2);
+            }
+
+            if (str_starts_with($digits, '0')) {
+                $digits = '62' . substr($digits, 1);
+            } elseif (str_starts_with($digits, '8')) {
+                $digits = '62' . $digits;
+            }
+
+            return $digits !== '' ? $digits : null;
+        };
+
+        $isAdminPost = strtolower((string) ($property->user?->role ?? '')) === 'admin';
+
+        $contactName = $property->agent?->name ?? ($property->user?->name ?? 'Pemilik Listing');
+        $isVerifiedAgentUser = (bool) (
+            $property->user
+            && ($property->user->role ?? null) === 'agent'
+            && !empty($property->user->agent_verified_at)
+        );
+
+        $contactRole = ($property->agent || (($property->user->role ?? null) === 'agent')) ? 'Agen Terdaftar' : 'Pemilik';
+        $contactVerified = (bool) (
+            ($property->agent && ($property->agent->is_active ?? true))
+            || $isVerifiedAgentUser
+        );
+        $contactPhoto = $property->agent?->photo ?? ($property->user?->avatar ?? null);
+
+        if ($isAdminPost) {
+            $contactName = 'Official Rumah.iO';
+            $contactRole = 'Official';
+            $contactVerified = true;
+        }
+
+        $contactPhoneDigits = $normalizePhoneDigits(
+            $property->whatsapp_phone
+                ?? $property->agent?->phone
+                ?? $property->user?->phone
+                ?? null
+        );
+
+        $contactWhatsAppDigits = $normalizePhoneDigits(
+            $property->whatsapp_phone
+                ?? $property->user?->whatsapp_phone
+                ?? $property->user?->phone
+                ?? $property->agent?->phone
+                ?? null
+        );
+
+        $phoneLink = $contactPhoneDigits ? "tel:+{$contactPhoneDigits}" : null;
+        $whatsAppLink = $contactWhatsAppDigits ? "https://wa.me/{$contactWhatsAppDigits}" : null;
     @endphp
 
     <div class="bg-gray-50">
@@ -330,19 +382,27 @@
                         <div class="rounded-2xl bg-white p-5 shadow-sm">
                             <div class="flex items-center gap-3">
                                 <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-200">
-                                    @if ($agentPhoto)
-                                        <img src="{{ $agentPhoto }}" alt="{{ $property->agent?->name }}" class="h-full w-full object-cover">
+                                    @if ($contactPhoto)
+                                        <img src="{{ $contactPhoto }}" alt="{{ $contactName }}" class="h-full w-full object-cover">
                                     @endif
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-900">{{ $property->agent?->name ?? 'Agen Properti' }}</p>
-                                    <p class="text-xs text-gray-500">Agen</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-sm font-semibold text-gray-900">{{ $contactName }}</p>
+                                        @if($contactVerified)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                                                <i class="fa-solid fa-circle-check"></i>
+                                                Verified
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs text-gray-500">{{ $contactRole }}</p>
                                 </div>
                             </div>
 
                             <div class="mt-4 flex items-center gap-2">
-                                @if($property->agent?->phone)
-                                    <a href="tel:{{ $whatsAppPhone ?: $property->agent->phone }}"
+                                @if($phoneLink)
+                                    <a href="{{ $phoneLink }}"
                                         class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-center text-sm text-gray-700 hover:bg-gray-50">
                                         Telepon
                                     </a>

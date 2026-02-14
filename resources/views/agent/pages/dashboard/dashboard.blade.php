@@ -1,7 +1,34 @@
 @extends('agent.layouts.app')
 
 @section('content')
+  <script>
+    window.__DASHBOARD_DATA__ = @json($dashboardData ?? []);
+  </script>
+
+  @php
+    $agent = $agentProfile ?? auth()->user();
+    $defaultRumahSubsidi = ($agent->agent_type ?? null) === \App\Models\AgentApplication::TYPE_PROPERTY_AGENT;
+    $canRumahSubsidi = $agent ? $agent->canAgentFeature('rumah_subsidi', $defaultRumahSubsidi) : false;
+  @endphp
+
   <div class="grid grid-cols-12 gap-4 md:gap-6">
+    <div class="col-span-12 space-y-6 xl:col-span-7">
+      <x-ecommerce.ecommerce-metrics :cards="$metricCards ?? []" :counts="$counts ?? []" />
+      <x-ecommerce.monthly-sale />
+    </div>
+    <div class="col-span-12 xl:col-span-5">
+        <x-ecommerce.monthly-target :summary="$approvalSummary ?? []" />
+    </div>
+
+    <div class="col-span-12 xl:col-span-5">
+      <x-ecommerce.customer-demographic :countries="$topCities ?? []" />
+    </div>
+
+    <div class="col-span-12 xl:col-span-7">
+      <x-ecommerce.recent-orders :products="$recentProperties ?? []" />
+    </div>
+
+    @if($canRumahSubsidi)
     <div class="col-span-12">
       <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -49,6 +76,7 @@
         @endif
       </div>
     </div>
+    @endif
 
     <div class="col-span-12">
       <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
@@ -65,17 +93,29 @@
           @endif
         </div>
 
-        @php
-          $agent = $agentProfile ?? auth()->user();
-        @endphp
-
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">🪪 Identitas Dasar</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Identitas Dasar</h3>
             <dl class="mt-3 space-y-2 text-sm">
               <div class="flex justify-between gap-4">
                 <dt class="text-gray-500 dark:text-gray-400">Nama lengkap (KTP)</dt>
                 <dd class="text-gray-900 dark:text-white text-right">{{ $agent->ktp_full_name ?? '-' }}</dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt class="text-gray-500 dark:text-gray-400">Status verifikasi</dt>
+                <dd class="text-right">
+                  @if(!empty($agent->agent_verified_at))
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200">
+                      <i class="fa fa-circle-check"></i>
+                      Verified
+                    </span>
+                  @else
+                    <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 dark:bg-white/[0.06] dark:text-gray-300">
+                      <i class="fa fa-circle-xmark"></i>
+                      Belum verified
+                    </span>
+                  @endif
+                </dd>
               </div>
               <div class="flex justify-between gap-4">
                 <dt class="text-gray-500 dark:text-gray-400">No. HP / WhatsApp</dt>
@@ -93,7 +133,7 @@
           </div>
 
           <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">🧑‍💼 Identitas Profesi</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Identitas Profesi</h3>
             <dl class="mt-3 space-y-2 text-sm">
               <div class="flex justify-between gap-4">
                 <dt class="text-gray-500 dark:text-gray-400">Kantor / brand</dt>
@@ -121,26 +161,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="col-span-12 space-y-6 xl:col-span-7">
-      <x-ecommerce.ecommerce-metrics />
-      <x-ecommerce.monthly-sale />
-    </div>
-    <div class="col-span-12 xl:col-span-5">
-        <x-ecommerce.monthly-target />
-    </div>
-
-    <div class="col-span-12">
-      <x-ecommerce.statistics-chart />
-    </div>
-
-    <div class="col-span-12 xl:col-span-5">
-      <x-ecommerce.customer-demographic />
-    </div>
-
-    <div class="col-span-12 xl:col-span-7">
-      <x-ecommerce.recent-orders />
     </div>
   </div>
 @endsection

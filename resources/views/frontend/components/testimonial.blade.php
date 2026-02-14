@@ -2,7 +2,7 @@
     $testimonial = $testimonial ?? null;
     $name = $testimonial?->name ?? 'John Doe';
     $role = $testimonial?->role ?? 'Pembeli Rumah';
-    $content = $testimonial?->content ?? 'Pengalaman yang sangat baik! Tim Rumah Ku membantu saya menemukan rumah impian dalam waktu singkat. Sangat profesional dan terpercaya.';
+    $content = $testimonial?->content ?? 'Pengalaman yang sangat baik! Tim Rumah IO membantu saya menemukan rumah impian dalam waktu singkat. Sangat profesional dan terpercaya.';
     $rating = (int) ($testimonial?->rating ?? 5);
     $initials = collect(preg_split('/\s+/', trim($name)))->filter()->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('');
 @endphp

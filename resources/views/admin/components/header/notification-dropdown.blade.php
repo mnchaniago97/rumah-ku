@@ -1,21 +1,85 @@
 {{-- Notification Dropdown Component --}}
+@php
+    use App\Models\ForumComment;
+    use App\Models\ForumPost;
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
+
+    $posts = ForumPost::query()
+        ->with(['user:id,name,avatar'])
+        ->latest()
+        ->take(8)
+        ->get();
+
+    $comments = ForumComment::query()
+        ->with(['user:id,name,avatar', 'post:id,title'])
+        ->latest()
+        ->take(8)
+        ->get();
+
+    $items = collect()
+        ->merge($posts->map(function (ForumPost $p) {
+            $user = $p->user;
+            $avatar = $user?->avatar;
+            if (filled($avatar) && !str_starts_with($avatar, 'http') && !str_starts_with($avatar, '/')) {
+                $avatar = Storage::url($avatar);
+            }
+
+            return [
+                'type' => 'post',
+                'id' => $p->id,
+                'user_name' => $user?->name ?? 'User',
+                'user_avatar' => $avatar,
+                'title' => $p->title,
+                'body' => $p->body,
+                'time' => $p->created_at,
+                'url' => route('admin.forum-posts.show', $p->id),
+            ];
+        }))
+        ->merge($comments->map(function (ForumComment $c) {
+            $user = $c->user;
+            $avatar = $user?->avatar;
+            if (filled($avatar) && !str_starts_with($avatar, 'http') && !str_starts_with($avatar, '/')) {
+                $avatar = Storage::url($avatar);
+            }
+
+            return [
+                'type' => 'comment',
+                'id' => $c->id,
+                'user_name' => $user?->name ?? 'User',
+                'user_avatar' => $avatar,
+                'title' => $c->post?->title ?? 'Posting',
+                'body' => $c->body,
+                'time' => $c->created_at,
+                'url' => route('admin.forum-comments.show', $c->id),
+            ];
+        }))
+        ->sortByDesc('time')
+        ->take(8)
+        ->values();
+
+    $latestTs = optional($items->first())['time']?->timestamp ?? 0;
+@endphp
+
 <div class="relative" x-data="{
     dropdownOpen: false,
-    notifying: true,
+    notifying: false,
+    latestTs: @json($latestTs),
+    init() {
+        const key = 'admin_forum_notif_seen_ts';
+        const seen = Number(localStorage.getItem(key) || 0);
+        this.notifying = this.latestTs > seen;
+    },
     toggleDropdown() {
         this.dropdownOpen = !this.dropdownOpen;
-        this.notifying = false;
+        if (this.dropdownOpen) {
+            const key = 'admin_forum_notif_seen_ts';
+            localStorage.setItem(key, String(this.latestTs || 0));
+            this.notifying = false;
+        }
     },
     closeDropdown() {
         this.dropdownOpen = false;
-    },
-    handleItemClick() {
-        console.log('Notification item clicked');
-        this.closeDropdown();
-    },
-    handleViewAllClick() {
-        console.log('View All Notifications clicked');
-        this.closeDropdown();
     }
 }" @click.away="closeDropdown()">
     <!-- Notification Button -->
@@ -66,7 +130,7 @@
     >
         <!-- Dropdown Header -->
         <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-gray-800">
-            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">Notification</h5>
+            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">Notifikasi Forum</h5>
 
             <button @click="closeDropdown()" class="text-gray-500 dark:text-gray-400" type="button">
                 <svg
@@ -89,133 +153,79 @@
 
         <!-- Notification List -->
         <ul class="flex flex-col h-auto overflow-y-auto custom-scrollbar">
-            @php
-                $notifications = [
-                    [
-                        'id' => 1,
-                        'userName' => 'Terry Franci',
-                        'userImage' => '/assets/admin/images/user/user-02.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Nganter App',
-                        'type' => 'Project',
-                        'time' => '5 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 2,
-                        'userName' => 'Alex Johnson',
-                        'userImage' => '/assets/admin/images/user/user-03.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Nganter App',
-                        'type' => 'Project',
-                        'time' => '10 min ago',
-                        'status' => 'offline',
-                    ],
-                    [
-                        'id' => 3,
-                        'userName' => 'Sarah Williams',
-                        'userImage' => '/assets/admin/images/user/user-04.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Dashboard UI',
-                        'type' => 'Project',
-                        'time' => '15 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 4,
-                        'userName' => 'Mike Brown',
-                        'userImage' => '/assets/admin/images/user/user-05.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - E-commerce',
-                        'type' => 'Project',
-                        'time' => '20 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 5,
-                        'userName' => 'Emma Davis',
-                        'userImage' => '/assets/admin/images/user/user-06.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Mobile App',
-                        'type' => 'Project',
-                        'time' => '25 min ago',
-                        'status' => 'offline',
-                    ],
-                    [
-                        'id' => 6,
-                        'userName' => 'John Smith',
-                        'userImage' => '/assets/admin/images/user/user-07.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Landing Page',
-                        'type' => 'Project',
-                        'time' => '30 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 7,
-                        'userName' => 'Lisa Anderson',
-                        'userImage' => '/assets/admin/images/user/user-08.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - Blog System',
-                        'type' => 'Project',
-                        'time' => '35 min ago',
-                        'status' => 'online',
-                    ],
-                    [
-                        'id' => 8,
-                        'userName' => 'David Wilson',
-                        'userImage' => '/assets/admin/images/user/user-09.jpg',
-                        'action' => 'requests permission to change',
-                        'project' => 'Project - CRM Dashboard',
-                        'type' => 'Project',
-                        'time' => '40 min ago',
-                        'status' => 'online',
-                    ],
-                ];
-            @endphp
+            @forelse($items as $item)
+                @php
+                    $initials = collect(explode(' ', (string) ($item['user_name'] ?? '')))
+                        ->filter()
+                        ->take(2)
+                        ->map(fn ($s) => Str::upper(Str::substr($s, 0, 1)))
+                        ->join('');
 
-            @foreach ($notifications as $notification)
-                <li @click="handleItemClick()">
+                    $badge = ($item['type'] ?? '') === 'comment' ? 'Komentar' : 'Posting';
+                    $badgeClass = ($item['type'] ?? '') === 'comment'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200'
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200';
+                @endphp
+
+                <li>
                     <a
                         class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
-                        href="#"
+                        href="{{ $item['url'] ?? '#' }}"
+                        @click="closeDropdown()"
                     >
-                        <span class="relative block w-full h-10 rounded-full z-1 max-w-10">
-                            <img src="{{ $notification['userImage'] }}" alt="User" class="overflow-hidden rounded-full" />
-                            <span
-                                class="absolute bottom-0 right-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900 {{ $notification['status'] === 'online' ? 'bg-success-500' : 'bg-error-500' }}"
-                            ></span>
+                        <span class="relative block h-10 w-10 rounded-full z-1 flex-shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-800">
+                            @if(filled($item['user_avatar'] ?? null))
+                                <img src="{{ $item['user_avatar'] }}" alt="{{ $item['user_name'] ?? 'User' }}" class="h-full w-full object-cover" />
+                            @else
+                                <span class="flex h-full w-full items-center justify-center text-xs font-semibold text-gray-700 dark:text-gray-200">
+                                    {{ $initials !== '' ? $initials : 'U' }}
+                                </span>
+                            @endif
                         </span>
 
-                        <span class="block">
+                        <span class="block min-w-0">
                             <span class="mb-1.5 block text-theme-sm text-gray-500 dark:text-gray-400">
                                 <span class="font-medium text-gray-800 dark:text-white/90">
-                                    {{ $notification['userName'] }}
+                                    {{ $item['user_name'] ?? 'User' }}
                                 </span>
-                                {{ $notification['action'] }}
+                                @if(($item['type'] ?? '') === 'comment')
+                                    mengomentari:
+                                @else
+                                    membuat posting:
+                                @endif
                                 <span class="font-medium text-gray-800 dark:text-white/90">
-                                    {{ $notification['project'] }}
+                                    {{ Str::limit((string) ($item['title'] ?? ''), 60) }}
                                 </span>
                             </span>
 
-                            <span class="flex items-center gap-2 text-gray-500 text-theme-xs dark:text-gray-400">
-                                <span>{{ $notification['type'] }}</span>
+                            @if(filled($item['body'] ?? null))
+                                <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                    {{ Str::limit(strip_tags((string) $item['body']), 90) }}
+                                </span>
+                            @endif
+
+                            <span class="mt-2 flex items-center gap-2 text-gray-500 text-theme-xs dark:text-gray-400">
+                                <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $badgeClass }}">{{ $badge }}</span>
                                 <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
-                                <span>{{ $notification['time'] }}</span>
+                                <span>{{ optional($item['time'] ?? null)->diffForHumans() }}</span>
                             </span>
                         </span>
                     </a>
                 </li>
-            @endforeach
+            @empty
+                <li class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Belum ada aktivitas forum.
+                </li>
+            @endforelse
         </ul>
 
         <!-- View All Button -->
         <a
-            href="#"
+            href="{{ route('admin.forum-posts.index') }}"
             class="mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-            @click.prevent="handleViewAllClick()"
+            @click="closeDropdown()"
         >
-            View All Notification
+            Lihat Semua Aktivitas Forum
         </a>
     </div>
     <!-- Dropdown End -->

@@ -1,6 +1,9 @@
 @extends('frontend.layouts.app')
 
 @section('content')
+    @php
+        $about = \App\Support\SiteSettings::about();
+    @endphp
     <div class="bg-gray-50">
         {{-- Hero Section --}}
         <section class="relative bg-gradient-to-br from-blue-900 to-blue-700 py-16 text-white">
@@ -8,25 +11,24 @@
                 <img src="/assets/frontend/img/welcome-bg.png" alt="Background" class="w-full h-full object-cover opacity-20">
             </div>
             <div class="max-w-[1200px] mx-auto px-4 relative text-center">
-                <h1 class="text-3xl md:text-4xl font-bold">Tentang Rumah Ku</h1>
-                <p class="mx-auto mt-3 max-w-xl text-blue-100">Platform properti terpercaya Indonesia</p>
+                <h1 class="text-3xl md:text-4xl font-bold">{{ $about['title'] ?? 'Tentang' }}</h1>
+                <p class="mx-auto mt-3 max-w-xl text-blue-100">{{ $about['subtitle'] ?? '' }}</p>
             </div>
         </section>
 
         <div class="max-w-[1200px] mx-auto px-4 py-12">
             {{-- About Content --}}
             <div class="bg-white rounded-xl p-8 shadow-sm mb-10">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Tentang Kami</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $about['heading'] ?? 'Tentang Kami' }}</h2>
                 <div class="prose prose-lg text-gray-600">
-                    <p class="mb-4">
-                        <strong>Rumah Ku</strong> adalah platform properti terpercaya yang berkomitmen untuk membantu Anda menemukan rumah impian dengan mudah, aman, dan transparan. Kami menyediakan berbagai pilihan properti dari seluruh Indonesia, mulai dari rumah tinggal, apartemen, villa, ruko, hingga tanah.
-                    </p>
-                    <p class="mb-4">
-                        Didukung oleh tim profesional yang berpengalaman di bidang properti, kami berkomitmen untuk memberikan pelayanan terbaik bagi setiap klien kami. Baik Anda pembeli, penjual, maupun penyewa properti, Rumah Ku siap membantu kebutuhan properti Anda.
-                    </p>
-                    <p>
-                        Kami percaya bahwa memiliki rumah adalah impian setiap orang. Oleh karena itu, kami terus berinovasi untuk memberikan pengalaman pencarian properti yang lebih mudah, cepat, dan terpercaya.
-                    </p>
+                    @php
+                        $content = $about['content'] ?? null;
+                        if (!filled($content) && filled($about['content_html'] ?? null)) {
+                            $content = trim(preg_replace("/\\n{3,}/", "\n\n", strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $about['content_html']))));
+                        }
+                    @endphp
+
+                    {!! nl2br(e($content ?? '')) !!}
                 </div>
             </div>
 

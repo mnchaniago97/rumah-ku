@@ -1,11 +1,19 @@
 @extends('frontend.layouts.app')
 
 @section('content')
+    @php
+        $contact = \App\Support\SiteSettings::contact();
+        $phone = $contact['phone'] ?? '';
+        $phoneTel = preg_replace('/\\D+/', '', $phone);
+        $waText = $contact['whatsapp'] ?? '';
+        $waLink = $contact['whatsapp_link'] ?? '';
+        $email = $contact['email'] ?? '';
+    @endphp
     <div class="bg-gray-50 py-8">
         <div class="max-w-[1200px] mx-auto px-4">
             <div class="text-center mb-10">
-                <h1 class="text-3xl font-bold text-gray-900">Hubungi Kami</h1>
-                <p class="mt-2 text-gray-600">Punya pertanyaan atau butuh bantuan? Silakan hubungi kami</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ $contact['title'] ?? 'Hubungi Kami' }}</h1>
+                <p class="mt-2 text-gray-600">{{ $contact['subtitle'] ?? '' }}</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-6 mb-10">
@@ -15,7 +23,11 @@
                     </div>
                     <h3 class="font-semibold text-gray-900">Telepon</h3>
                     <p class="mt-2 text-gray-600 text-sm">
-                        <a href="tel:021-12345678" class="hover:text-blue-600">021-1234-5678</a>
+                        @if(filled($phone))
+                            <a href="tel:{{ $phoneTel }}" class="hover:text-blue-600">{{ $phone }}</a>
+                        @else
+                            <span>-</span>
+                        @endif
                     </p>
                 </div>
                 <div class="bg-white rounded-xl p-6 shadow-sm text-center">
@@ -24,7 +36,13 @@
                     </div>
                     <h3 class="font-semibold text-gray-900">WhatsApp</h3>
                     <p class="mt-2 text-gray-600 text-sm">
-                        <a href="https://wa.me/6281234567890" class="hover:text-green-600">+62 812-3456-7890</a>
+                        @if(filled($waText) && filled($waLink))
+                            <a href="{{ $waLink }}" class="hover:text-green-600">{{ $waText }}</a>
+                        @elseif(filled($waText))
+                            <span>{{ $waText }}</span>
+                        @else
+                            <span>-</span>
+                        @endif
                     </p>
                 </div>
                 <div class="bg-white rounded-xl p-6 shadow-sm text-center">
@@ -33,7 +51,11 @@
                     </div>
                     <h3 class="font-semibold text-gray-900">Email</h3>
                     <p class="mt-2 text-gray-600 text-sm">
-                        <a href="mailto:info@rumahku.com" class="hover:text-red-600">info@rumahku.com</a>
+                        @if(filled($email))
+                            <a href="mailto:{{ $email }}" class="hover:text-red-600">{{ $email }}</a>
+                        @else
+                            <span>-</span>
+                        @endif
                     </p>
                 </div>
             </div>
@@ -79,21 +101,27 @@
 
                 <div class="bg-white rounded-xl p-6 shadow-sm">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Lokasi Kantor</h2>
-                    <div class="aspect-video bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                        <span class="text-gray-400">Peta Google Maps</span>
-                    </div>
+                    @if(filled($contact['maps_embed_html'] ?? null))
+                        <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-100">
+                            {!! $contact['maps_embed_html'] !!}
+                        </div>
+                    @else
+                        <div class="aspect-video bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                            <span class="text-gray-400">Peta Google Maps</span>
+                        </div>
+                    @endif
                     <div class="space-y-3 text-sm text-gray-600">
                         <p class="flex items-start gap-3">
                             <i class="fa fa-map-marker mt-1 text-red-500"></i>
-                            <span>Jl. Jendral Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190</span>
+                            <span>{{ $contact['address'] ?? '-' }}</span>
                         </p>
                         <p class="flex items-center gap-3">
                             <i class="fa fa-clock-o text-blue-500"></i>
-                            <span>Senin - Sabtu: 08:00 - 18:00 WIB</span>
+                            <span>{{ $contact['hours'] ?? '-' }}</span>
                         </p>
                         <p class="flex items-center gap-3">
                             <i class="fa fa-calendar text-green-500"></i>
-                            <span>Tutup hari Minggu dan hari libur nasional</span>
+                            <span>{{ $contact['notes'] ?? '-' }}</span>
                         </p>
                     </div>
                 </div>

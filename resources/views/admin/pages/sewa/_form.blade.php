@@ -106,7 +106,7 @@
             <select name="type"
                 class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
                 <option value="">Pilih...</option>
-                @foreach (['Rumah', 'Apartemen', 'Villa', 'Ruko', 'Tanah', 'Gudang', 'Kantor'] as $t)
+                @foreach (['Rumah', 'Apartemen', 'Kost', 'Kos-kosan', 'Villa', 'Ruko', 'Tanah', 'Gudang', 'Kantor'] as $t)
                     <option value="{{ $t }}" @selected(old('type', $property?->type ?? '') === $t)>{{ $t }}</option>
                 @endforeach
             </select>

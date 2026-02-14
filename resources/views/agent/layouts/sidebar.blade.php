@@ -8,7 +8,7 @@
 @endphp
 
 <aside id="sidebar"
-    class="fixed flex flex-col mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-99999 border-r border-gray-200"
+    class="fixed flex flex-col mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen z-99999 border-r border-gray-200"
     x-data="{
         openSubmenus: {},
         init() {
@@ -65,9 +65,9 @@
         'justify-start'">
         <a href="{{ route('agent.dashboard') }}">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" width="150" height="40" />
+                src="/assets/admin/images/logo/rumahio-light.svg" alt="Rumah IO" width="150" height="40" />
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="/assets/admin/images/logo/rumahsatu-dark.svg" alt="RumahKu" width="32" height="32" />
+                src="/assets/admin/images/logo/rumahio-dark.svg" alt="Rumah IO" width="32" height="32" />
 
         </a>
     </div>
@@ -215,7 +215,7 @@
         </nav>
 
         <!-- Sidebar Widget -->
-        <div x-data x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" x-transition class="mt-auto"></div>
+        <div x-data x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" class="mt-auto"></div>
 
     </div>
 </aside>

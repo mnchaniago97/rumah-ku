@@ -25,13 +25,13 @@
                 </div>
                 <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-red-600">Turun Harga</span>
             </a>
-            <a href="{{ route('calculator') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
+            <a href="{{ route('kpr.simulasi') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 group-hover:bg-yellow-600 group-hover:text-white transition">
                     <i class="fa fa-calculator text-lg"></i>
                 </div>
                 <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-yellow-600">Kalkulator KPR</span>
             </a>
-            <a href="{{ route('takeover') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
+            <a href="{{ route('kpr.pindah') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition">
                     <i class="fa fa-exchange text-lg"></i>
                 </div>

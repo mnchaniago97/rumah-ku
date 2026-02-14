@@ -16,7 +16,15 @@
                         <img src="{{ $avatar }}" alt="{{ $agent->name }}" class="w-full h-full object-cover" loading="lazy">
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ $agent->name }}</h1>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl font-bold text-gray-900">{{ $agent->name }}</h1>
+                            @if(!empty($agent->agent_verified_at))
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                    <i class="fa fa-circle-check"></i>
+                                    Verified
+                                </span>
+                            @endif
+                        </div>
                         <p class="text-sm text-gray-500">{{ $agent->published_properties_count ?? 0 }} properti aktif</p>
                     </div>
                 </div>

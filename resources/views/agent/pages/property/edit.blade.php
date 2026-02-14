@@ -93,6 +93,8 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
                         <option value="Rumah" @selected(old('type', $property->type)=='Rumah')>Rumah</option>
                         <option value="Apartemen" @selected(old('type', $property->type)=='Apartemen')>Apartemen</option>
+                        <option value="Kost" @selected(old('type', $property->type)=='Kost')>Kost</option>
+                        <option value="Kos-kosan" @selected(old('type', $property->type)=='Kos-kosan')>Kos-kosan</option>
                         <option value="Villa" @selected(old('type', $property->type)=='Villa')>Villa</option>
                         <option value="Ruko" @selected(old('type', $property->type)=='Ruko')>Ruko</option>
                         <option value="Tanah" @selected(old('type', $property->type)=='Tanah')>Tanah</option>

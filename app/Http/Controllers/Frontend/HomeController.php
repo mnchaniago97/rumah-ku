@@ -88,7 +88,7 @@ class HomeController extends Controller
         $bottomBanners = Banner::active()->byPosition('home')->byLocation('bottom')->orderBy('sort_order')->get();
         
         return view('frontend.pages.home', [
-            'title' => 'Rumah Ku - Temukan Rumah Impian Anda',
+            'title' => 'Rumah IO - Temukan Rumah Impian Anda',
             'recommendedProperties' => $recommendedProperties,
             'ourChoiceProperties' => $ourChoiceProperties,
             'popularProperties' => $popularProperties,

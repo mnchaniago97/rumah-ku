@@ -39,6 +39,8 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
                         <option value="Rumah" {{ old('type')=='Rumah'?'selected':'' }}>Rumah</option>
                         <option value="Apartemen" {{ old('type')=='Apartemen'?'selected':'' }}>Apartemen</option>
+                        <option value="Kost" {{ old('type')=='Kost'?'selected':'' }}>Kost</option>
+                        <option value="Kos-kosan" {{ old('type')=='Kos-kosan'?'selected':'' }}>Kos-kosan</option>
                         <option value="Villa" {{ old('type')=='Villa'?'selected':'' }}>Villa</option>
                         <option value="Ruko" {{ old('type')=='Ruko'?'selected':'' }}>Ruko</option>
                         <option value="Tanah" {{ old('type')=='Tanah'?'selected':'' }}>Tanah</option>

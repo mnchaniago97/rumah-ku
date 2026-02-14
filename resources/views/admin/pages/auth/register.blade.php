@@ -24,7 +24,7 @@
                         </p>
                     </div>
                     <div>
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-1 sm:gap-5">
                             <a href="{{ route('social.redirect', ['provider' => 'google']) }}"
                                 class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,14 +34,7 @@
                                     <path d="M10.1789 4.63331C11.8554 4.63331 12.9864 5.34303 13.6312 5.93612L16.1511 3.525C14.6035 2.11528 12.5895 1.25 10.1789 1.25C6.68676 1.25 3.67088 3.21387 2.20264 6.07218L5.08953 8.26943C5.81381 6.15972 7.81776 4.63331 10.1789 4.63331Z" fill="#EB4335" />
                                 </svg>
                                 Register with Google
-                            </a>
-                            <a href="{{ route('social.redirect', ['provider' => 'facebook']) }}"
-                                class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M22.675 0H1.325C.594 0 0 .594 0 1.326V22.67C0 23.406.594 24 1.325 24H12.82V14.71H9.692V11.1H12.82V8.414C12.82 5.325 14.67 3.62 17.376 3.62C18.674 3.62 19.792 3.716 20.118 3.76V6.987H18.24C16.77 6.987 16.49 7.684 16.49 8.72V11.1H20.01L19.55 14.71H16.49V24H22.675C23.406 24 24 23.406 24 22.675V1.326C24 .594 23.406 0 22.675 0Z" fill="#1877F2" />
-                                </svg>
-                                Register with Facebook
-                            </a>
+                            </a>                            
                         </div>
                         <div class="relative py-3 sm:py-5">
                             <div class="absolute inset-0 flex items-center">
@@ -174,10 +167,10 @@
                     <x-common.common-grid-shape />
                     <div class="flex max-w-xs flex-col items-center">
                         <a href="/" class="mb-4 inline-flex">
-                            <img src="/assets/admin/images/logo/rumahsatu-dark.svg" alt="RumahSatu" class="h-30 w-auto" />
+                            <img src="/assets/admin/images/logo/rumahio-dark.svg" alt="Rumah IO" class="h-15 w-auto" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
-                            Rumah Satu Kebanggaan Ku
+                            “Cari. Temukan. Punya Rumah.”
                         </p>
                     </div>
                 </div>

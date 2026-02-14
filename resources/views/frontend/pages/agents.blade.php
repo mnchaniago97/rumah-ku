@@ -44,7 +44,15 @@
                         <div class="w-20 h-20 rounded-full bg-gray-200 mx-auto mb-4 overflow-hidden">
                             <img src="{{ $avatar }}" alt="{{ $agent->name }}" class="w-full h-full object-cover" loading="lazy">
                         </div>
-                        <h4 class="font-semibold text-gray-900">{{ $agent->name }}</h4>
+                        <div class="flex items-center justify-center gap-2">
+                            <h4 class="font-semibold text-gray-900">{{ $agent->name }}</h4>
+                            @if(!empty($agent->agent_verified_at))
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                                    <i class="fa fa-circle-check"></i>
+                                    Verified
+                                </span>
+                            @endif
+                        </div>
                         <p class="text-sm text-gray-500 mb-3">{{ $agent->published_properties_count ?? 0 }} properti aktif</p>
                         <div class="flex items-center justify-center gap-1 mb-4">
                             <span class="text-xs text-gray-500">Agen terdaftar</span>
@@ -85,7 +93,15 @@
                                 <img src="{{ $avatar }}" alt="{{ $agent->name }}" class="w-full h-full object-cover" loading="lazy">
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900">{{ $agent->name }}</h4>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold text-gray-900">{{ $agent->name }}</h4>
+                                    @if(!empty($agent->agent_verified_at))
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                                            <i class="fa fa-circle-check"></i>
+                                            Verified
+                                        </span>
+                                    @endif
+                                </div>
                                 <p class="text-sm text-gray-500">Agen terdaftar</p>
                                 <p class="text-xs text-gray-400 mt-1">{{ $agent->published_properties_count ?? 0 }} properti aktif</p>
                             </div>

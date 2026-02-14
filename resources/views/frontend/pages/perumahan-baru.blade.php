@@ -30,72 +30,69 @@
     <div class="bg-gray-50">
         {{-- Hero --}}
         <div class="relative overflow-hidden">
-            <div class="relative">
-                <div class="absolute inset-0">
-                    <img src="/assets/admin/images/product/product-02.jpg" alt="Perumahan Baru"
-                        class="h-full w-full object-cover" />
-                    <div class="absolute inset-0 bg-blue-900/55"></div>
-                </div>
+            <div class="absolute inset-0">
+                <img src="/assets/admin/images/product/product-02.jpg" alt="Perumahan Baru" class="h-full w-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-indigo-700/60"></div>
+            </div>
 
-                <div class="relative mx-auto max-w-[1200px] px-4 py-10">
-                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center">
-                        <div class="lg:col-span-7">
-                            <h1 class="text-3xl font-extrabold tracking-tight text-white">Cari Perumahan Baru di Indonesia</h1>
-                            <p class="mt-2 max-w-2xl text-sm text-white/90">
-                                Temukan perumahan terbaru, pilihan lokasi terbaik, dan info properti terkini.
-                            </p>
-                        </div>
-                        <div class="lg:col-span-5">
-                            <form action="{{ route('perumahan-baru') }}" method="GET"
-                                class="rounded-2xl bg-white/95 p-4 shadow-sm ring-1 ring-black/5 backdrop-blur">
-                                <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
-                                    <div class="sm:col-span-12">
-                                        <label class="sr-only">Cari</label>
-                                        <div class="relative">
-                                            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
-                                                <i class="fa fa-magnifying-glass"></i>
-                                            </span>
-                                            <input name="q" value="{{ $filters['q'] ?? '' }}"
-                                                placeholder="Ketik lokasi, keyword, developer..."
-                                                class="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10" />
-                                        </div>
-                                    </div>
-
-                                    <div class="sm:col-span-6">
-                                        <label class="sr-only">Kota</label>
-                                        <select name="city"
-                                            class="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10">
-                                            <option value="">Semua Kota</option>
-                                            @foreach(($cityOptions ?? collect()) as $city)
-                                                <option value="{{ $city }}" @selected(($filters['city'] ?? '') === $city)>{{ $city }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="sm:col-span-6">
-                                        <label class="sr-only">Tipe</label>
-                                        <select name="type"
-                                            class="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10">
-                                            <option value="">Semua Tipe</option>
-                                            @foreach (['Rumah','Apartemen','Tanah','Ruko','Villa'] as $t)
-                                                <option value="{{ $t }}" @selected(($filters['type'] ?? '') === $t)>{{ $t }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="sm:col-span-12">
-                                        <button type="submit"
-                                            class="inline-flex h-11 w-full items-center justify-center rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white hover:bg-blue-800">
-                                            Cari
-                                        </button>
+            <div class="relative mx-auto max-w-[1200px] px-4 pt-14 pb-20">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+                    <div class="lg:col-span-7">
+                        <h1 class="text-3xl font-extrabold tracking-tight text-white">Cari Perumahan Baru di Indonesia</h1>
+                        <p class="mt-2 max-w-2xl text-sm text-white/90">
+                            Temukan perumahan terbaru, pilihan lokasi terbaik, dan info properti terkini.
+                        </p>
+                    </div>
+                    <div class="lg:col-span-5">
+                        <form action="{{ route('perumahan-baru') }}" method="GET"
+                            class="rounded-2xl bg-white/95 p-4 shadow-sm ring-1 ring-black/5 backdrop-blur">
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
+                                <div class="sm:col-span-12">
+                                    <label class="sr-only">Cari</label>
+                                    <div class="relative">
+                                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                            <i class="fa fa-magnifying-glass"></i>
+                                        </span>
+                                        <input name="q" value="{{ $filters['q'] ?? '' }}"
+                                            placeholder="Ketik lokasi, keyword, developer..."
+                                            class="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10" />
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+
+                                <div class="sm:col-span-6">
+                                    <label class="sr-only">Kota</label>
+                                    <select name="city"
+                                        class="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10">
+                                        <option value="">Semua Kota</option>
+                                        @foreach(($cityOptions ?? collect()) as $city)
+                                            <option value="{{ $city }}" @selected(($filters['city'] ?? '') === $city)>{{ $city }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="sm:col-span-6">
+                                    <label class="sr-only">Tipe</label>
+                                    <select name="type"
+                                        class="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10">
+                                        <option value="">Semua Tipe</option>
+                                        @foreach (['Rumah','Apartemen','Tanah','Ruko','Villa'] as $t)
+                                            <option value="{{ $t }}" @selected(($filters['type'] ?? '') === $t)>{{ $t }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="sm:col-span-12">
+                                    <button type="submit"
+                                        class="inline-flex h-11 w-full items-center justify-center rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white hover:bg-blue-800">
+                                        Cari
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
 
-            <div class="absolute inset-x-0 bottom-0 h-10 bg-gray-50" style="border-top-left-radius: 28px; border-top-right-radius: 28px;"></div>
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gray-50 rounded-t-[28px]"></div>
         </div>
 
         <div class="mx-auto max-w-[1200px] px-4 py-8">
@@ -141,7 +138,7 @@
                     <div class="col-span-full rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center">
                         <i class="fa fa-city mb-3 text-4xl text-gray-300"></i>
                         <p class="text-gray-600">Belum ada perumahan baru yang tersedia.</p>
-                        <p class="mt-1 text-sm text-gray-500">Admin dapat menandai properti ke kategori listing <span class="font-semibold">Perumahan Baru</span>.</p>
+                        <p class="mt-1 text-sm text-gray-500">Admin dapat menandai properti ke kategori listing <span class="font-semibold">Properti Baru</span>.</p>
                     </div>
                 @endforelse
             </div>
@@ -231,4 +228,3 @@
         </div>
     </div>
 @endsection
-

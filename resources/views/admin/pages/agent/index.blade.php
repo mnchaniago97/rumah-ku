@@ -18,6 +18,7 @@
                             <th class="px-6 py-3 font-medium">Nama</th>
                             <th class="px-6 py-3 font-medium">Email</th>
                             <th class="px-6 py-3 font-medium">Telepon</th>
+                            <th class="px-6 py-3 font-medium">Tipe</th>
                             <th class="px-6 py-3 font-medium">Status</th>
                             <th class="px-6 py-3 font-medium text-right">Aksi</th>
                         </tr>
@@ -28,12 +29,21 @@
                                 <td class="px-6 py-4 text-gray-900 dark:text-white">{{ $agent->name }}</td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->email ?? '-' }}</td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->phone ?? '-' }}</td>
+                                <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->agent_type ?? '-' }}</td>
                                 <td class="px-6 py-4">
-                                @if ($agent->is_active)
-                                    <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600 dark:bg-green-500/10 dark:text-green-400">Aktif</span>
-                                @else
-                                    <span class="rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-semibold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300">Menunggu</span>
-                                @endif
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @if ($agent->is_active)
+                                        <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600 dark:bg-green-500/10 dark:text-green-400">Aktif</span>
+                                    @else
+                                        <span class="rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-semibold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300">Menunggu</span>
+                                    @endif
+
+                                    @if(!empty($agent->agent_verified_at))
+                                        <span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                                            Verified
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-3">
@@ -55,7 +65,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-6 text-center text-gray-500 dark:text-gray-400">
+                                <td colspan="6" class="px-6 py-6 text-center text-gray-500 dark:text-gray-400">
                                     Belum ada data agen.
                                 </td>
                             </tr>

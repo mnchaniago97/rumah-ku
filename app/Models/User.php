@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +24,10 @@ class User extends Authenticatable
         'name',
         'email',
         'email_verified_at',
+        'agent_verified_at',
         'role',
+        'agent_type',
+        'agent_subscription_plan_id',
         'is_active',
         'password',
         'phone',
@@ -66,6 +70,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'agent_verified_at' => 'datetime',
             'password' => 'hashed',
             'notifications_email' => 'boolean',
             'notifications_sms' => 'boolean',
@@ -73,9 +78,46 @@ class User extends Authenticatable
         ];
     }
 
+    public function agentPlan(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'agent_subscription_plan_id');
+    }
+
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class);
+    }
+
+    public function isAgentVerified(): bool
+    {
+        return $this->agent_verified_at !== null;
+    }
+
+    public function agentAccess(): ?array
+    {
+        return $this->agentPlan?->access;
+    }
+
+    public function canAgentFeature(string $feature, bool $default = true): bool
+    {
+        if (($this->role ?? null) !== 'agent') {
+            return false;
+        }
+
+        $access = $this->agentAccess();
+        if ($access === null) {
+            return $default;
+        }
+
+        if (array_is_list($access)) {
+            return in_array($feature, $access, true);
+        }
+
+        if (array_key_exists($feature, $access)) {
+            return (bool) $access[$feature];
+        }
+
+        return $default;
     }
 
     protected function whatsappPhone(): Attribute

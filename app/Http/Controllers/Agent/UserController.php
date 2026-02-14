@@ -86,8 +86,8 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()
-            ->route('agent.users.index')
-            ->with('success', 'User updated.');
+            ->route('agent.users.show', $user)
+            ->with('success', 'Profil berhasil diperbarui.');
     }
 }
 

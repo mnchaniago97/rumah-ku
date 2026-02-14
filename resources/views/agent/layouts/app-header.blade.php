@@ -50,7 +50,7 @@
 
             <!-- Logo (mobile only) -->
             <a href="{{ route('agent.dashboard') }}" class="xl:hidden">
-                <img src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" class="h-9 w-auto" />
+                <img src="/assets/admin/images/logo/rumahsatu-light.svg" alt="Rumah IO" class="h-9 w-auto" />
             </a>
 
             <!-- Home -->
