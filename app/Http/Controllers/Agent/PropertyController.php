@@ -15,10 +15,23 @@ use Illuminate\View\View;
 
 class PropertyController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $q = trim((string) $request->query('q', ''));
+        $escaped = addcslashes($q, '\\%_');
+        $like = '%' . $escaped . '%';
+
         $properties = Property::where('user_id', Auth::id())
             ->with(['images', 'category', 'listingCategories'])
+            ->when($q !== '', function ($query) use ($like) {
+                $query->where(function ($query) use ($like) {
+                    $query->where('title', 'like', $like)
+                        ->orWhere('slug', 'like', $like)
+                        ->orWhere('address', 'like', $like)
+                        ->orWhere('city', 'like', $like)
+                        ->orWhere('province', 'like', $like);
+                });
+            })
             ->latest()
             ->get();
 
