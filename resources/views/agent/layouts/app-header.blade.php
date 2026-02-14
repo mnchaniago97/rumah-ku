@@ -50,8 +50,7 @@
 
             <!-- Logo (mobile only) -->
             <a href="{{ route('agent.dashboard') }}" class="xl:hidden">
-                <img class="dark:hidden" src="/assets/admin/images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="/assets/admin/images/logo/logo-dark.svg" alt="Logo" />
+                <img src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" class="h-9 w-auto" />
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->

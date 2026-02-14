@@ -5,11 +5,8 @@
             <div class="flex h-14 items-center justify-between">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2 text-lg font-extrabold tracking-tight">
-                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-                        <i class="fa fa-house"></i>
-                    </span>
-                    Rumah Ku
-                </a>
+                    <img src="{{ asset('assets/admin/images/logo/rumahsatu-dark.svg') }}" alt="Rumah Ku" class="h-12 w-auto">
+                    </a>
 
                 <!-- Actions (Desktop) -->
                 <div class="hidden md:flex items-center gap-2">
@@ -17,13 +14,40 @@
                         <i class="fa fa-calculator"></i>
                         KPR
                     </a>
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-white/90 hover:text-white">
-                        <i class="fa fa-user"></i>
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/15">
-                        Daftar
-                    </a>
+                    @auth
+                        <div class="relative" x-data="{ profileOpen: false }">
+                            <button @click="profileOpen = !profileOpen" class="inline-flex items-center gap-2 rounded-md bg-white/10 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/15">
+                                <i class="fa fa-user-circle"></i>
+                                {{ Auth::user()->name }}
+                                <i class="fa fa-chevron-down text-xs"></i>
+                            </button>
+                            <div x-show="profileOpen" @click.outside="profileOpen = false" class="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5" x-cloak x-transition>
+                                @if(Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa fa-cog w-4"></i> Dashboard
+                                    </a>
+                                @elseif(Auth::user()->role === 'agent')
+                                    <a href="{{ route('agent.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa fa-cog w-4"></i> Dashboard
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fa fa-sign-out-alt w-4"></i> Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-white/90 hover:text-white">
+                            <i class="fa fa-user"></i>
+                            Login
+                        </a>
+                        <a href="{{ route('register') }}" class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/15">
+                            Daftar
+                        </a>
+                    @endauth
                 </div>
 
                 <!-- Mobile menu button -->

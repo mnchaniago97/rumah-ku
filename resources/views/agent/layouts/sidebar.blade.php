@@ -65,12 +65,9 @@
         'justify-start'">
         <a href="{{ route('agent.dashboard') }}">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="/assets/admin/images/logo/logo.svg" alt="Logo" width="150" height="40" />
-            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="hidden dark:block" src="/assets/admin/images/logo/logo-dark.svg" alt="Logo" width="150"
-                height="40" />
+                src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" width="150" height="40" />
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="/assets/admin/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+                src="/assets/admin/images/logo/rumahsatu-dark.svg" alt="RumahKu" width="32" height="32" />
 
         </a>
     </div>

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Frontend\ArticleController as FrontendArticleController;
 use App\Http\Controllers\Frontend\AsetLelangBankController;
+use App\Http\Controllers\Frontend\AgentController as FrontendAgentController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PerumahanBaruController;
 use App\Http\Controllers\Frontend\PropertyInquiryController;
@@ -28,7 +30,8 @@ Route::redirect('/projects', '/perumahan-baru')->name('projects');
 Route::get('/rumah-subsidi', [RumahSubsidiController::class, 'index'])->name('rumah-subsidi');
 Route::get('/sewa', [SewaController::class, 'index'])->name('sewa');
 Route::get('/perumahan-baru', [PerumahanBaruController::class, 'index'])->name('perumahan-baru');
-Route::view('/agents', 'frontend.pages.agents')->name('agents');
+Route::get('/agents', [FrontendAgentController::class, 'index'])->name('agents');
+Route::get('/agents/{agent}', [FrontendAgentController::class, 'show'])->name('agents.show');
 Route::view('/calculator', 'frontend.pages.calculator')->name('calculator');
 Route::view('/eligibility', 'frontend.pages.eligibility')->name('eligibility');
 Route::view('/advertise', 'frontend.pages.advertise')->name('advertise');
@@ -36,6 +39,14 @@ Route::view('/discounted', 'frontend.pages.discounted')->name('discounted');
 Route::view('/takeover', 'frontend.pages.takeover')->name('takeover');
 Route::view('/forum', 'frontend.pages.forum')->name('forum');
 Route::view('/more', 'frontend.pages.more')->name('more');
+
+// Social Auth Routes
+Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
+    ->where('provider', 'google|facebook')
+    ->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])
+    ->where('provider', 'google|facebook')
+    ->name('social.callback');
 
 // Auth Routes
 Route::view('/login', 'admin.pages.auth.login')->name('login');
@@ -47,9 +58,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Agent Auth Routes
 Route::view('/agent/login', 'agent.pages.auth.login')->name('agent.login');
-Route::view('/agent/register', 'agent.pages.auth.register')->name('agent.register');
+Route::redirect('/agent/register', '/register')->name('agent.register');
 Route::post('/agent/login', [AuthController::class, 'login'])->name('agent.login.store');
-Route::post('/agent/register', [AuthController::class, 'registerAgent'])->name('agent.register.store');
+Route::post('/agent/register', [AuthController::class, 'register'])->name('agent.register.store');
 
 // Redirects
 Route::get('/signin', function () {

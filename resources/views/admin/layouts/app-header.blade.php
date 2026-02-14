@@ -50,7 +50,14 @@
 
             <!-- Logo (mobile only) -->
             <a href="{{ route('admin.dashboard') }}" class="xl:hidden">
-                <img src="/assets/admin/images/logo/logo_rumahku.svg" alt="RumahKu" class="h-9 w-auto" />
+                <img src="/assets/admin/images/logo/rumahsatu-light.svg" alt="RumahKu" class="h-9 w-auto" />
+            </a>
+
+            <!-- Frontend Home -->
+            <a href="{{ route('home') }}" target="_blank" rel="noopener"
+                class="flex xl:hidden items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                aria-label="Frontend Home">
+                <i class="fa-solid fa-house"></i>
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->
@@ -63,6 +70,13 @@
                         fill="currentColor" />
                 </svg>
             </button>
+
+            <!-- Frontend Home (desktop) -->
+            <a href="{{ route('home') }}" target="_blank" rel="noopener"
+                class="hidden xl:inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-white/[0.03] dark:hover:text-white">
+                <i class="fa-solid fa-house"></i>
+                <span>Frontend Home</span>
+            </a>
 
             <!-- Search Bar (desktop only) -->
             <div class="hidden xl:block">

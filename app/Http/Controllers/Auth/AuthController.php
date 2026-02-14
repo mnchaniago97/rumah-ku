@@ -25,16 +25,6 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = $request->user();
-            if ($user && $user->role === 'agent' && !$user->is_active) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return back()
-                    ->withErrors(['email' => 'Akun Anda belum disetujui admin.'])
-                    ->onlyInput('email');
-            }
-
             if ($user && $user->role === 'agent') {
                 return redirect()->route('agent.dashboard');
             }
@@ -53,11 +43,6 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
-        return $this->registerAgent($request);
-    }
-
-    public function registerAgent(Request $request): RedirectResponse
-    {
         $data = $request->validate([
             'fname' => ['required', 'string', 'max:100'],
             'lname' => ['nullable', 'string', 'max:100'],
@@ -70,14 +55,14 @@ class AuthController extends Controller
         User::create([
             'name' => $name !== '' ? $name : $data['fname'],
             'email' => $data['email'],
-            'role' => 'agent',
-            'is_active' => false,
+            'role' => 'user',
+            'is_active' => true,
             'password' => Hash::make($data['password']),
         ]);
 
         return redirect()
-            ->route('agent.login')
-            ->with('success', 'Register success. Menunggu persetujuan admin.');
+            ->route('login')
+            ->with('success', 'Register berhasil. Silakan login.');
     }
 
     public function logout(Request $request): RedirectResponse

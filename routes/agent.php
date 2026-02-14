@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Agent\DashboardController;
 use App\Http\Controllers\Agent\PropertyController;
+use App\Http\Controllers\Agent\RumahSubsidiController;
 use App\Http\Controllers\Agent\UserController;
-use App\Http\Controllers\Admin\RumahSubsidiController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('agent')->name('agent.')->middleware(['auth', 'role:agent'])->group(function () {

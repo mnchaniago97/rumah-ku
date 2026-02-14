@@ -64,6 +64,59 @@
                             <input name="phone" value="{{ old('phone', $user->phone) }}"
                                 class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
                         </div>
+
+                        <div class="sm:col-span-2 mt-2">
+                            <h5 class="text-sm font-semibold text-gray-800 dark:text-white/90">🪪 Identitas Dasar</h5>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nama lengkap (sesuai KTP)</label>
+                            <input name="ktp_full_name" value="{{ old('ktp_full_name', $user->ktp_full_name) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor HP / WhatsApp aktif</label>
+                            <input name="whatsapp_phone" value="{{ old('whatsapp_phone', $user->whatsapp_phone) }}" placeholder="62xxxxxxxxxx"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Email profesional</label>
+                            <input name="professional_email" type="email" value="{{ old('professional_email', $user->professional_email) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Domisili / area kerja</label>
+                            <input name="domicile_area" value="{{ old('domicile_area', $user->domicile_area) }}" placeholder="Misal: Jakarta Barat, BSD, dll"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+
+                        <div class="sm:col-span-2 mt-2">
+                            <h5 class="text-sm font-semibold text-gray-800 dark:text-white/90">🧑‍💼 Identitas Profesi</h5>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nama kantor / brand agen</label>
+                            <input name="agency_brand" value="{{ old('agency_brand', $user->agency_brand) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Jabatan</label>
+                            <input name="job_title" value="{{ old('job_title', $user->job_title) }}" placeholder="Marketing / Property Consultant / Broker"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor registrasi agen (jika ada)</label>
+                            <input name="agent_registration_number" value="{{ old('agent_registration_number', $user->agent_registration_number) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Pengalaman (tahun)</label>
+                            <input name="experience_years" type="number" min="0" max="80" value="{{ old('experience_years', $user->experience_years) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Spesialis area</label>
+                            <input name="specialization_areas" value="{{ old('specialization_areas', $user->specialization_areas) }}" placeholder="Misal: Jakarta Barat, BSD, dll"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
                         <div class="sm:col-span-2">
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
                             <textarea name="bio" rows="3"
