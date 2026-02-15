@@ -19,11 +19,11 @@
                 </div>
                 <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-purple-600">Cari Agen</span>
             </a>
-            <a href="{{ route('discounted') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
+            <a href="{{ route('kpr') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white transition">
-                    <i class="fa fa-arrow-down text-lg"></i>
+                    <i class="fa fa-home text-lg"></i>
                 </div>
-                <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-red-600">Turun Harga</span>
+                <span class="mt-1.5 text-xs font-medium text-gray-700 text-center group-hover:text-red-600">KPR</span>
             </a>
             <a href="{{ route('kpr.simulasi') }}" class="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm transition hover:shadow-md group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 group-hover:bg-yellow-600 group-hover:text-white transition">
