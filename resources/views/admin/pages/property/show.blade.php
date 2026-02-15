@@ -31,7 +31,7 @@
     @endphp
 
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
                 <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $property->title }}</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Property Detail</p>
