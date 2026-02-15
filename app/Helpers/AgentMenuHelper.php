@@ -27,34 +27,35 @@ class AgentMenuHelper
                 'title' => 'Properti',
                 'items' => [
                     [
-                        'name' => 'Properti',
+                        'name' => 'Properti Dijual',
                         'path' => route('agent.properties.index', [], false),
                         'icon' => 'home',
+                    ],
+                    [
+                        'name' => 'Aset Turun Harga',
+                        'path' => route('agent.properties.index', ['filter' => 'discount'], false),
+                        'icon' => 'discount',
+                    ],
+                    [
+                        'name' => 'Rumah Subsidi',
+                        'path' => route('agent.rumah-subsidi.index', [], false),
+                        'icon' => 'home-subsidi',
                     ],
                     [
                         'name' => 'Sewa',
                         'path' => route('agent.sewa.index', [], false),
                         'icon' => 'rent',
                     ],
-                    ...($canRumahSubsidi ? [[
-                        'name' => 'Rumah Subsidi',
-                        'path' => route('agent.rumah-subsidi.index', [], false),
-                        'icon' => 'home-subsidi',
-                    ]] : []),
                 ],
             ],
             [
-                'title' => 'Akun',
+                'title' => 'Setting',
                 'items' => [
-                    ...(
-                        auth()->check()
-                            ? [[
-                                'name' => 'Profil Saya',
-                                'path' => route('agent.users.show', ['user' => auth()->id()], false),
-                                'icon' => 'user',
-                            ]]
-                            : []
-                    ),
+                    [
+                        'name' => 'My Profile',
+                        'path' => route('agent.users.show', ['user' => auth()->id()], false),
+                        'icon' => 'user',
+                    ],
                 ],
             ],
         ];

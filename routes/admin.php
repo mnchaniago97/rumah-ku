@@ -5,11 +5,13 @@ use App\Http\Controllers\Admin\AgentApplicationController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DiscountedController;
 use App\Http\Controllers\Admin\ForumCommentController;
 use App\Http\Controllers\Admin\ForumPostController;
 use App\Http\Controllers\Admin\PropertyInquiryController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RumahSubsidiController;
 use App\Http\Controllers\Admin\SewaController;
 use App\Http\Controllers\Admin\SiteSettingController;
@@ -22,6 +24,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile routes
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
 
     Route::resource('properties', PropertyController::class);
     Route::patch('properties/{property}/approve', [PropertyController::class, 'approve'])->name('properties.approve');
@@ -36,6 +41,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])
     Route::resource('users', UserController::class);
     Route::resource('property-inquiries', PropertyInquiryController::class)
         ->only(['index', 'show', 'update', 'destroy']);
+
+    Route::resource('discounted', DiscountedController::class)
+        ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
 });
 

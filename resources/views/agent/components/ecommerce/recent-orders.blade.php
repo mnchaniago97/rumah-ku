@@ -3,44 +3,44 @@
 @php
     $defaultProducts = [
         [
-            'name' => 'Macbook pro 13"',
-            'variants' => 2,
+            'name' => 'Rumah Contoh',
+            'variants' => 'Jakarta',
             'image' => '/assets/admin/images/product/product-01.jpg',
-            'category' => 'Laptop',
-            'price' => '$2399.00',
-            'status' => 'Delivered',
+            'category' => 'Pilihan Kami',
+            'price' => 'Rp 500.000.000',
+            'status' => 'Published',
         ],
         [
-            'name' => 'Apple Watch Ultra',
-            'variants' => 1,
+            'name' => 'Apartemen Contoh',
+            'variants' => 'Bandung',
             'image' => '/assets/admin/images/product/product-02.jpg',
-            'category' => 'Watch',
-            'price' => '$879.00',
-            'status' => 'Pending',
+            'category' => 'Pending Approval',
+            'price' => 'Rp 250.000.000',
+            'status' => 'Pending Approval',
         ],
         [
-            'name' => 'iPhone 15 Pro Max',
-            'variants' => 2,
+            'name' => 'Villa Contoh',
+            'variants' => 'Bali',
             'image' => '/assets/admin/images/product/product-03.jpg',
-            'category' => 'SmartPhone',
-            'price' => '$1869.00',
-            'status' => 'Delivered',
+            'category' => 'Rekomendasi',
+            'price' => 'Rp 1.250.000.000',
+            'status' => 'Draft',
         ],
         [
-            'name' => 'iPad Pro 3rd Gen',
-            'variants' => 2,
+            'name' => 'Ruko Contoh',
+            'variants' => 'Surabaya',
             'image' => '/assets/admin/images/product/product-04.jpg',
-            'category' => 'Electronics',
-            'price' => '$1699.00',
-            'status' => 'Canceled',
+            'category' => 'Properti Populer',
+            'price' => 'Rp 900.000.000',
+            'status' => 'Published',
         ],
         [
-            'name' => 'Airpods Pro 2nd Gen',
-            'variants' => 1,
+            'name' => 'Tanah Contoh',
+            'variants' => 'Medan',
             'image' => '/assets/admin/images/product/product-05.jpg',
-            'category' => 'Accessories',
-            'price' => '$240.00',
-            'status' => 'Delivered',
+            'category' => 'Properti Baru',
+            'price' => 'Rp 300.000.000',
+            'status' => 'Published',
         ],
     ];
     
@@ -51,9 +51,9 @@
         $baseClasses = 'rounded-full px-2 py-0.5 text-theme-xs font-medium';
         
         return match($status) {
-            'Delivered' => $baseClasses . ' bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500',
-            'Pending' => $baseClasses . ' bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400',
-            'Canceled' => $baseClasses . ' bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500',
+            'Published' => $baseClasses . ' bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500',
+            'Pending Approval' => $baseClasses . ' bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400',
+            'Draft' => $baseClasses . ' bg-gray-50 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400',
             default => $baseClasses . ' bg-gray-50 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400',
         };
     };
@@ -62,7 +62,7 @@
 <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Recent Orders</h3>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Properti Terbaru</h3>
         </div>
 
         <div class="flex items-center gap-3">
@@ -87,7 +87,7 @@
             <thead>
                 <tr class="border-t border-gray-100 dark:border-gray-800">
                     <th class="py-3 text-left">
-                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Products</p>
+                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Properti</p>
                     </th>
                     <th class="py-3 text-left">
                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Category</p>
@@ -113,7 +113,11 @@
                                         {{ $product['name'] }}
                                     </p>
                                     <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {{ $product['variants'] }} Variants
+                                        @if(is_numeric($product['variants']))
+                                            {{ $product['variants'] }} Varian
+                                        @else
+                                            {{ $product['variants'] }}
+                                        @endif
                                     </span>
                                 </div>
                             </div>

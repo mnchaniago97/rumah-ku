@@ -31,7 +31,20 @@ class UserController extends Controller
         }
 
         return view('agent.pages.user.show', [
-            'title' => 'User Detail',
+            'title' => 'My Profile',
+            'user' => $user,
+        ]);
+    }
+
+    public function edit(User $user): View
+    {
+        $authUser = Auth::user();
+        if (!$authUser || $authUser->id !== $user->id) {
+            abort(403);
+        }
+
+        return view('agent.pages.user.edit', [
+            'title' => 'Edit Profile',
             'user' => $user,
         ]);
     }

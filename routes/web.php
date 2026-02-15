@@ -9,6 +9,7 @@ use App\Http\Controllers\Frontend\AgentController as FrontendAgentController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ForumController;
 use App\Http\Controllers\Frontend\PerumahanBaruController;
+use App\Http\Controllers\Frontend\DiscountedController;
 use App\Http\Controllers\Frontend\JoinController;
 use App\Http\Controllers\Frontend\LegalController;
 use App\Http\Controllers\Frontend\PricingController;
@@ -98,7 +99,7 @@ Route::get('/join/{type}', [JoinController::class, 'show'])
 Route::post('/join/{type}', [JoinController::class, 'store'])
     ->whereIn('type', ['property-agent', 'in-house-marketing', 'property-owner', 'developer'])
     ->name('join.store');
-Route::view('/discounted', 'frontend.pages.discounted')->name('discounted');
+Route::get('/discounted', [DiscountedController::class, 'index'])->name('discounted');
 Route::view('/takeover', 'frontend.pages.takeover')->name('takeover');
 Route::get('/forum', [ForumController::class, 'index'])->name('forum');
 Route::get('/forum/posts', [ForumController::class, 'posts'])->name('forum.posts');

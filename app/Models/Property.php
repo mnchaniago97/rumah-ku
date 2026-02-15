@@ -28,6 +28,7 @@ class Property extends Model
         'latitude',
         'longitude',
         'price',
+        'original_price',
         'price_period',
         'bedrooms',
         'bathrooms',
@@ -47,13 +48,16 @@ class Property extends Model
         'is_featured',
         'is_published',
         'is_approved',
+        'is_discounted',
         'approved_at',
         'approved_by',
         'published_at',
+        'discounted_at',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'original_price' => 'decimal:2',
         'bedrooms' => 'integer',
         'bathrooms' => 'integer',
         'floors' => 'integer',
@@ -67,33 +71,93 @@ class Property extends Model
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
         'is_approved' => 'boolean',
+        'is_discounted' => 'boolean',
         'approved_at' => 'datetime',
         'published_at' => 'datetime',
+        'discounted_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
         static::saving(function (Property $property): void {
+            // Handle slug generation
             if (filled($property->slug) || blank($property->title)) {
-                return;
+                // Continue with price change detection
+            } else {
+                $base = Str::slug($property->title);
+                $base = $base !== '' ? $base : Str::random(8);
+
+                $slug = $base;
+                $suffix = 1;
+
+                while (
+                    static::where('slug', $slug)
+                        ->when($property->exists, fn ($q) => $q->where('id', '!=', $property->id))
+                        ->exists()
+                ) {
+                    $slug = "{$base}-{$suffix}";
+                    $suffix++;
+                }
+
+                $property->slug = $slug;
             }
 
-            $base = Str::slug($property->title);
-            $base = $base !== '' ? $base : Str::random(8);
+            // Detect price change and mark as discounted
+            if ($property->exists && $property->isDirty('price')) {
+                $oldPrice = $property->getOriginal('price');
+                $newPrice = $property->price;
 
-            $slug = $base;
-            $suffix = 1;
-
-            while (
-                static::where('slug', $slug)
-                    ->when($property->exists, fn ($q) => $q->where('id', '!=', $property->id))
-                    ->exists()
-            ) {
-                $slug = "{$base}-{$suffix}";
-                $suffix++;
+                // If new price is lower than original, mark as discounted
+                if ($oldPrice > 0 && $newPrice < $oldPrice) {
+                    // Store original price if not already set
+                    if (empty($property->original_price) || $property->original_price > $oldPrice) {
+                        $property->original_price = $oldPrice;
+                    }
+                    $property->is_discounted = true;
+                    $property->discounted_at = now();
+                }
             }
 
-            $property->slug = $slug;
+            // Handle manual discount checkbox
+            if ($property->is_discounted && empty($property->discounted_at)) {
+                $property->discounted_at = now();
+            }
+            // If discount is unchecked, clear the discounted_at
+            if (!$property->is_discounted && $property->isDirty('is_discounted')) {
+                $property->discounted_at = null;
+            }
+        });
+    }
+
+    /**
+     * Get the discount percentage
+     */
+    public function getDiscountPercentage(): ?int
+    {
+        if (!$this->original_price || !$this->price || $this->original_price <= 0) {
+            return null;
+        }
+
+        $discount = (($this->original_price - $this->price) / $this->original_price) * 100;
+        return round($discount);
+    }
+
+    /**
+     * Scope to filter only discounted properties
+     */
+    public function scopeDiscounted($query)
+    {
+        return $query->where('is_discounted', true);
+    }
+
+    /**
+     * Scope to filter properties for sale (not for rent)
+     */
+    public function scopeForSale($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('status')
+                ->orWhere('status', '!=', 'disewakan');
         });
     }
 

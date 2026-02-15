@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'Dashboard' }} | TailAdmin - Laravel Tailwind CSS Admin Dashboard Template</title>
-
+    <title>{{ $title ?? 'Dashboard' }} | “Cari. Temukan. Punya Rumah.”</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <!-- Scripts -->
     @vite(['resources/template/css/style.css', 'resources/js/agent.js'])
 

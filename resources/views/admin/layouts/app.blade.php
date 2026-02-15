@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'Dashboard' }} Rumah Satu Kebanggaan Ku</title>
+    <title>{{ $title ?? 'Dashboard' }} | “Cari. Temukan. Punya Rumah.”</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <!-- Font Awesome -->

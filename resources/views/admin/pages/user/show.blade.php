@@ -3,7 +3,7 @@
 @section('content')
     <div class="space-y-6">
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">User Detail</h1>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Account Settings</h1>
             <a href="{{ route('admin.users.index') }}"
                 class="text-sm text-gray-600 hover:underline dark:text-gray-300">Kembali</a>
         </div>
