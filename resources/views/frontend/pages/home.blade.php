@@ -1,46 +1,67 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    {{-- Hero Banner --}}
-    @if(isset($heroBanners) && $heroBanners->count() > 0)
-        <div class="relative">
-            <div id="hero-carousel" class="overflow-hidden rounded-b-[40px] mx-[50px]">
-                <div class="flex transition-transform duration-500 ease-in-out" id="hero-slides">
-                    @foreach($heroBanners as $index => $banner)
-                        <div class="w-full flex-shrink-0">
-                            <a href="{{ $banner->link ?? '#' }}" class="block">
-                                <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Hero Banner' }}" class="w-full object-cover">
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            
-            @if($heroBanners->count() > 1)
-                <button id="hero-prev" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white transition">
-                    <i class="fa fa-chevron-left"></i>
-                </button>
-                <button id="hero-next" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white transition">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
-                
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" id="hero-dots">
-                    @foreach($heroBanners as $index => $banner)
-                        <button class="w-2 h-2 rounded-full transition {{ $index === 0 ? 'bg-white' : 'bg-white/50' }}" data-index="{{ $index }}"></button>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    @else
-        <div class="max-w-[1200px] mx-auto px-4 py-8 hidden md:block">
-            <div class="w-full md:w-4/12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
-                <div class="text-center text-white py-12 px-6">
-                    <h1 class="text-2xl md:text-3xl font-bold mb-2">Temukan Rumah Impian Anda</h1>
-                    <p class="text-sm md:text-base">ribuan properti terbaik tersedia</p>
-                </div>
+{{-- Hero Banner --}}
+@if(isset($heroBanners) && $heroBanners->count() > 0)
+
+    {{-- ================= DESKTOP HERO ================= --}}
+    <div class="relative hidden md:block">
+        <div id="hero-carousel" class="overflow-hidden rounded-b-[40px] mx-[50px]">
+            <div class="flex transition-transform duration-500 ease-in-out" id="hero-slides">
+                @foreach($heroBanners as $index => $banner)
+                    <div class="w-full flex-shrink-0">
+                        <a href="{{ $banner->link ?? '#' }}" class="block">
+                            <img src="{{ Storage::url($banner->image) }}"
+                                 alt="{{ $banner->title ?? 'Hero Banner' }}"
+                                 class="w-full object-cover">
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
-    @endif
+
+        @if($heroBanners->count() > 1)
+            <button id="hero-prev" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white transition">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+
+            <button id="hero-next" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-700 hover:bg-white transition">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" id="hero-dots">
+                @foreach($heroBanners as $index => $banner)
+                    <button class="w-2 h-2 rounded-full transition {{ $index === 0 ? 'bg-white' : 'bg-white/50' }}"
+                            data-index="{{ $index }}"></button>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+
+    {{-- ================= MOBILE HERO ================= --}}
+    <div class="md:hidden bg-gradient-to-br from-blue-700 to-blue-900 min-h-[400px] pb-20">
+        <div class="px-4 pt-4 text-white text-center">
+            <h1 class="text-2xl font-bold leading-tight">
+                “Cari. Temukan. Punya Rumah.”
+            </h1>
+
+        </div>
+    </div>
+
+@else
+
+    {{-- Kalau tidak ada banner sama sekali --}}
+    <div class="md:hidden bg-gradient-to-br from-blue-700 to-blue-900 min-h-[360px] pb-20">
+        <div class="px-4 pt-12 text-white text-center">
+            <h1 class="text-xl font-bold">Temukan Rumah Impian Anda</h1>
+            <p class="text-sm opacity-90">Ribuan properti terbaik tersedia</p>
+        </div>
+    </div>
+
+@endif
+
+
 
     {{-- Hero Search --}}
     @include('frontend.components.hero-search')

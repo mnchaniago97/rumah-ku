@@ -1,4 +1,4 @@
-<section class="relative z-20 pb-2 -mb-8 md:-mb-20">
+<section class="relative z-30 -mt-60 md:mt-0 pb-2 -mb-8 md:-mb-20">
     <div class="max-w-[1200px] mx-auto px-4">
         <div class="relative mx-auto w-full -translate-y-[30%] text-center md:w-7/12 md:-translate-y-1/2 rounded-xl bg-blue-600/90 px-4 py-6 text-white">
             <h1 class="text-xl md:text-2xl font-bold">
