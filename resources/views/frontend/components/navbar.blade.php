@@ -1,6 +1,6 @@
 <nav class="sticky top-0 z-50" x-data="{ mobileOpen: false }">
     <!-- Top Bar -->
-    <div class="bg-blue-800 text-white shadow-sm">
+    <div class="relative z-[60] bg-blue-800 text-white shadow-sm">
         <div class="max-w-[1200px] mx-auto px-4">
             <div class="flex h-14 items-center justify-between">
                 <!-- Logo -->
@@ -21,7 +21,7 @@
                                 {{ str_replace(['Rumah Ku', 'Rumahku', 'RumahKu'], 'Rumah IO', Auth::user()->name) }}
                                 <i class="fa fa-chevron-down text-xs"></i>
                             </button>
-                            <div x-show="profileOpen" @click.outside="profileOpen = false" class="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5" x-cloak x-transition>
+                            <div x-show="profileOpen" @click.outside="profileOpen = false" class="absolute right-0 z-[70] mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5" x-cloak x-transition>
                                 @if(Auth::user()->role === 'admin')
                                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i class="fa fa-cog w-4"></i> Dashboard
@@ -90,6 +90,32 @@
 
                 <a href="{{ route('agents') }}" class="block rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white" @click="mobileOpen = false">Agen</a>
 
+                <div class="rounded-md" x-data="{ open: false }">
+                    <button type="button" class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white"
+                        @click="open = !open" :aria-expanded="open">
+                        <span>Perusahaan</span>
+                        <i class="fa fa-chevron-down text-xs transition" :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="open" x-transition class="mt-1 space-y-1 pl-2" x-cloak>
+                        <a href="{{ route('about') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
+                            <i class="fa fa-info-circle w-4 text-white/80"></i>
+                            Tentang
+                        </a>
+                        <a href="{{ route('company.products') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
+                            <i class="fa fa-layer-group w-4 text-white/80"></i>
+                            Produk & Layanan
+                        </a>
+                        <a href="{{ route('company.partners') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
+                            <i class="fa fa-handshake w-4 text-white/80"></i>
+                            Partner
+                        </a>
+                        <a href="{{ route('contact') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
+                            <i class="fa fa-envelope w-4 text-white/80"></i>
+                            Kontak
+                        </a>
+                    </div>
+                </div>
+
                     <div class="rounded-md" x-data="{ open: false }">
                     <button type="button" class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white"
                         @click="open = !open" :aria-expanded="open">
@@ -108,14 +134,6 @@
                         <a href="{{ route('calculator') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
                             <i class="fa fa-calculator w-4 text-white/80"></i>
                             Kalkulator
-                        </a>
-                        <a href="{{ route('about') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
-                            <i class="fa fa-info-circle w-4 text-white/80"></i>
-                            Tentang
-                        </a>
-                        <a href="{{ route('contact') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white" @click="mobileOpen = false">
-                            <i class="fa fa-envelope w-4 text-white/80"></i>
-                            Kontak
                         </a>
                     </div>
                 </div>
@@ -169,7 +187,7 @@
     </div>
 
     <!-- Bottom Bar (Desktop Menu) -->
-    <div class="hidden md:block bg-blue-700/95 text-white/90 border-t border-white/10">
+    <div class="relative z-50 hidden md:block bg-blue-700/95 text-white/90 border-t border-white/10">
         <div class="max-w-[1200px] mx-auto px-4">
             <div class="flex h-11 items-center justify-between">
                 <div class="flex items-center gap-1">
@@ -183,7 +201,7 @@
                             <i class="fa fa-chevron-down text-[10px] opacity-90"></i>
                         </button>
                         <div x-show="open" x-transition x-cloak
-                            class="absolute left-0 mt-2 w-64 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
+                            class="absolute left-0 z-[60] mt-2 w-64 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
                             <div class="p-2">
                                 <a href="{{ route('properties') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
                                     <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><i class="fa fa-home"></i></span>
@@ -215,11 +233,41 @@
                         <button type="button"
                             class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white"
                             @click="open = !open" :aria-expanded="open">
+                            Perusahaan
+                            <i class="fa fa-chevron-down text-[10px] opacity-90"></i>
+                        </button>
+                        <div x-show="open" x-transition x-cloak
+                            class="absolute left-0 z-[60] mt-2 w-64 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
+                            <div class="p-2">
+                                <a href="{{ route('about') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
+                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-700"><i class="fa fa-info-circle"></i></span>
+                                    Tentang
+                                </a>
+                                <a href="{{ route('company.products') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
+                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><i class="fa fa-layer-group"></i></span>
+                                    Produk & Layanan
+                                </a>
+                                <a href="{{ route('company.partners') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
+                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700"><i class="fa fa-handshake"></i></span>
+                                    Partner
+                                </a>
+                                <a href="{{ route('contact') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
+                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><i class="fa fa-envelope"></i></span>
+                                    Kontak
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                        <button type="button"
+                            class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-white"
+                            @click="open = !open" :aria-expanded="open">
                             Lainnya
                             <i class="fa fa-chevron-down text-[10px] opacity-90"></i>
                         </button>
                         <div x-show="open" x-transition x-cloak
-                            class="absolute left-0 mt-2 w-60 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
+                            class="absolute left-0 z-[60] mt-2 w-60 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
                             <div class="p-2">
                                 <a href="{{ route('articles') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
                                     <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-700"><i class="fa fa-newspaper"></i></span>
@@ -232,14 +280,6 @@
                                 <a href="{{ route('calculator') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
                                     <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><i class="fa fa-calculator"></i></span>
                                     Kalkulator
-                                </a>
-                                <a href="{{ route('about') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
-                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-700"><i class="fa fa-info-circle"></i></span>
-                                    Tentang
-                                </a>
-                                <a href="{{ route('contact') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
-                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><i class="fa fa-envelope"></i></span>
-                                    Kontak
                                 </a>
                             </div>
                         </div>
@@ -260,7 +300,7 @@
                             <i class="fa fa-chevron-down text-[10px] opacity-90"></i>
                         </button>
                         <div x-show="open" x-transition x-cloak
-                            class="absolute right-0 mt-2 w-64 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
+                            class="absolute right-0 z-[60] mt-2 w-64 overflow-hidden rounded-xl bg-white text-gray-800 shadow-xl ring-1 ring-black/5">
                             <div class="p-2">
                                 <a href="{{ route('pricing.show', ['type' => 'property-owner']) }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-gray-50">
                                     <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700"><i class="fa fa-bullhorn"></i></span>

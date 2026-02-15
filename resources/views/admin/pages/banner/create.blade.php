@@ -76,6 +76,7 @@
                             <option value="ads_2" {{ ($location ?? '') === 'ads_2' ? 'selected' : '' }}>Banner Iklan 2</option>
                             <option value="ads_3" {{ ($location ?? '') === 'ads_3' ? 'selected' : '' }}>Banner Iklan 3</option>
                             <option value="bottom" {{ ($location ?? '') === 'bottom' ? 'selected' : '' }}>Banner Bawah</option>
+                            <option value="property_detail_sidebar" {{ ($location ?? '') === 'property_detail_sidebar' ? 'selected' : '' }}>Iklan Detail Properti (Sidebar)</option>
                         </select>
                         @error('location')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

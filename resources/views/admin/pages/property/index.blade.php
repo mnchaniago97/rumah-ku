@@ -35,14 +35,14 @@
                                 </div>
 
                                 <div class="absolute bottom-0 left-5 mb-3 flex">
-                                    <p class="flex items-center font-medium text-white shadow-sm">
-                                        <i class="fa fa-camera mr-2 text-xl text-white"></i>
+                                    <p class="flex items-center text-xs font-semibold text-white shadow-sm">
+                                        <i class="fa fa-camera mr-2 text-base text-white"></i>
                                         {{ $property->images->count() }}
                                     </p>
                                 </div>
                                 <div class="absolute bottom-0 right-5 mb-3 flex">
-                                    <p class="flex items-center font-medium text-gray-800">
-                                        <i class="fa fa-heart mr-2 text-2xl text-white"></i>
+                                    <p class="flex items-center text-xs font-semibold text-gray-800">
+                                        <i class="fa fa-heart mr-2 text-lg text-white"></i>
                                     </p>
                                 </div>
 
@@ -54,56 +54,56 @@
                             Pending Approval
                         </span>
                     @endif
-                                <span class="absolute top-0 left-0 z-10 mt-3 ml-3 inline-flex select-none rounded-lg bg-transparent px-3 py-2 text-lg font-medium text-white">
+                                <span class="absolute top-0 left-0 z-10 mt-3 ml-3 inline-flex select-none rounded-lg bg-transparent px-2.5 py-2 text-base font-medium text-white">
                                     <i class="fa fa-star"></i>
                                 </span>
                             </div>
 
                             <div class="mt-4">
-                                <h2 class="line-clamp-1 text-2xl font-medium text-gray-800 md:text-lg" title="{{ $property->title }}">
+                                <h2 class="line-clamp-1 text-base font-semibold text-gray-800" title="{{ $property->title }}">
                                     {{ $property->title }}
                                 </h2>
                                 @if(($property->listingCategories ?? collect())->count() > 0)
                                     <div class="mt-2 flex flex-wrap gap-1">
                                         @foreach($property->listingCategories->sortBy('sort_order')->take(3) as $cat)
-                                            <span class="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">{{ $cat->name }}</span>
+                                            <span class="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">{{ $cat->name }}</span>
                                         @endforeach
                                     </div>
                                 @endif
 
-                                <p class="text-primary mt-2 inline-block whitespace-nowrap rounded-xl font-semibold leading-tight">
-                                    <span class="text-sm uppercase">Rp</span>
-                                    <span class="text-2xl">{{ $property->price ? number_format($property->price, 0, ',', '.') : '0' }}</span>
+                                <p class="mt-2 inline-flex items-end gap-1 whitespace-nowrap font-semibold leading-tight text-gray-900">
+                                    <span class="text-[10px] uppercase text-gray-600">Rp</span>
+                                    <span class="text-lg">{{ $property->price ? number_format($property->price, 0, ',', '.') : '0' }}</span>
                                 </p>
                             </div>
                             <div class="mt-4">
-                                <p class="line-clamp-1 mt-2 text-lg text-gray-800">{{ $property->address ?? 'Alamat belum diisi' }}</p>
+                                <p class="line-clamp-1 mt-2 text-sm text-gray-700">{{ $property->address ?? 'Alamat belum diisi' }}</p>
                             </div>
                             <div class="justify-center">
                                 <div class="mt-4 flex flex-wrap gap-3 overflow-hidden rounded-lg px-1 py-1">
-                                    <p class="flex items-center font-medium text-gray-800">
+                                    <p class="flex items-center text-sm font-semibold text-gray-800">
                                         <i class="fa fa-bed mr-2 text-blue-900"></i>
                                         {{ $bedrooms }}
                                     </p>
 
-                                    <p class="flex items-center font-medium text-gray-800">
+                                    <p class="flex items-center text-sm font-semibold text-gray-800">
                                         <i class="fa fa-bath mr-2 text-blue-900"></i>
                                         {{ $bathrooms }}
                                     </p>
-                                    <p class="flex items-center font-medium text-gray-800">
+                                    <p class="flex items-center text-sm font-semibold text-gray-800">
                                         <i class="fa fa-home mr-2 text-blue-900"></i>
                                         {{ $area }} m<sup>2</sup>
                                     </p>
                                 </div>
                                 <div class="mt-2 flex flex-wrap gap-3 overflow-hidden rounded-lg px-1 py-1">
                                     @if($property->electricity)
-                                    <p class="flex items-center font-medium text-gray-800">
+                                    <p class="flex items-center text-sm font-semibold text-gray-800">
                                         <i class="fa fa-bolt mr-2 text-yellow-500"></i>
                                         {{ $property->electricity }} Watt
                                     </p>
                                     @endif
                                     @if($property->water_source)
-                                    <p class="flex items-center font-medium text-gray-800">
+                                    <p class="flex items-center text-sm font-semibold text-gray-800">
                                         <i class="fa fa-tint mr-2 text-blue-500"></i>
                                         {{ $property->water_source }}
                                     </p>
@@ -121,7 +121,7 @@
                                         <span class="bg-primary-red absolute top-0 right-0 inline-block h-3 w-3 rounded-full"></span>
                                     </div>
 
-                                    <p class="line-clamp-1 ml-2 text-gray-800">{{ $property->user?->name ?? 'Admin' }}</p>
+                                    <p class="line-clamp-1 ml-2 text-sm text-gray-800">{{ $property->user?->name ?? 'Admin' }}</p>
                                 </div>
                             </div>
                         </div>

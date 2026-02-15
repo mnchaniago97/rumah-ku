@@ -48,13 +48,6 @@
               </a>
             </div>
           </div>
-
-          <div class="hidden lg:block">
-            <div class="relative">
-              <div class="absolute -left-6 -top-6 h-14 w-14 rounded-full bg-white/10"></div>
-              <img src="/assets/frontend/img/pro-ads.jpg" alt="hero" class="h-[260px] w-[460px] rounded-2xl object-cover shadow-2xl ring-1 ring-white/10" />
-            </div>
-          </div>
         </div>
 
         <div class="mt-10 grid gap-4 sm:grid-cols-3">

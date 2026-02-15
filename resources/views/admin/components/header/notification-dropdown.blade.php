@@ -2,8 +2,16 @@
 @php
     use App\Models\ForumComment;
     use App\Models\ForumPost;
+    use App\Models\ContactMessage;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
+
+    $contactUnread = ContactMessage::query()->unread()->count();
+    $contactLatest = ContactMessage::query()
+        ->orderByDesc('created_at')
+        ->orderByDesc('id')
+        ->take(6)
+        ->get();
 
     $posts = ForumPost::query()
         ->with(['user:id,name,avatar'])
@@ -65,6 +73,7 @@
     dropdownOpen: false,
     notifying: false,
     latestTs: @json($latestTs),
+    contactUnread: @json($contactUnread),
     init() {
         const key = 'admin_forum_notif_seen_ts';
         const seen = Number(localStorage.getItem(key) || 0);
@@ -89,13 +98,13 @@
         type="button"
     >
         <!-- Notification Badge -->
-        <span
-            x-show="notifying"
-            class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full bg-orange-400"
-        >
-            <span
-                class="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 -z-1 animate-ping"
-            ></span>
+        <template x-if="contactUnread > 0">
+            <span class="absolute -right-1 -top-1 z-10 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white ring-2 ring-white dark:ring-gray-900">
+                <span x-text="contactUnread > 99 ? '99+' : contactUnread"></span>
+            </span>
+        </template>
+        <span x-show="notifying && contactUnread === 0" class="absolute right-0 top-0.5 z-1 h-2 w-2 rounded-full bg-orange-400">
+            <span class="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 -z-1 animate-ping"></span>
         </span>
 
         <!-- Bell Icon -->
@@ -130,7 +139,7 @@
     >
         <!-- Dropdown Header -->
         <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-gray-800">
-            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">Notifikasi Forum</h5>
+            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">Notifikasi</h5>
 
             <button @click="closeDropdown()" class="text-gray-500 dark:text-gray-400" type="button">
                 <svg
@@ -149,6 +158,59 @@
                     />
                 </svg>
             </button>
+        </div>
+
+        <div class="px-4 pb-2">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-gray-800 dark:text-white/90">Pesan Kontak</div>
+                <a href="{{ route('admin.contact-messages.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
+                    Lihat semua
+                </a>
+            </div>
+        </div>
+
+        <ul class="flex flex-col h-auto overflow-y-auto custom-scrollbar">
+            @forelse($contactLatest as $m)
+                <li>
+                    <a class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+                        href="{{ route('admin.contact-messages.show', $m) }}"
+                        @click="closeDropdown()">
+                        <span class="relative block h-10 w-10 rounded-full z-1 flex-shrink-0 overflow-hidden bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 flex items-center justify-center">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+
+                        <span class="block min-w-0">
+                            <span class="mb-1.5 block text-theme-sm text-gray-500 dark:text-gray-400">
+                                <span class="font-medium text-gray-800 dark:text-white/90">{{ $m->name }}</span>
+                                <span class="ml-1">{{ $m->subject ?: 'Pesan kontak' }}</span>
+                            </span>
+                            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                {{ Str::limit((string) $m->message, 90) }}
+                            </span>
+                            <span class="mt-2 flex items-center gap-2 text-gray-500 text-theme-xs dark:text-gray-400">
+                                <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $m->is_read ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-200' }}">
+                                    {{ $m->is_read ? 'Dibaca' : 'Baru' }}
+                                </span>
+                                <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+                                <span>{{ optional($m->created_at)->diffForHumans() }}</span>
+                            </span>
+                        </span>
+                    </a>
+                </li>
+            @empty
+                <li class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Belum ada pesan kontak.
+                </li>
+            @endforelse
+        </ul>
+
+        <div class="px-4 pt-4 pb-2">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-gray-800 dark:text-white/90">Aktivitas Forum</div>
+                <a href="{{ route('admin.forum-posts.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
+                    Lihat semua
+                </a>
+            </div>
         </div>
 
         <!-- Notification List -->
@@ -219,14 +281,18 @@
             @endforelse
         </ul>
 
-        <!-- View All Button -->
-        <a
-            href="{{ route('admin.forum-posts.index') }}"
-            class="mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-            @click="closeDropdown()"
-        >
-            Lihat Semua Aktivitas Forum
-        </a>
+        <div class="mt-3 grid grid-cols-2 gap-2 px-4 pb-4">
+            <a href="{{ route('admin.contact-messages.index') }}"
+                class="flex justify-center rounded-lg border border-gray-300 bg-white p-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                @click="closeDropdown()">
+                Inbox Pesan
+            </a>
+            <a href="{{ route('admin.forum-posts.index') }}"
+                class="flex justify-center rounded-lg border border-gray-300 bg-white p-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                @click="closeDropdown()">
+                Forum
+            </a>
+        </div>
     </div>
     <!-- Dropdown End -->
 </div>

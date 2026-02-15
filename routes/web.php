@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Frontend\ArticleController as FrontendArticleController;
 use App\Http\Controllers\Frontend\AsetLelangBankController;
 use App\Http\Controllers\Frontend\AgentController as FrontendAgentController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\Frontend\PropertyInquiryController;
 use App\Http\Controllers\Frontend\PropertyController as FrontendPropertyController;
 use App\Http\Controllers\Frontend\RumahSubsidiController;
 use App\Http\Controllers\Frontend\SewaController;
+use App\Http\Controllers\Frontend\CompanyPartnerController;
+use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend Routes
@@ -30,6 +33,11 @@ Route::post('/carikan-properti', [PropertyInquiryController::class, 'store'])->n
 // Static Pages
 Route::view('/about', 'frontend.pages.about')->name('about');
 Route::view('/contact', 'frontend.pages.contact')->name('contact');
+Route::post('/contact', [FrontendContactController::class, 'store'])->name('contact.store');
+Route::view('/perusahaan/produk-layanan', 'frontend.pages.company.products-services', [
+    'title' => 'Produk & Layanan - Rumah IO',
+])->name('company.products');
+Route::get('/perusahaan/partner', [CompanyPartnerController::class, 'index'])->name('company.partners');
 Route::get('/kebijakan-privasi', [LegalController::class, 'show'])->defaults('page', 'kebijakan-privasi')->name('legal.privacy');
 Route::get('/syarat-penggunaan', [LegalController::class, 'show'])->defaults('page', 'syarat-penggunaan')->name('legal.terms');
 Route::get('/syarat-penggunaan-agen', [LegalController::class, 'show'])->defaults('page', 'syarat-penggunaan-agen')->name('legal.agent-terms');
@@ -110,8 +118,15 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
     ->name('social.callback');
 
 // Auth Routes
-Route::view('/login', 'admin.pages.auth.login')->name('login');
-Route::view('/register', 'admin.pages.auth.register')->name('register');
+Route::middleware('guest')->group(function () {
+    Route::view('/login', 'admin.pages.auth.login')->name('login');
+    Route::view('/register', 'admin.pages.auth.register')->name('register');
+
+    Route::get('/forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'store'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.update');
+});
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');

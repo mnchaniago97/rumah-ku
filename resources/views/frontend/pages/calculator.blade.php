@@ -106,8 +106,8 @@
 
                     <div class="bg-white rounded-xl p-6 shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Rincian Cicilan</h3>
-                        <div class="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
-                            <span class="text-gray-400">Grafik Angsuran</span>
+                        <div class="h-56 overflow-hidden rounded-lg bg-gray-50">
+                            <div id="kpr-installment-chart" class="h-full"></div>
                         </div>
                     </div>
 
@@ -156,6 +156,7 @@
     <script>
         let selectedTenor = 20;
         let selectedRate = 8;
+        let kprInstallmentChart = null;
 
         document.querySelectorAll('.tenor-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -194,10 +195,109 @@
             return 'Rp ' + amount.toLocaleString('id-ID');
         }
 
+        function buildYearlyAmortization({ loanAmount, monthlyRate, totalMonths, monthlyPayment }) {
+            const years = Math.ceil(totalMonths / 12);
+            const yearlyPrincipal = Array(years).fill(0);
+            const yearlyInterest = Array(years).fill(0);
+
+            let balance = loanAmount;
+            for (let month = 1; month <= totalMonths; month++) {
+                const interest = monthlyRate > 0 ? balance * monthlyRate : 0;
+                const principal = Math.max(0, monthlyPayment - interest);
+                balance = Math.max(0, balance - principal);
+
+                const yearIndex = Math.ceil(month / 12) - 1;
+                yearlyPrincipal[yearIndex] += principal;
+                yearlyInterest[yearIndex] += interest;
+            }
+
+            return {
+                categories: Array.from({ length: years }, (_, i) => `Tahun ${i + 1}`),
+                yearlyPrincipal: yearlyPrincipal.map(v => Math.round(v)),
+                yearlyInterest: yearlyInterest.map(v => Math.round(v)),
+            };
+        }
+
+        function renderInstallmentChart({ loanAmount, monthlyRate, totalMonths, monthlyPayment }, retry = 0) {
+            const container = document.getElementById('kpr-installment-chart');
+            if (!container) return;
+
+            if (!window.ApexCharts) {
+                if (retry < 20) {
+                    setTimeout(() => renderInstallmentChart({ loanAmount, monthlyRate, totalMonths, monthlyPayment }, retry + 1), 50);
+                    return;
+                }
+
+                container.innerHTML = '<div class="h-full flex items-center justify-center text-sm text-gray-500">Grafik belum tersedia.</div>';
+                return;
+            }
+
+            if (kprInstallmentChart) {
+                kprInstallmentChart.destroy();
+                kprInstallmentChart = null;
+            }
+            container.innerHTML = '';
+
+            const { categories, yearlyPrincipal, yearlyInterest } = buildYearlyAmortization({
+                loanAmount,
+                monthlyRate,
+                totalMonths,
+                monthlyPayment,
+            });
+
+            const options = {
+                chart: {
+                    type: 'bar',
+                    stacked: true,
+                    height: '100%',
+                    toolbar: { show: false },
+                    fontFamily: 'inherit',
+                },
+                series: [
+                    { name: 'Pokok', data: yearlyPrincipal },
+                    { name: 'Bunga', data: yearlyInterest },
+                ],
+                xaxis: {
+                    categories,
+                    labels: { rotate: -45, style: { fontSize: '11px' } },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: (val) => {
+                            const n = Math.round(val);
+                            return n >= 1000000000 ? `${(n / 1000000000).toFixed(1)}M` : n >= 1000000 ? `${(n / 1000000).toFixed(0)}jt` : n.toString();
+                        },
+                    },
+                },
+                plotOptions: {
+                    bar: { borderRadius: 6, columnWidth: '55%' },
+                },
+                dataLabels: { enabled: false },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'left',
+                    fontSize: '12px',
+                },
+                tooltip: {
+                    y: {
+                        formatter: (val) => formatRupiah(Math.round(val)),
+                    },
+                },
+                colors: ['#2563EB', '#F59E0B'],
+                grid: {
+                    borderColor: '#E5E7EB',
+                    strokeDashArray: 4,
+                },
+            };
+            kprInstallmentChart = new window.ApexCharts(container, options);
+            kprInstallmentChart.render();
+        }
+
         function calculateKPR() {
             const price = parseFloat(document.getElementById('property-price').value) || 500000000;
             const downPaymentPercent = parseFloat(document.getElementById('down-payment-percent').value) || 20;
-            const downPayment = price * (downPaymentPercent / 100);
+            const safeDownPaymentPercent = Math.min(100, Math.max(0, downPaymentPercent));
+            const downPayment = price * (safeDownPaymentPercent / 100);
             const loanAmount = price - downPayment;
             
             document.getElementById('down-payment-amount').textContent = formatRupiah(downPayment);
@@ -205,7 +305,9 @@
             const monthlyRate = (selectedRate / 100) / 12;
             const totalMonths = selectedTenor * 12;
             
-            const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            const monthlyPayment = monthlyRate > 0
+                ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
+                : (loanAmount / totalMonths);
             const totalPayment = monthlyPayment * totalMonths;
             const totalInterest = totalPayment - loanAmount;
 
@@ -216,6 +318,8 @@
             document.getElementById('result-tenor').textContent = selectedTenor + ' Tahun';
             document.getElementById('result-rate').textContent = selectedRate + '% per tahun';
             document.getElementById('result-total').textContent = formatRupiah(Math.round(totalPayment));
+
+            renderInstallmentChart({ loanAmount, monthlyRate, totalMonths, monthlyPayment });
         }
 
         document.getElementById('property-price').addEventListener('input', function() {
@@ -230,7 +334,9 @@
 
         document.getElementById('down-payment-percent').addEventListener('input', calculateKPR);
 
-        // Initial calculation
-        calculateKPR();
+        // Initial calculation (tunggu script Vite selesai untuk memastikan ApexCharts tersedia)
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateKPR();
+        });
     </script>
 @endsection

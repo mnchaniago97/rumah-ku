@@ -8,6 +8,13 @@
         $waText = $contact['whatsapp'] ?? '';
         $waLink = $contact['whatsapp_link'] ?? '';
         $email = $contact['email'] ?? '';
+
+        $mapsQuery = $contact['maps_query'] ?? ($contact['address'] ?? '');
+        $mapsQuery = is_string($mapsQuery) ? trim($mapsQuery) : '';
+        if (!filled($mapsQuery)) {
+            $mapsQuery = 'Jakarta, Indonesia';
+        }
+        $mapsUrl = 'https://www.google.com/maps?q=' . urlencode($mapsQuery) . '&output=embed';
     @endphp
     <div class="bg-gray-50 py-8">
         <div class="max-w-[1200px] mx-auto px-4">
@@ -63,35 +70,53 @@
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="bg-white rounded-xl p-6 shadow-sm">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Kirim Pesan</h2>
-                    <form action="#" method="POST">
+
+                    @if(session('success'))
+                        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                            <div class="font-semibold mb-1">Periksa kembali input Anda:</div>
+                            <ul class="list-disc pl-5">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('contact.store') }}" method="POST" novalidate>
                         @csrf
                         <div class="grid md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                                <input type="text" name="name" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama lengkap">
+                                <input type="text" name="name" value="{{ old('name') }}" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama lengkap">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" name="email" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@anda.com">
+                                <input type="email" name="email" value="{{ old('email') }}" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@anda.com">
                             </div>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Telepon/WhatsApp</label>
-                            <input type="tel" name="phone" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0812-3456-7890">
+                            <input type="tel" name="phone" value="{{ old('phone') }}" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0812-3456-7890">
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Subjek</label>
                             <select name="subject" class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="">Pilih subjek...</option>
-                                <option value="informasi">Informasi Properti</option>
-                                <option value="iklan">Pasang Iklan</option>
-                                <option value="kerjasama">Kerjasama</option>
-                                <option value="lainnya">Lainnya</option>
+                                <option value="informasi" @selected(old('subject') === 'informasi')>Informasi Properti</option>
+                                <option value="iklan" @selected(old('subject') === 'iklan')>Pasang Iklan</option>
+                                <option value="kerjasama" @selected(old('subject') === 'kerjasama')>Kerjasama</option>
+                                <option value="lainnya" @selected(old('subject') === 'lainnya')>Lainnya</option>
                             </select>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
-                            <textarea name="message" rows="4" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis pesan Anda..."></textarea>
+                            <textarea name="message" rows="4" required class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis pesan Anda...">{{ old('message') }}</textarea>
                         </div>
                         <button type="submit" class="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 transition">
                             Kirim Pesan
@@ -106,8 +131,17 @@
                             {!! $contact['maps_embed_html'] !!}
                         </div>
                     @else
-                        <div class="aspect-video bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                            <span class="text-gray-400">Peta Google Maps</span>
+                        <div class="aspect-video overflow-hidden rounded-lg mb-4 bg-gray-100">
+                            <iframe
+                                title="Google Maps"
+                                src="{{ $mapsUrl }}"
+                                width="100%"
+                                height="100%"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     @endif
                     <div class="space-y-3 text-sm text-gray-600">

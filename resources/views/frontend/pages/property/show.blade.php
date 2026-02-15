@@ -42,6 +42,8 @@
             ? 'https://www.google.com/maps?q=' . urlencode((string) $mapsQuery)
             : null;
 
+        $detailSidebarBanner = $detailSidebarBanner ?? null;
+
         $formatValue = function (string $field, mixed $value): mixed {
             if (!filled($value)) {
                 return null;
@@ -449,8 +451,37 @@
                         </div>
 
                         <div class="rounded-2xl bg-white p-3 shadow-sm">
-                            <div class="h-40 rounded-xl bg-gray-100"></div>
-                            <p class="mt-2 text-xs text-gray-500">Iklan/Promosi</p>
+                            @php
+                                $banner = $detailSidebarBanner;
+                                $bannerUrl = null;
+                                $bannerImage = null;
+
+                                if ($banner) {
+                                    $bannerUrl = filled($banner->link ?? null) ? $banner->link : null;
+                                    $bannerImage = filled($banner->image ?? null)
+                                        ? \Illuminate\Support\Facades\Storage::url($banner->image)
+                                        : null;
+                                }
+                            @endphp
+
+                            @if($banner && $bannerImage)
+                                @if($bannerUrl)
+                                    <a href="{{ $bannerUrl }}" target="_blank" rel="noopener"
+                                        class="block overflow-hidden rounded-xl bg-gray-100">
+                                        <img src="{{ $bannerImage }}" alt="{{ $banner->title ?? 'Iklan' }}"
+                                            class="h-40 w-full object-cover">
+                                    </a>
+                                @else
+                                    <div class="overflow-hidden rounded-xl bg-gray-100">
+                                        <img src="{{ $bannerImage }}" alt="{{ $banner->title ?? 'Iklan' }}"
+                                            class="h-40 w-full object-cover">
+                                    </div>
+                                @endif
+                                <p class="mt-2 text-xs text-gray-500">{{ $banner->title ?: 'Iklan/Promosi' }}</p>
+                            @else
+                                <div class="h-40 rounded-xl bg-gray-100"></div>
+                                <p class="mt-2 text-xs text-gray-500">Iklan/Promosi</p>
+                            @endif
                         </div>
                     </div>
                 </aside>

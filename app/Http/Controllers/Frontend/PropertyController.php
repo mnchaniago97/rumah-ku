@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Property;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -144,6 +145,10 @@ class PropertyController extends Controller
             'title' => 'Property Detail',
             'property' => $property,
             'relatedProperties' => $relatedProperties,
+            'detailSidebarBanner' => Banner::active()
+                ->byLocation('property_detail_sidebar')
+                ->orderBy('sort_order')
+                ->first(),
         ]);
     }
 

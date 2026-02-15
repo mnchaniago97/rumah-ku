@@ -28,6 +28,7 @@
                             'ads_2' => 'Banner Iklan 2',
                             'ads_3' => 'Banner Iklan 3',
                             'bottom' => 'Banner Bawah',
+                            'property_detail_sidebar' => 'Iklan Detail Properti (Sidebar)',
                         ];
                         $currentLocation = request()->get('location', 'hero');
                     @endphp
@@ -66,6 +67,9 @@
                             @break
                         @case('bottom')
                             Banner Bawah (Akhir halaman)
+                            @break
+                        @case('property_detail_sidebar')
+                            Iklan Detail Properti (Sidebar di halaman detail)
                             @break
                     @endswitch
                 </h3>
@@ -162,6 +166,9 @@
                                                 @break
                                             @case('bottom')
                                                 Banner Bawah
+                                                @break
+                                            @case('property_detail_sidebar')
+                                                Iklan Detail Properti (Sidebar)
                                                 @break
                                             @default
                                                 {{ $banner->location }}
