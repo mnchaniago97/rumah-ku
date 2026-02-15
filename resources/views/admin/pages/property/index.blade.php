@@ -40,23 +40,16 @@
                                         {{ $property->images->count() }}
                                     </p>
                                 </div>
-                                <div class="absolute bottom-0 right-5 mb-3 flex">
-                                    <p class="flex items-center text-xs font-semibold text-gray-800">
-                                        <i class="fa fa-heart mr-2 text-lg text-white"></i>
-                                    </p>
-                                </div>
 
-                    <span class="absolute top-0 right-2 z-10 mt-3 ml-3 inline-flex select-none rounded-sm bg-[#1f93ff] px-2 py-1 text-xs font-semibold text-white">
-                        {{ $property->type ?? 'Residential' }}
-                    </span>
-                    @if(!$property->is_approved)
-                        <span class="absolute top-0 left-2 z-10 mt-3 inline-flex select-none rounded-sm bg-yellow-500 px-2 py-1 text-xs font-semibold text-white">
-                            Pending Approval
-                        </span>
-                    @endif
-                                <span class="absolute top-0 left-0 z-10 mt-3 ml-3 inline-flex select-none rounded-lg bg-transparent px-2.5 py-2 text-base font-medium text-white">
-                                    <i class="fa fa-star"></i>
+                                <span class="absolute top-0 right-2 z-10 mt-3 ml-3 inline-flex select-none rounded-sm bg-[#1f93ff] px-2 py-1 text-xs font-semibold text-white">
+                                    {{ $property->type ?? 'Residential' }}
                                 </span>
+                                @if(!$property->is_approved)
+                                    <span class="absolute top-0 left-2 z-10 mt-3 inline-flex select-none rounded-sm bg-yellow-500 px-2 py-1 text-xs font-semibold text-white">
+                                        Pending Approval
+                                    </span>
+                                @endif
+
                             </div>
 
                             <div class="mt-4">
@@ -114,8 +107,8 @@
                                 <div class="flex items-center">
                                     <div class="relative">
                                         <div class="h-6 w-6 rounded-full bg-gray-200 md:h-8 md:w-8">
-                                            @if($property->user && $property->user->photo)
-                                                <img src="{{ $property->user->photo }}" alt="{{ $property->user->name }}" class="h-6 w-6 rounded-full md:h-8 md:w-8 object-cover">
+                                            @if($property->user && $property->user->avatar)
+                                                <img src="{{ $property->user->avatar }}" alt="{{ $property->user->name }}" class="h-6 w-6 rounded-full md:h-8 md:w-8 object-cover">
                                             @endif
                                         </div>
                                         <span class="bg-primary-red absolute top-0 right-0 inline-block h-3 w-3 rounded-full"></span>

@@ -299,10 +299,10 @@
             <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Agen / Penjual</h3>
             <div class="flex items-center gap-4">
                 <div class="h-16 w-16 rounded-full bg-gray-200 overflow-hidden">
-                    @if($property->user?->photo)
-                        <img src="{{ $property->user->photo }}" alt="{{ $property->user->name }}" class="h-full w-full object-cover">
-                    @elseif($property->agent?->photo)
-                        <img src="{{ $property->agent->photo }}" alt="{{ $property->agent->name }}" class="h-full w-full object-cover">
+                    @if($property->user?->avatar)
+                        <img src="{{ $property->user->avatar }}" alt="{{ $property->user->name }}" class="h-full w-full object-cover">
+                    @elseif($property->agent?->avatar)
+                        <img src="{{ $property->agent->avatar }}" alt="{{ $property->agent->name }}" class="h-full w-full object-cover">
                     @endif
                 </div>
                 <div>

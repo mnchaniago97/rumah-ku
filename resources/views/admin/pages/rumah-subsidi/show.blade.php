@@ -222,8 +222,20 @@
                         <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Agen / Penjual</h3>
                         <div class="flex items-center gap-4">
                             <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
-                                @if($property->agent?->photo)
-                                    <img src="{{ $property->agent->photo }}" alt="{{ $property->agent->name }}" class="h-full w-full object-cover">
+                                @php
+                                    $avatarSrc = null;
+                                    if ($property->agent?->photo) {
+                                        $avatarSrc = $property->agent->photo;
+                                    } elseif ($property->user?->avatar) {
+                                        $avatarSrc = $property->user->avatar;
+                                    }
+                                    
+                                    if ($avatarSrc && !str_starts_with($avatarSrc, 'http://') && !str_starts_with($avatarSrc, 'https://') && !str_starts_with($avatarSrc, '/')) {
+                                        $avatarSrc = '/storage/' . ltrim($avatarSrc, '/');
+                                    }
+                                @endphp
+                                @if($avatarSrc)
+                                    <img src="{{ $avatarSrc }}" alt="{{ $property->agent?->name ?? $property->user?->name ?? 'Avatar' }}" class="h-full w-full object-cover">
                                 @endif
                             </div>
                             <div>
