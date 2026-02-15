@@ -14,9 +14,6 @@
         $userEmail = $authUser?->email ?? '-';
         $userAvatar = $authUser?->avatar ?? '/assets/admin/images/user/owner.png';
         $userId = $authUser?->id;
-        $userPhone = $authUser?->phone ?? $authUser?->whatsapp_phone ?? '-';
-        $userRole = $authUser?->role === 'admin' ? 'Admin' : 'Agent';
-        $userKtpName = $authUser?->ktp_full_name ?? '-';
     @endphp
 
     <button
@@ -55,15 +52,9 @@
         style="display: none;"
     >
         <!-- User Info -->
-        <div class="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-800">
-            <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-200">
-                <img src="{{ $userAvatar }}" alt="avatar" class="h-full w-full object-cover">
-            </div>
-            <div class="min-w-0 flex-1">
-                <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400 truncate">{{ $userName }}</span>
-                <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400 truncate">{{ $userEmail }}</span>
-                <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">{{ $userRole }}</span>
-            </div>
+        <div>
+            <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{{ $userName }}</span>
+            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">{{ $userEmail }}</span>
         </div>
 
         <!-- Menu Items -->
@@ -71,30 +62,6 @@
             <li>
                 <a
                     href="{{ $userId ? route('agent.users.show', $userId) : '#' }}"
-                    class="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-                >
-                    <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4ZM12 6C13.1046 6 14 6.89543 14 8C14 9.10457 13.1046 10 12 10C10.8954 10 10 9.10457 10 8C10 6.89543 10.8954 6 12 6Z"
-                                fill="currentColor"
-                            />
-                            <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M12 14C8.13401 14 5 16.3582 5 19.1282V21H19V19.1282C19 16.3582 15.866 14 12 14ZM7.82145 16.7857C8.4957 15.2401 10.1779 14 12 14C13.8221 14 15.5043 15.2401 16.1786 16.7857H7.82145Z"
-                                fill="currentColor"
-                            />
-                        </svg>
-                    </span>
-                    My Profile
-                </a>
-            </li>
-            <li>
-                <a
-                    href="{{ $userId ? route('agent.users.edit', $userId) : '#' }}"
                     class="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                 >
                     <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">

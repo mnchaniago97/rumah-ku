@@ -3,144 +3,189 @@
 @section('content')
     <div class="space-y-6">
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">My Profile</h1>
-            <a href="{{ route('agent.users.edit', $user) }}" 
-               class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                Edit Profile
-            </a>
+            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">User Detail</h1>
+            <a href="{{ route('agent.users.index') }}"
+                class="text-sm text-gray-600 hover:underline dark:text-gray-300">Kembali</a>
         </div>
 
-        <!-- Profile Card -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-            <div class="flex items-center gap-6">
-                <div class="h-24 w-24 overflow-hidden rounded-full bg-gray-200">
-                    <img src="{{ $user->avatar ?? '/assets/admin/images/user/owner.png' }}" alt="avatar" class="h-full w-full object-cover">
-                </div>
-                <div>
-                    <h4 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ $user->name }}</h4>
-                    <p class="text-gray-500 dark:text-gray-400">{{ $user->bio ?? 'No bio yet' }}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ $user->role === 'admin' ? 'Admin' : 'Agent' }}
-                        @if($user->agent_verified_at)
-                            <span class="inline-flex items-center gap-1 ml-2 text-emerald-600">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                                Verified
-                            </span>
-                        @endif
-                    </p>
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+            <h3 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Profile</h3>
+
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="h-14 w-14 overflow-hidden rounded-full bg-gray-200">
+                            <img src="{{ $user->avatar ?? '/assets/admin/images/user/owner.png' }}" alt="avatar"
+                                class="h-full w-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                {{ $user->name }}
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ $user->bio ?? 'Team Member' }}
+                            </p>
+                            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                {{ $user->role === 'admin' ? 'Admin (Super Admin)' : 'Agent' }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Personal Information -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-5">Personal Information</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Nama Lengkap (KTP)</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->ktp_full_name ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->email ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Telepon</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->phone ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">WhatsApp</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->whatsapp_phone ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email Profesional</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->professional_email ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Domisili / Area Kerja</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->domicile_area ?? '-' }}</p>
-                </div>
-            </div>
-        </div>
+            <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-base font-semibold text-gray-800 dark:text-white/90">Personal Information</h4>
+                    </div>
 
-        <!-- Professional Information -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-5">Professional Information</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Kantor / Brand</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->agency_brand ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Jabatan</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->job_title ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Nomor Registrasi</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->agent_registration_number ?? '-' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Pengalaman</label>
-                    <p class="text-gray-800 dark:text-white">
-                        {{ $user->experience_years ? $user->experience_years . ' tahun' : '-' }}
-                    </p>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Spesialis Area</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->specialization_areas ?? '-' }}</p>
-                </div>
-            </div>
-        </div>
+                    <form class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2"
+                        action="{{ route('agent.users.update', $user) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
 
-        <!-- Account Settings Summary -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-5">Account Settings</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timezone</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->timezone ?? '-' }}</p>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Avatar</label>
+                            <input type="file" name="avatar" accept="image/*"
+                                class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nama</label>
+                            <input name="name" value="{{ old('name', $user->name) }}" required
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <input name="email" type="email" value="{{ old('email', $user->email) }}" required
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Telepon</label>
+                            <input name="phone" value="{{ old('phone', $user->phone) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+
+                        <div class="sm:col-span-2 mt-2">
+                            <h5 class="text-sm font-semibold text-gray-800 dark:text-white/90">🪪 Identitas Dasar</h5>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nama lengkap (sesuai KTP)</label>
+                            <input name="ktp_full_name" value="{{ old('ktp_full_name', $user->ktp_full_name) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor HP / WhatsApp aktif</label>
+                            <input name="whatsapp_phone" value="{{ old('whatsapp_phone', $user->whatsapp_phone) }}" placeholder="62xxxxxxxxxx"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Email profesional</label>
+                            <input name="professional_email" type="email" value="{{ old('professional_email', $user->professional_email) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Domisili / area kerja</label>
+                            <input name="domicile_area" value="{{ old('domicile_area', $user->domicile_area) }}" placeholder="Misal: Jakarta Barat, BSD, dll"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+
+                        <div class="sm:col-span-2 mt-2">
+                            <h5 class="text-sm font-semibold text-gray-800 dark:text-white/90">🧑‍💼 Identitas Profesi</h5>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nama kantor / brand agen</label>
+                            <input name="agency_brand" value="{{ old('agency_brand', $user->agency_brand) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Jabatan</label>
+                            <input name="job_title" value="{{ old('job_title', $user->job_title) }}" placeholder="Marketing / Property Consultant / Broker"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor registrasi agen (jika ada)</label>
+                            <input name="agent_registration_number" value="{{ old('agent_registration_number', $user->agent_registration_number) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Pengalaman (tahun)</label>
+                            <input name="experience_years" type="number" min="0" max="80" value="{{ old('experience_years', $user->experience_years) }}"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Spesialis area</label>
+                            <input name="specialization_areas" value="{{ old('specialization_areas', $user->specialization_areas) }}" placeholder="Misal: Jakarta Barat, BSD, dll"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
+                            <textarea name="bio" rows="3"
+                                class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">{{ old('bio', $user->bio) }}</textarea>
+                        </div>
+                        <div class="sm:col-span-2 flex items-center gap-3">
+                            <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Language</label>
-                    <p class="text-gray-800 dark:text-white">
-                        @if($user->language === 'id')
-                            Bahasa Indonesia
-                        @elseif($user->language === 'en')
-                            English
-                        @else
-                            -
-                        @endif
-                    </p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Theme</label>
-                    <p class="text-gray-800 dark:text-white">
-                        @if($user->theme === 'light')
-                            Light
-                        @elseif($user->theme === 'dark')
-                            Dark
-                        @else
-                            System
-                        @endif
-                    </p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email Notifications</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->notifications_email ? 'Enabled' : 'Disabled' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">SMS Notifications</label>
-                    <p class="text-gray-800 dark:text-white">{{ $user->notifications_sms ? 'Enabled' : 'Disabled' }}</p>
+
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-base font-semibold text-gray-800 dark:text-white/90">Settings</h4>
+                    </div>
+
+                    <form class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2"
+                        action="{{ route('agent.users.update', $user) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+                            <input name="timezone" value="{{ old('timezone', $user->timezone) }}" placeholder="Asia/Jakarta"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
+                            <select name="language"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                                <option value="">-</option>
+                                <option value="id" @selected(old('language', $user->language) === 'id')>Bahasa Indonesia</option>
+                                <option value="en" @selected(old('language', $user->language) === 'en')>English</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Theme</label>
+                            <select name="theme"
+                                class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                                <option value="">System</option>
+                                <option value="light" @selected(old('theme', $user->theme) === 'light')>Light</option>
+                                <option value="dark" @selected(old('theme', $user->theme) === 'dark')>Dark</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 space-y-3">
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <input type="checkbox" name="notifications_email" value="1" class="h-4 w-4 rounded border-gray-300"
+                                    @checked(old('notifications_email', $user->notifications_email)) />
+                                Notifikasi email
+                            </label>
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                <input type="checkbox" name="notifications_sms" value="1" class="h-4 w-4 rounded border-gray-300"
+                                    @checked(old('notifications_sms', $user->notifications_sms)) />
+                                Notifikasi SMS
+                            </label>
+                        </div>
+                        <div class="sm:col-span-2 flex items-center gap-3">
+                            <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+

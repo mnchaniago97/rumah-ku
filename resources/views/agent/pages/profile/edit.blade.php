@@ -48,7 +48,7 @@
                     class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
                     Simpan
                 </button>
-                <a href="{{ route('agent.profile') }}" class="text-sm text-gray-600 hover:underline dark:text-gray-300">Batal</a>
+                <a href="{{ route('agent.profile.show') }}" class="text-sm text-gray-600 hover:underline dark:text-gray-300">Batal</a>
             </div>
         </form>
     </div>

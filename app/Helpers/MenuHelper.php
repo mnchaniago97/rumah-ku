@@ -28,11 +28,6 @@ class MenuHelper
                         'path' => route('admin.properties.index', [], false),
                         'icon' => 'home',
                     ],
-                    [
-                        'name' => 'Aset Turun Harga',
-                        'path' => route('admin.discounted.index', [], false),
-                        'icon' => 'discount',
-                    ],
                     ...($isAdmin ? [[
                         'name' => 'Rumah Subsidi',
                         'path' => route('admin.rumah-subsidi.index', [], false),
@@ -118,6 +113,20 @@ class MenuHelper
                     ],
                 ],
             ],
+            [
+                'title' => 'Akun',
+                'items' => [
+                    ...(
+                        auth()->check()
+                            ? [[
+                                'name' => 'My Profile',
+                                'path' => route('admin.users.show', ['user' => auth()->id()], false),
+                                'icon' => 'user',
+                            ]]
+                            : []
+                    ),
+                ],
+            ],
         ];
 
         return array_values(array_filter($groups, function ($group) {
@@ -140,7 +149,6 @@ class MenuHelper
             'search' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
             'home-subsidi' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 8.33333L10 3.33334L16.5 8.33333V15.8333C16.5 16.2936 16.1269 16.6667 15.6667 16.6667H4.33333C3.8731 16.6667 3.5 16.2936 3.5 15.8333V8.33333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 16.6667V11.6667H12.5V16.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.5H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
             'rent' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 8.33333L10 3.33334L16.5 8.33333V15.8333C16.5 16.2936 16.1269 16.6667 15.6667 16.6667H4.33333C3.8731 16.6667 3.5 16.2936 3.5 15.8333V8.33333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 12.4H12.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7.3 14.9H10.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-            'discount' => '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5L2.5 7.5V15C2.5 16.3807 3.61929 17.5 5 17.5H15C16.3807 17.5 17.5 16.3807 17.5 15V7.5L10 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.25 10H13.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 7.5V12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
             'settings' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065Z"/><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
             'handshake' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 10.5L9.2 8.8C10.4 7.6 12.3 7.6 13.5 8.8L14.2 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 10.5L14.9 12.1C13.7 13.3 11.8 13.3 10.6 12.1L9.8 11.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9L7 5L10 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 9L17 5L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 9L3 19C3 19.6 3.4 20 4 20H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M21 9V19C21 19.6 20.6 20 20 20H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
             'inbox' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4H20V14H15.5L13.5 17H10.5L8.5 14H4V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M4 14V20H20V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',

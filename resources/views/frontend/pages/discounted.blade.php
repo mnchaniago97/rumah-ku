@@ -13,103 +13,73 @@
             </div>
 
             {{-- Filters --}}
-            <form method="GET" action="{{ route('discounted') }}" class="bg-white rounded-xl p-4 shadow-sm mb-6">
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-6">
                 <div class="flex flex-wrap gap-4">
-                    <select name="type" class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                    <select class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
                         <option value="">Semua Tipe</option>
-                        @foreach($typeOptions as $type)
-                            <option value="{{ $type }}" {{ $filters['type'] === $type ? 'selected' : '' }}>
-                                {{ ucfirst($type) }}
-                            </option>
-                        @endforeach
+                        <option value="rumah">Rumah</option>
+                        <option value="apartemen">Apartemen</option>
+                        <option value="tanah">Tanah</option>
+                        <option value="ruko">Ruko</option>
                     </select>
-                    <select name="city" class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                    <select class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
                         <option value="">Semua Lokasi</option>
-                        @foreach($cityOptions as $city)
-                            <option value="{{ $city }}" {{ $filters['city'] === $city ? 'selected' : '' }}>
-                                {{ $city }}
-                            </option>
-                        @endforeach
+                        <option value="jakarta">Jakarta</option>
+                        <option value="bandung">Bandung</option>
+                        <option value="surabaya">Surabaya</option>
+                        <option value="tangerang">Tangerang</option>
                     </select>
-                    <select name="sort" class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
-                        <option value="discount_desc" {{ $filters['sort'] === 'discount_desc' ? 'selected' : '' }}>Urutkan: Diskon Terbesar</option>
-                        <option value="price_asc" {{ $filters['sort'] === 'price_asc' ? 'selected' : '' }}>Harga: Termurah</option>
-                        <option value="price_desc" {{ $filters['sort'] === 'price_desc' ? 'selected' : '' }}>Harga: Termahal</option>
+                    <select class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <option value="">Urutkan: Diskon Terbesar</option>
+                        <option value="price_asc">Harga: Termurah</option>
+                        <option value="price_desc">Harga: Termahal</option>
                     </select>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
-                        Filter
-                    </button>
                 </div>
-            </form>
+            </div>
 
             {{-- Properties Grid --}}
-            @if($properties->count() > 0)
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-                    @foreach($properties as $property)
-                        @php
-                            $discountPercentage = $property->getDiscountPercentage();
-                            $primaryImage = $property->images->firstWhere('is_primary') ?? $property->images->first();
-                        @endphp
-                        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition relative">
-                            @if($discountPercentage)
-                                <div class="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                    DISCON {{ $discountPercentage }}%
-                                </div>
-                            @endif
-                            <div class="aspect-[4/3] bg-gray-200 relative">
-                                @if($primaryImage)
-                                    <img src="{{ $primaryImage->path }}" alt="{{ $property->title }}" class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                        <i class="fas fa-home text-4xl"></i>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    @if($property->original_price)
-                                        <span class="text-lg font-bold text-red-500 line-through text-gray-400">
-                                            Rp {{ number_format($property->original_price / 1000000, 0, ',', '.') }} JT
-                                        </span>
-                                    @endif
-                                    <span class="text-lg font-bold text-blue-600">
-                                        Rp {{ number_format($property->price / 1000000, 0, ',', '.') }} JT
-                                    </span>
-                                </div>
-                                <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ $property->title }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ $property->city }}</p>
-                                <div class="mt-3 flex items-center gap-3 text-xs text-gray-600">
-                                    @if($property->bedrooms)
-                                        <span><i class="fa fa-bed"></i> {{ $property->bedrooms }}</span>
-                                    @endif
-                                    @if($property->bathrooms)
-                                        <span><i class="fa fa-bath"></i> {{ $property->bathrooms }}</span>
-                                    @endif
-                                    @if($property->land_area)
-                                        <span><i class="fa fa-ruler-combined"></i> {{ $property->land_area }} m²</span>
-                                    @endif
-                                </div>
-                                <a href="{{ route('property.show', $property->slug) }}" class="mt-3 block w-full text-center py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
-                                    Lihat Detail
-                                </a>
-                            </div>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+                @for($i = 1; $i <= 8; $i++)
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition relative">
+                        <div class="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            DISCON {{ 10 + $i * 5 }}%
                         </div>
-                    @endforeach
-                </div>
-
-                {{-- Pagination --}}
-                <div class="flex justify-center">
-                    {{ $properties->links() }}
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                        <i class="fas fa-home text-2xl text-gray-400"></i>
+                        <div class="aspect-[4/3] bg-gray-200 relative">
+                            <img src="https://source.unsplash.com/600x400/?house,property&sig={{ $i + 20 }}" alt="Property" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-lg font-bold text-red-500 line-through text-gray-400">Rp {{ number_format(2000 + $i * 500, 0, ',', '.') }} JT</span>
+                                <span class="text-lg font-bold text-blue-600">Rp {{ number_format(1500 + $i * 400, 0, ',', '.') }} JT</span>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ ['Rumah Minimalis di Jakarta Selatan', 'Apartemen Mewah di Bandung', 'Ruko Strategis di Surabaya', 'Tanah Kavling di Tangerang'][$i % 4] }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ ['Jakarta Selatan', 'Bandung', 'Surabaya', 'Tangerang'][$i % 4] }}</p>
+                            <div class="mt-3 flex items-center gap-3 text-xs text-gray-600">
+                                <span><i class="fa fa-bed"></i> {{ 2 + ($i % 4) }}</span>
+                                <span><i class="fa fa-bath"></i> {{ 1 + ($i % 3) }}</span>
+                                <span><i class="fa fa-ruler-combined"></i> {{ 60 + $i * 20 }} m²</span>
+                            </div>
+                            <a href="#" class="mt-3 block w-full text-center py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+                                Lihat Detail
+                            </a>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Belum Ada Properti Turun Harga</h3>
-                    <p class="mt-1 text-gray-500">Saat ini tidak ada properti dengan harga turun. Silakan cek kembali nanti.</p>
-                </div>
-            @endif
+                @endfor
+            </div>
+
+            {{-- Pagination --}}
+            <div class="flex justify-center">
+                <nav class="flex items-center gap-2">
+                    <a href="#" class="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50">
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-medium">1</a>
+                    <a href="#" class="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50">2</a>
+                    <a href="#" class="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50">
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </nav>
+            </div>
         </div>
     </div>
 @endsection
