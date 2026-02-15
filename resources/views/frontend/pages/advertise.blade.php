@@ -92,9 +92,11 @@
                 <h3 class="text-2xl font-bold mb-3">Siap memasang iklan?</h3>
                 <p class="text-blue-100 mb-6">Bergabunglah dengan ribuan agen dan pemilik properti yang sukses di Rumah IO</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('register') }}" class="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
-                        Daftar Sekarang
-                    </a>
+
+                    <a href="{{ route('pricing.show', ['type' => 'property-owner']) }}" class="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
+                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700"><i class="fa fa-bullhorn"></i></span>
+                                    Iklankan Sekarang
+                                </a>
                     <a href="{{ route('contact') }}" class="px-8 py-3 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition">
                         Hubungi Kami
                     </a>
