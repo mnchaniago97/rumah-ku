@@ -174,14 +174,54 @@
                     KPR
                 </a>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-white/90 hover:text-white" @click="mobileOpen = false">
-                        <i class="fa fa-user"></i>
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/15" @click="mobileOpen = false">
-                        Daftar
-                    </a>
+                    @auth
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open"
+                                class="inline-flex items-center gap-2 rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/15">
+                                <i class="fa fa-user-circle"></i>
+                                {{ str_replace(['Rumah Ku', 'Rumahku', 'RumahKu'], 'Rumah IO', Auth::user()->name) }}
+                                <i class="fa fa-chevron-down text-xs"></i>
+                            </button>
+
+                            <div x-show="open" @click.outside="open = false"
+                                class="absolute right-0 z-[70] mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5"
+                                x-cloak x-transition>
+
+                                @if(Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa fa-cog w-4"></i> Dashboard
+                                    </a>
+                                @elseif(Auth::user()->role === 'agent')
+                                    <a href="{{ route('agent.dashboard') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa fa-cog w-4"></i> Dashboard
+                                    </a>
+                                @endif
+
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fa fa-sign-out-alt w-4"></i> Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="inline-flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-white/90 hover:text-white">
+                            <i class="fa fa-user"></i>
+                            Login
+                        </a>
+
+                        <a href="{{ route('register') }}"
+                            class="inline-flex items-center rounded-md border border-white/40 bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/15">
+                            Daftar
+                        </a>
+                    @endauth
                 </div>
+
             </div>
         </div>
     </div>
