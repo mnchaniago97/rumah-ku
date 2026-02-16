@@ -72,6 +72,15 @@
                         @if($image->is_primary)
                             <span class="absolute bottom-2 left-2 rounded bg-brand-500 px-2 py-1 text-xs text-white">Primary</span>
                         @endif
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <form action="{{ route('agent.properties.images.destroy', [$property, $image]) }}" method="POST" onsubmit="return confirm('Hapus foto ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="rounded-full bg-red-500 p-2 text-white hover:bg-red-600">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>

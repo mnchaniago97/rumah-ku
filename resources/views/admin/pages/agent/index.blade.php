@@ -19,6 +19,7 @@
                             <th class="px-6 py-3 font-medium">Email</th>
                             <th class="px-6 py-3 font-medium">Telepon</th>
                             <th class="px-6 py-3 font-medium">Tipe</th>
+                            <th class="px-6 py-3 font-medium">Paket</th>
                             <th class="px-6 py-3 font-medium">Status</th>
                             <th class="px-6 py-3 font-medium text-right">Aksi</th>
                         </tr>
@@ -30,6 +31,20 @@
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->email ?? '-' }}</td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->phone ?? '-' }}</td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $agent->agent_type ?? '-' }}</td>
+                                <td class="px-6 py-4">
+                                    @if($agent->agentPlan)
+                                        <span class="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                                            {{ $agent->agentPlan->name ?? '-' }}
+                                        </span>
+                                        @if($agent->agentPlan->price)
+                                            <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                                                (Rp {{ number_format($agent->agentPlan->price, 0, ',', '.') }})
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="text-gray-400 dark:text-gray-500">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4">
                                 <div class="flex flex-wrap items-center gap-2">
                                     @if ($agent->is_active)
@@ -65,7 +80,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-6 text-center text-gray-500 dark:text-gray-400">
+                                <td colspan="7" class="px-6 py-6 text-center text-gray-500 dark:text-gray-400">
                                     Belum ada data agen.
                                 </td>
                             </tr>

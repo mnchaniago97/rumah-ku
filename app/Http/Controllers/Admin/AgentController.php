@@ -12,7 +12,7 @@ class AgentController extends Controller
 {
     public function index(): View
     {
-        $agents = User::where('role', 'agent')->latest()->get();
+        $agents = User::where('role', 'agent')->with('agentPlan')->latest()->get();
 
         return view('admin.pages.agent.index', [
             'title' => 'Agents',

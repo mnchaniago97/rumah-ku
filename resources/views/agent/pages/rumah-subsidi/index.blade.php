@@ -7,10 +7,25 @@
                 <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Rumah Subsidi</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Kelola listing rumah subsidi Anda.</p>
             </div>
-            <a href="{{ route('agent.rumah-subsidi.create') }}"
-                class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-green-700">
-                + Tambah Rumah Subsidi
-            </a>
+            <div class="flex items-center gap-3">
+                <!-- View Toggle -->
+                <div class="inline-flex rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-800 dark:bg-gray-900">
+                    <button type="button" onclick="setView('card')" id="btn-card-view" 
+                        class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
+                        <i class="fa fa-th-large"></i>
+                        Card
+                    </button>
+                    <button type="button" onclick="setView('table')" id="btn-table-view"
+                        class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
+                        <i class="fa fa-list"></i>
+                        Table
+                    </button>
+                </div>
+                <a href="{{ route('agent.rumah-subsidi.create') }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-green-700">
+                    + Tambah Rumah Subsidi
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -19,7 +34,8 @@
             </div>
         @endif
 
-        <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <!-- Card View -->
+        <div id="card-view" class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @forelse ($properties as $property)
                 @php
                     $cardImage = $property->images->sortBy('sort_order')->firstWhere('is_primary', true)?->path
@@ -56,6 +72,16 @@
                                     <span class="absolute top-0 right-2 z-10 mt-3 ml-3 inline-flex select-none rounded-sm bg-green-600 px-2 py-1 text-xs font-semibold text-white">
                                         Subsidi
                                     </span>
+                                    
+                                    @if($property->is_published)
+                                        <span class="absolute top-0 left-2 z-10 mt-3 inline-flex select-none rounded-sm bg-green-500 px-2 py-1 text-xs font-semibold text-white">
+                                            Published
+                                        </span>
+                                    @else
+                                        <span class="absolute top-0 left-2 z-10 mt-3 inline-flex select-none rounded-sm bg-gray-500 px-2 py-1 text-xs font-semibold text-white">
+                                            Unpublished
+                                        </span>
+                                    @endif
                                 </div>
 
                                 <div class="mt-4">
@@ -118,6 +144,107 @@
                 </div>
             @endforelse
         </div>
-    </div>
-@endsection
 
+        <!-- Table View -->
+        <div id="table-view" class="hidden">
+            <div class="rounded-xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50 text-left text-gray-500 dark:bg-white/[0.03] dark:text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3 font-medium">Properti</th>
+                                <th class="px-6 py-3 font-medium">Harga</th>
+                                <th class="px-6 py-3 font-medium">Lokasi</th>
+                                <th class="px-6 py-3 font-medium">Status</th>
+                                <th class="px-6 py-3 font-medium text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                            @forelse ($properties as $property)
+                                @php
+                                    $cardImage = $property->images->sortBy('sort_order')->firstWhere('is_primary', true)?->path
+                                        ?? $property->images->sortBy('sort_order')->first()?->path
+                                        ?? 'https://ui-avatars.com/api/?name=' . urlencode($property->title) . '&background=random&color=fff&size=512';
+                                @endphp
+                                <tr>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="{{ $cardImage }}" alt="{{ $property->title }}" class="h-12 w-12 rounded-lg object-cover">
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">{{ $property->title }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $property->bedrooms ?? 0 }} KT, {{ $property->bathrooms ?? 0 }} KM, {{ $property->land_area ?? $property->building_area ?? 0 }} m²</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-900 dark:text-white">
+                                        Rp {{ $property->price ? number_format($property->price, 0, ',', '.') : '0' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                        {{ $property->city ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($property->is_published)
+                                            <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600 dark:bg-green-500/10 dark:text-green-400">Published</span>
+                                        @else
+                                            <span class="rounded-full bg-gray-50 px-2.5 py-0.5 text-xs font-semibold text-gray-600 dark:bg-gray-500/10 dark:text-gray-400">Unpublished</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="inline-flex items-center gap-3">
+                                            <a href="{{ route('agent.rumah-subsidi.show', $property) }}" class="text-sm font-medium text-brand-600 hover:underline">Detail</a>
+                                            <a href="{{ route('agent.rumah-subsidi.edit', $property) }}" class="text-sm font-medium text-blue-600 hover:underline">Edit</a>
+                                            <form action="{{ route('agent.rumah-subsidi.destroy', $property) }}" method="POST" onsubmit="return confirm('Hapus properti ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-sm font-medium text-red-500 hover:underline">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-6 text-center text-gray-500 dark:text-gray-400">
+                                        Belum ada rumah subsidi.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setView(view) {
+            const cardView = document.getElementById('card-view');
+            const tableView = document.getElementById('table-view');
+            const btnCard = document.getElementById('btn-card-view');
+            const btnTable = document.getElementById('btn-table-view');
+            
+            if (view === 'card') {
+                cardView.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                btnCard.classList.add('bg-green-600', 'text-white');
+                btnCard.classList.remove('text-gray-600', 'dark:text-gray-300');
+                btnTable.classList.remove('bg-green-600', 'text-white');
+                btnTable.classList.add('text-gray-600', 'dark:text-gray-300');
+            } else {
+                cardView.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                btnTable.classList.add('bg-green-600', 'text-white');
+                btnTable.classList.remove('text-gray-600', 'dark:text-gray-300');
+                btnCard.classList.remove('bg-green-600', 'text-white');
+                btnCard.classList.add('text-gray-600', 'dark:text-gray-300');
+            }
+            
+            localStorage.setItem('agentRumahSubsidiViewPreference', view);
+        }
+        
+        // Load saved preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('agentRumahSubsidiViewPreference') || 'card';
+            setView(savedView);
+        });
+    </script>
+@endsection

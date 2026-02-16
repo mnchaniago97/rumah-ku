@@ -51,9 +51,6 @@ class PropertyController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $user = Auth::user();
-        $isVerified = $user ? $user->isAgentVerified() : false;
-
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug'],
@@ -103,15 +100,10 @@ class PropertyController extends Controller
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
 
-        if ($data['is_published'] && $isVerified) {
-            $data['is_approved'] = true;
-            $data['approved_at'] = now();
-            $data['approved_by'] = null;
-        } else {
-            $data['is_approved'] = false;
-            $data['approved_at'] = null;
-            $data['approved_by'] = null;
-        }
+        // Auto-approve all agent listings (no approval needed)
+        $data['is_approved'] = true;
+        $data['approved_at'] = now();
+        $data['approved_by'] = null;
 
         $property = Property::create($data);
 
@@ -170,9 +162,6 @@ class PropertyController extends Controller
     {
         $this->authorizeProperty($property);
 
-        $user = Auth::user();
-        $isVerified = $user ? $user->isAgentVerified() : false;
-
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:properties,slug,' . $property->id],
@@ -222,22 +211,11 @@ class PropertyController extends Controller
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
 
-        if ($data['is_published']) {
-            if ($isVerified) {
-                $data['is_approved'] = true;
-                if (!$property->is_approved || !$property->approved_at) {
-                    $data['approved_at'] = now();
-                    $data['approved_by'] = null;
-                } else {
-                    unset($data['approved_at'], $data['approved_by']);
-                }
-            } else {
-                $data['is_approved'] = false;
-                $data['approved_at'] = null;
-                $data['approved_by'] = null;
-            }
-        } else {
-            unset($data['is_approved'], $data['approved_at'], $data['approved_by']);
+        // Auto-approve all agent listings (no approval needed)
+        $data['is_approved'] = true;
+        if (!$property->is_approved || !$property->approved_at) {
+            $data['approved_at'] = now();
+            $data['approved_by'] = null;
         }
 
         $property->update($data);

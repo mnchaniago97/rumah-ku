@@ -131,9 +131,11 @@
         $contactPhoto = $property->agent?->photo ?? ($property->user?->avatar ?? null);
 
         if ($isAdminPost) {
-            $contactName = 'Official Rumah.iO';
-            $contactRole = 'Official';
+            // Use admin's actual profile but mark as Official
+            $contactName = $property->user?->name ?? 'Official Rumah.iO';
+            $contactRole = 'Official Rumah.iO';
             $contactVerified = true;
+            $contactPhoto = $property->user?->avatar ?? null;
         }
 
         $contactPhoneDigits = $normalizePhoneDigits(
@@ -383,15 +385,22 @@
                     <div class="sticky top-6 space-y-4">
                         <div class="rounded-2xl bg-white p-5 shadow-sm">
                             <div class="flex items-center gap-3">
-                                <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-200">
+                                <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-200 flex items-center justify-center">
                                     @if ($contactPhoto)
                                         <img src="{{ $contactPhoto }}" alt="{{ $contactName }}" class="h-full w-full object-cover">
+                                    @elseif($isAdminPost)
+                                        <i class="fa fa-building text-gray-400 text-xl"></i>
                                     @endif
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <p class="text-sm font-semibold text-gray-900">{{ $contactName }}</p>
-                                        @if($contactVerified)
+                                        @if($isAdminPost)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700">
+                                                <i class="fa-solid fa-check-circle"></i>
+                                                Official
+                                            </span>
+                                        @elseif($contactVerified)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
                                                 <i class="fa-solid fa-circle-check"></i>
                                                 Verified

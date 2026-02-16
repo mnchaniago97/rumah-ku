@@ -187,6 +187,31 @@
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Properti Unggulan</span>
                     </label>
                 </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Durasi Listing (Bulan)</label>
+                    <select name="listing_duration_months"
+                        class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm dark:border-gray-800 dark:text-white">
+                        @for($i = 1; $i <= 12; $i++)
+                            <option value="{{ $i }}" @selected(old('listing_duration_months', $property->listing_duration_months) == $i)>{{ $i }} Bulan</option>
+                        @endfor
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Durasi aktif listing sebelum kedaluwarsa.</p>
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Kedaluwarsa</label>
+                    @if($property->listing_expires_at)
+                        <p class="h-11 flex items-center text-sm text-gray-800 dark:text-white">
+                            {{ \Carbon\Carbon::parse($property->listing_expires_at)->translatedFormat('d F Y H:i') }}
+                            @if($property->listing_expires_at->isPast())
+                                <span class="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700">Kedaluwarsa</span>
+                            @else
+                                <span class="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">Aktif</span>
+                            @endif
+                        </p>
+                    @else
+                        <p class="h-11 flex items-center text-sm text-gray-500 dark:text-gray-400">Belum ditentukan</p>
+                    @endif
+                </div>
                 <div class="md:col-span-2">
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori Listing (Home)</label>
                     @php

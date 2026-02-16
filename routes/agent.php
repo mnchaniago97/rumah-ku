@@ -3,6 +3,7 @@
 use App\Http\Controllers\Agent\DashboardController;
 use App\Http\Controllers\Agent\ProfileController;
 use App\Http\Controllers\Agent\PropertyController;
+use App\Http\Controllers\Agent\PropertyImageController;
 use App\Http\Controllers\Agent\RumahSubsidiController;
 use App\Http\Controllers\Agent\SewaController;
 use App\Http\Controllers\Agent\UserController;
@@ -13,6 +14,7 @@ Route::prefix('agent')->name('agent.')->middleware(['auth', 'role:agent'])->grou
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
     Route::resource('properties', PropertyController::class);
+    Route::delete('properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('properties.images.destroy');
     Route::resource('sewa', SewaController::class);
     Route::resource('users', UserController::class)->only(['index', 'show', 'update']);
     Route::resource('rumah-subsidi', RumahSubsidiController::class)->middleware('agent.feature:rumah_subsidi');

@@ -83,8 +83,9 @@ class RumahSubsidiController extends Controller
         $data['status'] = 'subsidi';
         $data['user_id'] = Auth::id();
 
-        $data['is_approved'] = false;
-        $data['approved_at'] = null;
+        // Auto-approve all agent listings (no approval needed)
+        $data['is_approved'] = true;
+        $data['approved_at'] = now();
         $data['approved_by'] = null;
 
         $property = Property::create($data);
@@ -110,7 +111,7 @@ class RumahSubsidiController extends Controller
 
         return redirect()
             ->route('agent.rumah-subsidi.index')
-            ->with('success', 'Rumah subsidi berhasil ditambahkan. Menunggu persetujuan admin.');
+            ->with('success', 'Rumah subsidi berhasil ditambahkan.');
     }
 
     public function edit(Property $rumah_subsidi): View
@@ -173,9 +174,12 @@ class RumahSubsidiController extends Controller
         $data['status'] = 'subsidi';
         $data['user_id'] = Auth::id();
 
-        $data['is_approved'] = false;
-        $data['approved_at'] = null;
-        $data['approved_by'] = null;
+        // Auto-approve all agent listings (no approval needed)
+        $data['is_approved'] = true;
+        if (!$rumah_subsidi->is_approved || !$rumah_subsidi->approved_at) {
+            $data['approved_at'] = now();
+            $data['approved_by'] = null;
+        }
 
         $rumah_subsidi->update($data);
 
@@ -201,7 +205,7 @@ class RumahSubsidiController extends Controller
 
         return redirect()
             ->route('agent.rumah-subsidi.index')
-            ->with('success', 'Rumah subsidi berhasil diperbarui. Menunggu persetujuan admin.');
+            ->with('success', 'Rumah subsidi berhasil diperbarui.');
     }
 
     public function destroy(Property $rumah_subsidi): RedirectResponse

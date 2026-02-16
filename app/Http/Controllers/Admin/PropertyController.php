@@ -124,6 +124,9 @@ class PropertyController extends Controller
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
         
+        // Set the user_id to the authenticated admin user
+        $data['user_id'] = Auth::id();
+        
         $property = Property::create($data);
 
         if (count($listingCategoryIds) === 0) {
@@ -203,6 +206,7 @@ class PropertyController extends Controller
             'status' => ['nullable', 'string', 'max:50'],
             'is_published' => ['nullable', 'boolean'],
             'is_featured' => ['nullable', 'boolean'],
+            'listing_duration_months' => ['nullable', 'integer', 'min:1', 'max:12'],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
             'province' => ['nullable', 'string', 'max:100'],
@@ -254,6 +258,12 @@ class PropertyController extends Controller
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
+
+        // Handle listing duration
+        if (isset($data['listing_duration_months']) && $data['listing_duration_months'] > 0) {
+            $data['listing_expires_at'] = now()->addMonths((int) $data['listing_duration_months']);
+        }
+        unset($data['listing_duration_months']);
 
         $property->update($data);
 
