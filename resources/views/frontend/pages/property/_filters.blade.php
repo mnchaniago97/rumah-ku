@@ -67,13 +67,13 @@
 
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <label class="text-xs font-semibold text-gray-700">Min LT (m&sup2;)</label>
+                <label class="text-xs font-semibold text-gray-700">Min LT (m²)</label>
                 <input name="min_land_area" type="number" inputmode="numeric" min="0" value="{{ request('min_land_area') }}"
                     placeholder="0"
                     class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm focus:ring-2 focus:ring-blue-600">
             </div>
             <div>
-                <label class="text-xs font-semibold text-gray-700">Max LT (m&sup2;)</label>
+                <label class="text-xs font-semibold text-gray-700">Max LT (m²)</label>
                 <input name="max_land_area" type="number" inputmode="numeric" min="0" value="{{ request('max_land_area') }}"
                     placeholder="300"
                     class="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm focus:ring-2 focus:ring-blue-600">

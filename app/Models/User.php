@@ -49,6 +49,17 @@ class User extends Authenticatable
         'theme',
         'notifications_email',
         'notifications_sms',
+        // Developer company profile fields
+        'company_name',
+        'company_logo',
+        'company_address',
+        'company_phone',
+        'company_email',
+        'company_website',
+        'company_description',
+        'company_npwp',
+        'company_siup',
+        'company_nib',
     ];
 
     /**

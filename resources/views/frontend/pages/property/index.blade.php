@@ -164,7 +164,7 @@
                                             </span>
                                             <span class="inline-flex items-center gap-1">
                                                 <i class="fa fa-ruler-combined text-blue-900"></i>
-                                                {{ $totalArea }} m&sup2;
+                                                {{ $totalArea }} m²
                                             </span>
                                         </div>
                                     </div>

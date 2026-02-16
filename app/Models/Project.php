@@ -13,23 +13,42 @@ class Project extends Model
 
     protected $fillable = [
         'developer_id',
+        'user_id',
         'name',
+        'slug',
+        'logo',
         'address',
         'city',
         'province',
         'price_start',
         'price_end',
         'description',
+        'brochure',
+        'video_url',
+        'status',
+        'is_published',
+        'total_units',
+        'available_units',
+        'start_date',
+        'end_date',
     ];
 
     protected $casts = [
         'price_start' => 'decimal:2',
         'price_end' => 'decimal:2',
+        'is_published' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function developer(): BelongsTo
     {
         return $this->belongsTo(Developer::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function properties(): BelongsToMany

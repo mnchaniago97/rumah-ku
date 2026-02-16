@@ -11,6 +11,9 @@ class AgentMenuHelper
 
         $defaultRumahSubsidi = $agentType === \App\Models\AgentApplication::TYPE_PROPERTY_AGENT;
         $canRumahSubsidi = $user ? $user->canAgentFeature('rumah_subsidi', $defaultRumahSubsidi) : false;
+        
+        // Developers don't have access to Sewa menu
+        $isDeveloper = $agentType === \App\Models\AgentApplication::TYPE_DEVELOPER;
 
         $groups = [
             [
@@ -31,11 +34,12 @@ class AgentMenuHelper
                         'path' => route('agent.properties.index', [], false),
                         'icon' => 'home',
                     ],
-                    [
+                    // Hide Sewa menu for developers
+                    ...($isDeveloper ? [] : [[
                         'name' => 'Sewa',
                         'path' => route('agent.sewa.index', [], false),
                         'icon' => 'rent',
-                    ],
+                    ]]),
                     ...($canRumahSubsidi ? [[
                         'name' => 'Rumah Subsidi',
                         'path' => route('agent.rumah-subsidi.index', [], false),
@@ -43,6 +47,17 @@ class AgentMenuHelper
                     ]] : []),
                 ],
             ],
+            // Developer Projects menu - only for developers
+            ...($isDeveloper ? [[
+                'title' => 'Developer',
+                'items' => [
+                    [
+                        'name' => 'Proyek Saya',
+                        'path' => route('agent.developer-projects.index', [], false),
+                        'icon' => 'building',
+                    ],
+                ],
+            ]] : []),
             [
                 'title' => 'Akun',
                 'items' => [
