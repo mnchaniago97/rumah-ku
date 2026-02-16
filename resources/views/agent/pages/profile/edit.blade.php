@@ -5,7 +5,7 @@
 
     <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <h3 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Profile</h3>
-        <form action="{{ route('agent.profile.update') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('agent.users.update', $user?->id ?? auth()->id()) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -48,7 +48,7 @@
                     class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-theme-xs hover:bg-brand-600">
                     Simpan
                 </button>
-                <a href="{{ route('agent.profile.show') }}" class="text-sm text-gray-600 hover:underline dark:text-gray-300">Batal</a>
+                <a href="{{ route('agent.users.show', auth()->id()) }}" class="text-sm text-gray-600 hover:underline dark:text-gray-300">Batal</a>
             </div>
         </form>
     </div>

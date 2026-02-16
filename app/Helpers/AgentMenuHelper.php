@@ -50,7 +50,7 @@ class AgentMenuHelper
                         auth()->check()
                             ? [[
                                 'name' => 'Profil Saya',
-                                'path' => route('agent.users.show', ['user' => auth()->id()], false),
+                                'path' => route('agent.profile', [], false),
                                 'icon' => 'user',
                             ]]
                             : []

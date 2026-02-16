@@ -1,15 +1,11 @@
 @extends('agent.layouts.app')
 
 @section('content')
-    <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">User Detail</h1>
-            <a href="{{ route('agent.users.index') }}"
-                class="text-sm text-gray-600 hover:underline dark:text-gray-300">Kembali</a>
-        </div>
+    <x-common.page-breadcrumb pageTitle="Edit Profil" />
 
+    <div class="space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-            <h3 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Profile</h3>
+            <h3 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Edit Profil</h3>
 
             <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div class="flex flex-wrap items-center justify-between gap-4">
