@@ -119,8 +119,8 @@ class MenuHelper
                     ...(
                         auth()->check()
                             ? [[
-                                'name' => 'My Profile',
-                                'path' => route('admin.users.show', ['user' => auth()->id()], false),
+                                'name' => 'Profil Saya',
+                                'path' => route('admin.profile', [], false),
                                 'icon' => 'user',
                             ]]
                             : []

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ForumCommentController;
 use App\Http\Controllers\Admin\ForumPostController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PropertyInquiryController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\PropertyImageController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
     Route::resource('properties', PropertyController::class);
     Route::patch('properties/{property}/approve', [PropertyController::class, 'approve'])->name('properties.approve');
