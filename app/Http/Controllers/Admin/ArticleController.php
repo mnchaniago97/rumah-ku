@@ -34,7 +34,7 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('articles', 'public');
+            $validated['image'] = $request->file('image')->store('articles', 'uploads');
         }
 
         Article::create($validated);
@@ -67,10 +67,10 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($article->image && Storage::disk('public')->exists($article->image)) {
-                Storage::disk('public')->delete($article->image);
+            if ($article->image && Storage::disk('uploads')->exists($article->image)) {
+                Storage::disk('uploads')->delete($article->image);
             }
-            $validated['image'] = $request->file('image')->store('articles', 'public');
+            $validated['image'] = $request->file('image')->store('articles', 'uploads');
         }
 
         $article->update($validated);

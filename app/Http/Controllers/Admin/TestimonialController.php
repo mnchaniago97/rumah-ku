@@ -33,7 +33,7 @@ class TestimonialController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('testimonials', 'public');
+            $validated['photo'] = $request->file('photo')->store('testimonials', 'uploads');
         }
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
@@ -67,10 +67,10 @@ class TestimonialController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($testimonial->photo && Storage::disk('public')->exists($testimonial->photo)) {
-                Storage::disk('public')->delete($testimonial->photo);
+            if ($testimonial->photo && Storage::disk('uploads')->exists($testimonial->photo)) {
+                Storage::disk('uploads')->delete($testimonial->photo);
             }
-            $validated['photo'] = $request->file('photo')->store('testimonials', 'public');
+            $validated['photo'] = $request->file('photo')->store('testimonials', 'uploads');
         }
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;

@@ -76,8 +76,8 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = \Illuminate\Support\Facades\Storage::url($path);
+            $path = $request->file('avatar')->store('avatars', 'uploads');
+            $data['avatar'] = '/storage/' . $path;
         }
 
         $data['notifications_email'] = $request->boolean('notifications_email');

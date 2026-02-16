@@ -45,7 +45,7 @@ class PartnerController extends Controller
         $data = $this->validated($request);
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('partners', 'public');
+            $data['logo'] = $request->file('logo')->store('partners', 'uploads');
         }
 
         Partner::query()->create($data);
@@ -69,10 +69,10 @@ class PartnerController extends Controller
         $data = $this->validated($request, $partner);
 
         if ($request->hasFile('logo')) {
-            if ($partner->logo && Storage::disk('public')->exists($partner->logo)) {
-                Storage::disk('public')->delete($partner->logo);
+            if ($partner->logo && Storage::disk('uploads')->exists($partner->logo)) {
+                Storage::disk('uploads')->delete($partner->logo);
             }
-            $data['logo'] = $request->file('logo')->store('partners', 'public');
+            $data['logo'] = $request->file('logo')->store('partners', 'uploads');
         }
 
         $partner->update($data);

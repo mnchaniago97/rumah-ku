@@ -51,7 +51,7 @@ class BannerController extends Controller
             'end_date' => 'nullable|date',
         ]);
 
-        $imagePath = $request->file('image')->store('banners', 'public');
+        $imagePath = $request->file('image')->store('banners', 'uploads');
 
         Banner::create([
             'title' => $request->title,
@@ -119,10 +119,10 @@ class BannerController extends Controller
 
         if ($request->hasFile('image')) {
             // Delete old image
-            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
-                Storage::disk('public')->delete($banner->image);
+            if ($banner->image && Storage::disk('uploads')->exists($banner->image)) {
+                Storage::disk('uploads')->delete($banner->image);
             }
-            $data['image'] = $request->file('image')->store('banners', 'public');
+            $data['image'] = $request->file('image')->store('banners', 'uploads');
         }
 
         $banner->update($data);

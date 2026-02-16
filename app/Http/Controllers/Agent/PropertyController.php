@@ -129,10 +129,10 @@ class PropertyController extends Controller
         if ($request->hasFile('images')) {
             $files = $request->file('images');
             foreach ($files as $index => $file) {
-                $path = $file->store('properties', 'public');
+                $path = $file->store('properties', 'uploads');
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => Storage::url($path),
+                    'path' => '/storage/' . $path,
                     'sort_order' => $index,
                     'is_primary' => $index === 0,
                 ]);
@@ -247,10 +247,10 @@ class PropertyController extends Controller
             $startIndex = $property->images()->max('sort_order') ?? 0;
             $files = $request->file('images');
             foreach ($files as $offset => $file) {
-                $path = $file->store('properties', 'public');
+                $path = $file->store('properties', 'uploads');
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => Storage::url($path),
+                    'path' => '/storage/' . $path,
                     'sort_order' => $startIndex + $offset + 1,
                     'is_primary' => $property->images()->count() === 0 && $offset === 0,
                 ]);
