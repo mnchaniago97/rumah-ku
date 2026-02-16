@@ -1,68 +1,81 @@
 # Server Setup Instructions
 
-## Storage Symlink
+## Konfigurasi Upload di Server
 
-After deploying to the server, run the following command to create the storage symlink:
+### Opsi 1: Menggunakan Symlink (Recommended untuk VPS/Dedicated Server)
+
+Jalankan perintah ini di server:
 
 ```bash
 php artisan storage:link
 ```
 
-This will create a symbolic link from `public/storage` to `storage/app/public`.
+Ini akan membuat symlink `public/storage` → `storage/app/public`.
 
-## Alternative: Manual Symlink Creation
+File upload akan disimpan di `storage/app/public/` dan bisa diakses via `/storage/...`.
 
-If `php artisan storage:link` doesn't work on your server, you can create the symlink manually:
+### Opsi 2: Untuk Shared Hosting (public_html)
 
-### Linux/Mac:
-```bash
-ln -s $(pwd)/storage/app/public $(pwd)/public/storage
+Jika server menggunakan `public_html` sebagai document root dan symlink tidak berfungsi:
+
+1. **Buat folder storage di public_html:**
+   ```bash
+   mkdir -p public_html/storage
+   mkdir -p public_html/storage/properties
+   mkdir -p public_html/storage/avatars
+   mkdir -p public_html/storage/banners
+   mkdir -p public_html/storage/articles
+   mkdir -p public_html/storage/partners
+   mkdir -p public_html/storage/testimonials
+   ```
+
+2. **Set permissions:**
+   ```bash
+   chmod -R 755 public_html/storage
+   ```
+
+3. **Tambahkan di .env:**
+   ```env
+   UPLOADS_ROOT=/home/username/public_html/storage
+   ```
+   
+   Ganti `username` dengan username hosting Anda.
+
+4. **Clear config cache:**
+   ```bash
+   php artisan config:clear
+   ```
+
+### Contoh Struktur Folder di Shared Hosting:
+
 ```
-
-### Shared Hosting (via PHP script):
-Create a file `create-symlink.php` in your project root and run it once:
-
-```php
-<?php
-$target = __DIR__ . '/storage/app/public';
-$link = __DIR__ . '/public/storage';
-
-if (file_exists($link)) {
-    echo "Symlink already exists or is a directory.\n";
-} else {
-    if (symlink($target, $link)) {
-        echo "Symlink created successfully!\n";
-    } else {
-        echo "Failed to create symlink. Check permissions.\n";
-    }
-}
+/home/username/
+├── laravel-app/           # Semua file Laravel
+│   ├── app/
+│   ├── config/
+│   ├── storage/
+│   └── ...
+└── public_html/           # Document root
+    ├── index.php
+    ├── storage/           # Folder upload gambar
+    │   ├── properties/
+    │   ├── avatars/
+    │   └── ...
+    └── ...
 ```
-
-Then access it via browser: `https://yourdomain.com/create-symlink.php`
-
-**Important:** Delete `create-symlink.php` after running it for security.
 
 ## Permissions
-
-Make sure the storage directory is writable:
 
 ```bash
 chmod -R 775 storage
 chmod -R 775 bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
 ```
-
-## Current Upload Configuration
-
-The application now uses the `uploads` disk which stores files directly in `public/storage/` directory, bypassing the symlink requirement. However, the symlink is still useful for:
-
-1. Accessing files uploaded before this change
-2. Laravel's built-in storage functions that may still reference the `public` disk
 
 ## Troubleshooting
 
-If images still return 404:
+Jika gambar 404:
 
-1. Check if `public/storage` directory exists and contains the uploaded files
-2. Check file permissions (should be 644 for files, 755 for directories)
-3. Check web server configuration to ensure it serves files from `public/storage`
+1. Cek apakah symlink ada: `ls -la public/storage`
+2. Cek apakah file ada di `storage/app/public/properties/`
+3. Jalankan `php artisan storage:link`
+4. Untuk shared hosting, pastikan `UPLOADS_ROOT` sudah benar
