@@ -13,19 +13,21 @@ use Illuminate\View\View;
 
 class DeveloperProjectController extends Controller
 {
-    public function __construct()
+    /**
+     * Check if user is a developer.
+     */
+    private function checkDeveloper(): void
     {
-        // Only developers can access this controller
-        $this->middleware(function ($request, $next) {
-            if (Auth::user()?->agent_type !== AgentApplication::TYPE_DEVELOPER) {
-                abort(403, 'Only developers can access this page.');
-            }
-            return $next($request);
-        });
+        $user = Auth::user();
+        if ($user?->agent_type !== AgentApplication::TYPE_DEVELOPER) {
+            abort(403, 'Only developers can access this page.');
+        }
     }
 
     public function index(): View
     {
+        $this->checkDeveloper();
+        
         $user = Auth::user();
         $projects = Project::where('user_id', $user->id)
             ->with('properties')
@@ -47,6 +49,8 @@ class DeveloperProjectController extends Controller
 
     public function create(): View
     {
+        $this->checkDeveloper();
+        
         $user = Auth::user();
         $maxProjects = $this->getMaxProjects();
         $activeProjects = Project::where('user_id', $user->id)
@@ -66,6 +70,8 @@ class DeveloperProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->checkDeveloper();
+        
         $user = Auth::user();
         $maxProjects = $this->getMaxProjects();
         $activeProjects = Project::where('user_id', $user->id)
@@ -120,6 +126,8 @@ class DeveloperProjectController extends Controller
 
     public function show(Project $developer_project): View
     {
+        $this->checkDeveloper();
+        
         $developer_project->load(['properties.images', 'properties.category']);
 
         return view('agent.pages.developer.projects.show', [
@@ -130,6 +138,8 @@ class DeveloperProjectController extends Controller
 
     public function edit(Project $developer_project): View
     {
+        $this->checkDeveloper();
+        
         return view('agent.pages.developer.projects.edit', [
             'title' => 'Edit Proyek',
             'project' => $developer_project,
@@ -138,6 +148,8 @@ class DeveloperProjectController extends Controller
 
     public function update(Request $request, Project $developer_project): RedirectResponse
     {
+        $this->checkDeveloper();
+        
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', 'unique:projects,slug,' . $developer_project->id],
@@ -189,6 +201,8 @@ class DeveloperProjectController extends Controller
 
     public function destroy(Project $developer_project): RedirectResponse
     {
+        $this->checkDeveloper();
+        
         // Delete associated files
         if ($developer_project->logo) {
             $oldPath = str_replace('/storage/', '', $developer_project->logo);

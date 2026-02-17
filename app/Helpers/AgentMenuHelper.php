@@ -56,6 +56,11 @@ class AgentMenuHelper
                         'path' => route('agent.developer-projects.index', [], false),
                         'icon' => 'building',
                     ],
+                    [
+                        'name' => 'Laporan',
+                        'path' => route('agent.developer-reports.index', [], false),
+                        'icon' => 'report',
+                    ],
                 ],
             ]] : []),
             [

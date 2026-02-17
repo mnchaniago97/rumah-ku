@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Agent\DashboardController;
 use App\Http\Controllers\Agent\DeveloperProjectController;
+use App\Http\Controllers\Agent\DeveloperReportController;
 use App\Http\Controllers\Agent\ProfileController;
 use App\Http\Controllers\Agent\PropertyController;
 use App\Http\Controllers\Agent\PropertyImageController;
@@ -23,4 +24,7 @@ Route::prefix('agent')->name('agent.')->middleware(['auth', 'role:agent'])->grou
     
     // Developer projects - only for developer agent type
     Route::resource('developer-projects', DeveloperProjectController::class);
+    
+    // Developer reports (analytics dashboard) - only for developer agent type
+    Route::get('developer-reports', [DeveloperReportController::class, 'index'])->name('developer-reports.index');
 });
