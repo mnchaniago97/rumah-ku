@@ -15,7 +15,23 @@ class WatermarkService
     public function __construct()
     {
         $this->manager = new ImageManager(new Driver());
-        $this->watermarkPath = public_path('assets/admin/images/logo/rumahio-dark.png');
+        
+        // Check multiple possible locations for the logo
+        $possiblePaths = [
+            public_path('assets/admin/images/logo/rumahio-dark.png'),
+            base_path('../public_html/assets/admin/images/logo/rumahio-dark.png'),
+            base_path('../public/assets/admin/images/logo/rumahio-dark.png'),
+        ];
+        
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                $this->watermarkPath = $path;
+                return;
+            }
+        }
+        
+        // Default to standard public path
+        $this->watermarkPath = $possiblePaths[0];
     }
 
     /**
