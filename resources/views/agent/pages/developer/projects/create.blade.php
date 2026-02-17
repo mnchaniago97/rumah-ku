@@ -39,6 +39,14 @@
                         class="h-11 w-full rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white" />
                 </div>
 
+                <!-- Project Images -->
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar Proyek</label>
+                    <input type="file" name="images[]" accept="image/*" multiple
+                        class="block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-600 dark:border-gray-800 dark:text-gray-300" />
+                    <p class="mt-1 text-xs text-gray-500">Dapat memilih beberapa gambar sekaligus. Maks 5MB per gambar.</p>
+                </div>
+
                 <!-- Location -->
                 <div class="md:col-span-2 mt-4">
                     <h4 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">Lokasi</h4>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentApplication;
+use App\Models\DeveloperInquiry;
 use App\Models\Property;
 use App\Models\Project;
 use App\Models\PropertyInquiry;
@@ -52,16 +53,16 @@ class DeveloperReportController extends Controller
                 ->sum('views');
         }
 
-        // Inquiries statistics
-        $totalInquiries = PropertyInquiry::whereHas('property', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->count();
+        // Developer Inquiries statistics
+        $totalInquiries = DeveloperInquiry::where('developer_id', $user->id)->count();
+        $inquiriesThisMonth = DeveloperInquiry::where('developer_id', $user->id)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
         
-        $inquiriesThisMonth = PropertyInquiry::whereHas('property', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->whereMonth('created_at', now()->month)
-          ->whereYear('created_at', now()->year)
-          ->count();
+        $newInquiriesCount = DeveloperInquiry::where('developer_id', $user->id)
+            ->where('status', 'new')
+            ->count();
 
         // Views Chart Data (Last 6 months)
         $viewsChart = $this->getViewsChartData($user->id);
@@ -69,7 +70,7 @@ class DeveloperReportController extends Controller
         // Inquiries Chart Data (Last 6 months)
         $inquiriesChart = $this->getInquiriesChartData($user->id);
 
-        // Properties by Status
+        // Properties by Status - ensure at least one value for chart display
         $propertiesByStatus = [
             'Aktif' => Property::where('user_id', $user->id)->where('is_published', true)->count(),
             'Draft' => Property::where('user_id', $user->id)->where('is_published', false)->count(),
@@ -77,6 +78,16 @@ class DeveloperReportController extends Controller
                 ->where('listing_expires_at', '<', now())
                 ->count(),
         ];
+        
+        // If all values are 0, still show the chart with empty data
+        $totalStatus = array_sum($propertiesByStatus);
+        if ($totalStatus === 0) {
+            $propertiesByStatus = [
+                'Aktif' => 0,
+                'Draft' => 0,
+                'Expired' => 0,
+            ];
+        }
 
         // Properties by Category
         $propertiesByCategory = Property::where('user_id', $user->id)
@@ -114,14 +125,12 @@ class DeveloperReportController extends Controller
             ->limit(5)
             ->get();
 
-        // Recent Inquiries
-        $recentInquiries = PropertyInquiry::whereHas('property', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })
-        ->with('property')
-        ->latest()
-        ->limit(5)
-        ->get();
+        // Recent Developer Inquiries
+        $recentInquiries = DeveloperInquiry::where('developer_id', $user->id)
+            ->with('project')
+            ->latest()
+            ->limit(5)
+            ->get();
 
         return view('agent.pages.developer.reports.index', compact(
             'totalProperties',
@@ -132,6 +141,7 @@ class DeveloperReportController extends Controller
             'viewsThisMonth',
             'totalInquiries',
             'inquiriesThisMonth',
+            'newInquiriesCount',
             'viewsChart',
             'inquiriesChart',
             'propertiesByStatus',
@@ -193,14 +203,12 @@ class DeveloperReportController extends Controller
             $date = now()->subMonths($i);
             $labels[] = $date->format('M Y');
             
-            $count = PropertyInquiry::whereHas('property', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })
-            ->whereMonth('created_at', $date->month)
-            ->whereYear('created_at', $date->year)
-            ->count();
+            $inquiries = DeveloperInquiry::where('developer_id', $userId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->count();
             
-            $data[] = $count;
+            $data[] = (int) $inquiries;
         }
 
         return [

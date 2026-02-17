@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AgentApplicationController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DeveloperProjectController;
 use App\Http\Controllers\Admin\ForumCommentController;
 use App\Http\Controllers\Admin\ForumPostController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -33,6 +34,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,agent'])
     Route::resource('agents', AgentController::class)->only(['index', 'show']);
     Route::patch('agents/{agent}/approve', [AgentController::class, 'approve'])->name('agents.approve');
     Route::delete('agents/{agent}/reject', [AgentController::class, 'reject'])->name('agents.reject');
+    Route::patch('agents/{agent}/plan', [AgentController::class, 'updatePlan'])->name('agents.update-plan');
     Route::resource('testimonials', TestimonialController::class);
     Route::resource('articles', ArticleController::class);
     Route::resource('users', UserController::class);
@@ -50,6 +52,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::patch('agents/{agent}/verify', [AgentController::class, 'verify'])->name('agents.verify');
     Route::patch('agents/{agent}/unverify', [AgentController::class, 'unverify'])->name('agents.unverify');
     Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['show']);
+
+    Route::resource('developer-projects', DeveloperProjectController::class)->except(['create', 'store']);
+    Route::post('developer-projects/{developer_project}/toggle-publish', [DeveloperProjectController::class, 'togglePublish'])->name('developer-projects.toggle-publish');
 
     Route::resource('rumah-subsidi', RumahSubsidiController::class);
     Route::resource('sewa', SewaController::class);

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -17,6 +18,7 @@ class Project extends Model
         'name',
         'slug',
         'logo',
+        'images',
         'address',
         'city',
         'province',
@@ -39,7 +41,49 @@ class Project extends Model
         'is_published' => 'boolean',
         'start_date' => 'date',
         'end_date' => 'date',
+        'images' => 'array',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            if (empty($project->slug)) {
+                $project->slug = $project->generateUniqueSlug($project->name);
+            }
+        });
+
+        static::updating(function ($project) {
+            if ($project->isDirty('name') && empty($project->slug)) {
+                $project->slug = $project->generateUniqueSlug($project->name);
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug for the project.
+     */
+    public function generateUniqueSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $count = static::where('slug', 'like', $slug . '%')
+            ->where('id', '!=', $this->id ?? 0)
+            ->count();
+
+        return $count > 0 ? "{$slug}-{$count}" : $slug;
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     public function developer(): BelongsTo
     {

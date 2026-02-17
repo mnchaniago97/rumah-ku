@@ -46,14 +46,14 @@
                     </div>
                 </a>
 
-                <a href="{{ route('discounted') }}" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group">
+                <a href="{{ route('tanah-dijual') }}" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center group-hover:bg-red-600 transition">
-                            <i class="fas fa-arrow-down text-2xl text-red-600 group-hover:text-white"></i>
+                        <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-600 transition">
+                            <i class="fas fa-map text-2xl text-green-600 group-hover:text-white"></i>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-900">Properti Turun Harga</h3>
-                            <p class="text-sm text-gray-500">Hot deals dan diskon properti</p>
+                            <h3 class="font-semibold text-gray-900">Tanah Dijual</h3>
+                            <p class="text-sm text-gray-500">Tanah untuk investasi dan pembangunan</p>
                         </div>
                     </div>
                 </a>

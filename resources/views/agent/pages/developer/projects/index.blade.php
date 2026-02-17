@@ -34,7 +34,9 @@
                 @foreach($projects as $project)
                     <div class="rounded-xl border border-gray-200 bg-white overflow-hidden dark:border-gray-800 dark:bg-gray-900">
                         <div class="h-40 bg-gray-100 flex items-center justify-center">
-                            @if($project->logo)
+                            @if(!empty($project->images) && isset($project->images[0]))
+                                <img src="{{ $project->images[0] }}" alt="{{ $project->name }}" class="h-full w-full object-cover">
+                            @elseif($project->logo)
                                 <img src="{{ $project->logo }}" alt="{{ $project->name }}" class="h-full w-full object-cover">
                             @else
                                 <i class="fa fa-building text-gray-300 text-5xl"></i>

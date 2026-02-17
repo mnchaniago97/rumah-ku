@@ -75,17 +75,13 @@
         <!-- Views Chart -->
         <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Statistik Views (6 Bulan Terakhir)</h4>
-            <div class="h-64">
-                <canvas id="viewsChart"></canvas>
-            </div>
+            <div id="viewsChart"></div>
         </div>
 
         <!-- Inquiries Chart -->
         <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Statistik Inquiries (6 Bulan Terakhir)</h4>
-            <div class="h-64">
-                <canvas id="inquiriesChart"></canvas>
-            </div>
+            <div id="inquiriesChart"></div>
         </div>
     </div>
 
@@ -94,17 +90,13 @@
         <!-- Properties by Status -->
         <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Properti per Status</h4>
-            <div class="h-64">
-                <canvas id="statusChart"></canvas>
-            </div>
+            <div id="statusChart"></div>
         </div>
 
         <!-- Properties by Category -->
         <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">Properti per Kategori</h4>
-            <div class="h-64">
-                <canvas id="categoryChart"></canvas>
-            </div>
+            <div id="categoryChart"></div>
         </div>
 
         <!-- Top Projects -->
@@ -194,9 +186,11 @@
     <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="flex items-center justify-between mb-4">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">Inquiry Terbaru</h4>
-            <a href="{{ route('agent.properties.index') }}" class="text-sm text-brand-500 hover:text-brand-600">
-                Lihat Semua <i class="fa fa-arrow-right ml-1"></i>
-            </a>
+            @if($recentInquiries->count() > 0)
+                <a href="{{ route('agent.developer-inquiries.index') }}" class="text-sm text-brand-500 hover:text-brand-600">
+                    Lihat Semua <i class="fa fa-arrow-right ml-1"></i>
+                </a>
+            @endif
         </div>
         <div class="space-y-4">
             @if($recentInquiries->count() > 0)
@@ -211,12 +205,26 @@
                                 <span class="text-xs text-gray-500">{{ $inquiry->created_at->diffForHumans() }}</span>
                             </div>
                             <p class="text-sm text-gray-500">{{ $inquiry->email }} - {{ $inquiry->phone }}</p>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($inquiry->message, 100) }}</p>
-                            @if($inquiry->property)
-                                <a href="{{ route('agent.properties.show', $inquiry->property) }}" class="mt-2 inline-block text-xs text-brand-500 hover:text-brand-600">
-                                    <i class="fa fa-home mr-1"></i> {{ $inquiry->property->title }}
-                                </a>
+                            @if($inquiry->project)
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                                    <i class="fa fa-building mr-1"></i> {{ $inquiry->project->name }}
+                                </p>
                             @endif
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($inquiry->message, 100) }}</p>
+                            <div class="mt-2 flex items-center gap-2">
+                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+                                    {{ $inquiry->status === 'new' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                                    {{ $inquiry->status === 'contacted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}
+                                    {{ $inquiry->status === 'qualified' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                                    {{ $inquiry->status === 'closed' ? 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' : '' }}
+                                    {{ $inquiry->status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                                ">
+                                    {{ $inquiry->status_label }}
+                                </span>
+                                @if($inquiry->financing_type)
+                                    <span class="text-xs text-gray-400">{{ $inquiry->financing_type_label }}</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -228,100 +236,298 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Views Chart
-    const viewsCtx = document.getElementById('viewsChart').getContext('2d');
-    new Chart(viewsCtx, {
-        type: 'line',
-        data: {
-            labels: {{ json_encode($viewsChart['labels']) }},
-            datasets: [{
-                label: 'Views',
-                data: {{ json_encode($viewsChart['data']) }},
-                borderColor: '#465FFF',
-                backgroundColor: 'rgba(70, 95, 255, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+    // Views Chart (Area Chart)
+    const viewsChartEl = document.getElementById('viewsChart');
+    if (viewsChartEl) {
+        const viewsChartOptions = {
+            series: [{
+                name: 'Views',
+                data: {!! json_encode($viewsChart['data']) !!}
+            }],
+            chart: {
+                fontFamily: 'Outfit, sans-serif',
+                height: 256,
+                type: 'area',
+                toolbar: {
+                    show: false
+                }
             },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-
-    // Inquiries Chart
-    const inquiriesCtx = document.getElementById('inquiriesChart').getContext('2d');
-    new Chart(inquiriesCtx, {
-        type: 'bar',
-        data: {
-            labels: {{ json_encode($inquiriesChart['labels']) }},
-            datasets: [{
-                label: 'Inquiries',
-                data: {{ json_encode($inquiriesChart['data']) }},
-                backgroundColor: '#F59E0B',
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+            colors: ['#465FFF'],
+            fill: {
+                gradient: {
+                    enabled: true,
+                    opacityFrom: 0.55,
+                    opacityTo: 0
+                }
             },
-            scales: {
-                y: { beginAtZero: true }
+            stroke: {
+                curve: 'straight',
+                width: 2
+            },
+            markers: {
+                size: 4,
+                colors: ['#465FFF'],
+                strokeWidth: 0
+            },
+            dataLabels: {
+                enabled: false
+            },
+            grid: {
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            xaxis: {
+                categories: {!! json_encode($viewsChart['labels']) !!},
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                title: {
+                    style: {
+                        fontSize: '0px'
+                    }
+                },
+                labels: {
+                    formatter: function(val) {
+                        return Math.round(val);
+                    }
+                }
+            },
+            tooltip: {
+                x: {
+                    show: true
+                }
             }
-        }
-    });
+        };
+        const viewsChart = new ApexCharts(viewsChartEl, viewsChartOptions);
+        viewsChart.render();
+    }
 
-    // Status Chart
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ json_encode(array_keys($propertiesByStatus)) }},
-            datasets: [{
-                data: {{ json_encode(array_values($propertiesByStatus)) }},
-                backgroundColor: ['#22C55E', '#6B7280', '#EF4444']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
+    // Inquiries Chart (Bar Chart)
+    const inquiriesChartEl = document.getElementById('inquiriesChart');
+    if (inquiriesChartEl) {
+        const inquiriesChartOptions = {
+            series: [{
+                name: 'Inquiries',
+                data: {!! json_encode($inquiriesChart['data']) !!}
+            }],
+            chart: {
+                fontFamily: 'Outfit, sans-serif',
+                height: 256,
+                type: 'bar',
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#F59E0B'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 5,
+                    borderRadiusApplication: 'end'
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 4,
+                colors: ['transparent']
+            },
+            grid: {
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            xaxis: {
+                categories: {!! json_encode($inquiriesChart['labels']) !!},
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                title: {
+                    style: {
+                        fontSize: '0px'
+                    }
+                },
+                labels: {
+                    formatter: function(val) {
+                        return Math.round(val);
+                    }
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                x: {
+                    show: true
+                }
             }
-        }
-    });
+        };
+        const inquiriesChart = new ApexCharts(inquiriesChartEl, inquiriesChartOptions);
+        inquiriesChart.render();
+    }
 
-    // Category Chart
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-    new Chart(categoryCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ json_encode(array_keys($propertiesByCategory)) }},
-            datasets: [{
-                data: {{ json_encode(array_values($propertiesByCategory)) }},
-                backgroundColor: ['#465FFF', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
+    // Status Chart (Donut Chart)
+    const statusChartEl = document.getElementById('statusChart');
+    if (statusChartEl) {
+        const statusData = {!! json_encode(array_values($propertiesByStatus)) !!};
+        const totalStatus = statusData.reduce((a, b) => a + b, 0);
+        
+        const statusChartOptions = {
+            series: totalStatus > 0 ? statusData : [1],
+            chart: {
+                fontFamily: 'Outfit, sans-serif',
+                height: 256,
+                type: 'donut'
+            },
+            colors: totalStatus > 0 ? ['#22C55E', '#6B7280', '#EF4444'] : ['#E5E7EB'],
+            labels: totalStatus > 0 ? {!! json_encode(array_keys($propertiesByStatus)) !!} : ['Tidak ada data'],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        labels: {
+                            show: true,
+                            name: {
+                                show: true,
+                                fontSize: '14px',
+                                fontWeight: 500
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                formatter: function(val) {
+                                    return totalStatus > 0 ? val : '0';
+                                }
+                            },
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                formatter: function() {
+                                    return totalStatus;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                fontSize: '12px',
+                markers: {
+                    radius: 99
+                }
+            },
+            tooltip: {
+                enabled: totalStatus > 0
             }
-        }
-    });
+        };
+        const statusChart = new ApexCharts(statusChartEl, statusChartOptions);
+        statusChart.render();
+    }
+
+    // Category Chart (Donut Chart)
+    const categoryChartEl = document.getElementById('categoryChart');
+    if (categoryChartEl) {
+        const categoryData = {!! json_encode(array_values($propertiesByCategory)) !!};
+        const totalCategory = categoryData.reduce((a, b) => a + b, 0);
+        
+        const categoryChartOptions = {
+            series: totalCategory > 0 ? categoryData : [1],
+            chart: {
+                fontFamily: 'Outfit, sans-serif',
+                height: 256,
+                type: 'donut'
+            },
+            colors: totalCategory > 0 ? ['#465FFF', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'] : ['#E5E7EB'],
+            labels: totalCategory > 0 ? {!! json_encode(array_keys($propertiesByCategory)) !!} : ['Tidak ada data'],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        labels: {
+                            show: true,
+                            name: {
+                                show: true,
+                                fontSize: '14px',
+                                fontWeight: 500
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                formatter: function(val) {
+                                    return totalCategory > 0 ? val : '0';
+                                }
+                            },
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                formatter: function() {
+                                    return totalCategory;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                fontSize: '12px',
+                markers: {
+                    radius: 99
+                }
+            },
+            tooltip: {
+                enabled: totalCategory > 0
+            }
+        };
+        const categoryChart = new ApexCharts(categoryChartEl, categoryChartOptions);
+        categoryChart.render();
+    }
 });
 </script>
 @endpush

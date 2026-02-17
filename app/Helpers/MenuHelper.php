@@ -95,6 +95,10 @@ class MenuHelper
                         'name' => 'Pricing (Paket)',
                         'path' => route('admin.subscription-plans.index', [], false),
                         'icon' => 'tag',
+                    ], [
+                        'name' => 'Proyek Developer',
+                        'path' => route('admin.developer-projects.index', [], false),
+                        'icon' => 'building',
                     ]] : []),
                 ],
             ],

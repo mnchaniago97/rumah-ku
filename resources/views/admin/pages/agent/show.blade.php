@@ -182,5 +182,78 @@
                 </div>
             </div>
         </div>
+
+        {{-- Subscription Plan Section --}}
+        <div id="subscription" class="rounded-xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Paket Langganan</h2>
+            
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Paket Saat Ini</p>
+                        <p class="text-lg font-semibold text-gray-800 dark:text-white mt-1">
+                            {{ $agent->agentPlan?->name ?? 'Belum ada paket' }}
+                        </p>
+                        @if($agent->agentPlan)
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                                {{ $agent->agentPlan->formattedPrice() }}
+                                @if($agent->agentPlan->period_label)
+                                    <span class="text-gray-400">/ {{ $agent->agentPlan->period_label }}</span>
+                                @endif
+                            </p>
+                            @if($agent->agentPlan->access)
+                                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                    <p class="text-xs font-semibold text-gray-600 dark:text-gray-300">Batasan Akses:</p>
+                                    <ul class="mt-2 space-y-1">
+                                        @if(isset($agent->agentPlan->access['max_projects']))
+                                            <li class="text-sm text-gray-600 dark:text-gray-300">
+                                                <i class="fa fa-building mr-2 text-gray-400"></i>
+                                                Maks. Proyek: {{ $agent->agentPlan->access['max_projects'] === -1 ? 'Unlimited' : $agent->agentPlan->access['max_projects'] }}
+                                            </li>
+                                        @endif
+                                        @if(isset($agent->agentPlan->access['listings']))
+                                            <li class="text-sm text-gray-600 dark:text-gray-300">
+                                                <i class="fa fa-home mr-2 text-gray-400"></i>
+                                                Maks. Listing: {{ $agent->agentPlan->access['listings'] === -1 ? 'Unlimited' : $agent->agentPlan->access['listings'] }}
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+
+                <div>
+                    <form method="POST" action="{{ route('admin.agents.update-plan', $agent) }}">
+                        @csrf
+                        @method('PATCH')
+                        <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Ubah Paket</label>
+                        <select name="plan_id" class="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm dark:border-gray-800 dark:bg-gray-900 dark:text-white">
+                            <option value="">- Tanpa Paket -</option>
+                            @php
+                                $availablePlans = \App\Models\SubscriptionPlan::where('agent_type', $agent->agent_type)
+                                    ->where('is_active', true)
+                                    ->orderBy('sort_order')
+                                    ->get();
+                            @endphp
+                            @foreach($availablePlans as $plan)
+                                <option value="{{ $plan->id }}" @selected($agent->agent_subscription_plan_id === $plan->id)>
+                                    {{ $plan->name }} - {{ $plan->formattedPrice() }}
+                                    @if($plan->period_label)
+                                        / {{ $plan->period_label }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Pilih paket sesuai tipe agent: {{ $typeOptions[$agent->agent_type] ?? '-' }}</p>
+                        <button type="submit" class="mt-3 inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">
+                            <i class="fa fa-save mr-2"></i>
+                            Simpan Paket
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

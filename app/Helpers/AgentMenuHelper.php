@@ -57,6 +57,11 @@ class AgentMenuHelper
                         'icon' => 'building',
                     ],
                     [
+                        'name' => 'Inquiry',
+                        'path' => route('agent.developer-inquiries.index', [], false),
+                        'icon' => 'inbox',
+                    ],
+                    [
                         'name' => 'Laporan',
                         'path' => route('agent.developer-reports.index', [], false),
                         'icon' => 'report',

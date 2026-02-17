@@ -162,22 +162,34 @@
     @endif
 
     {{-- Properti Pilihan --}}
-    <section class="max-w-[1200px] mx-auto px-4 py-8">
-        <h3 class="text-lg font-semibold mb-4">Properti Pilihan Kami</h3>
-        <div class="grid md:grid-cols-2 gap-6">
-            @forelse($ourChoiceProperties as $property)
-                @include('frontend.components.project-card', ['property' => $property])
-            @empty
-                @for($i = 0; $i < 4; $i++)
-                    <div class="bg-white rounded-xl shadow overflow-hidden">
-                        <div class="aspect-[16/9] bg-gray-200"></div>
-                        <div class="p-4">
+    <section class="max-w-[1200px] mx-auto px-4 py-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Properti Pilihan Kami</h3>
+            <div class="flex gap-2">
+                <button id="choice-prev" class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa fa-chevron-left text-sm"></i>
+                </button>
+                <button id="choice-next" class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Carousel Container --}}
+        <div id="choice-carousel" class="relative">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @forelse($ourChoiceProperties as $property)
+                    @include('frontend.components.property-card', ['property' => $property])
+                @empty
+                    @for($i = 0; $i < 8; $i++)
+                        <div class="bg-white rounded-xl shadow p-4">
+                            <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
                             <div class="h-4 bg-gray-200 rounded mb-2"></div>
                             <div class="h-3 bg-gray-200 rounded w-2/3"></div>
                         </div>
-                    </div>
-                @endfor
-            @endforelse
+                    @endfor
+                @endforelse
+            </div>
         </div>
     </section>
 
@@ -195,22 +207,98 @@
     @endif
 
     {{-- Properti Populer --}}
-    <section class="max-w-[1200px] mx-auto px-4 py-8">
-        <h3 class="text-lg font-semibold mb-4">Properti Populer</h3>
-        <div class="grid md:grid-cols-3 gap-4">
-            @forelse($popularProperties as $property)
-                @include('frontend.components.property-card', ['property' => $property])
-            @empty
-                @for($i = 0; $i < 6; $i++)
-                    <div class="bg-white rounded-xl shadow p-4">
-                        <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
-                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </div>
-                @endfor
-            @endforelse
+    <section class="max-w-[1200px] mx-auto px-4 py-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Properti Populer</h3>
+            <div class="flex gap-2">
+                <button id="popular-prev" class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa fa-chevron-left text-sm"></i>
+                </button>
+                <button id="popular-next" class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Carousel Container --}}
+        <div id="popular-carousel" class="relative">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @forelse($popularProperties as $property)
+                    @include('frontend.components.property-card', ['property' => $property])
+                @empty
+                    @for($i = 0; $i < 8; $i++)
+                        <div class="bg-white rounded-xl shadow p-4">
+                            <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                        </div>
+                    @endfor
+                @endforelse
+            </div>
         </div>
     </section>
+
+    {{-- Proyek Developer --}}
+    @if(isset($developerProjects) && $developerProjects->count() > 0)
+    <section class="max-w-[1200px] mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Proyek Terverifikasi</h3>
+                <p class="text-sm text-gray-500 mt-1">Properti dengan info terbaru, akurat, dan diverifikasi secara berkala ke developer</p>
+            </div>
+            <a href="{{ route('projects') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                Lihat Semua <i class="fa fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            @foreach($developerProjects as $project)
+                <a href="{{ route('projects.show', $project->slug ?? $project->id) }}" class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow group">
+                    <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
+                        @if(!empty($project->images) && count($project->images) > 0)
+                            <img src="{{ $project->images[0] }}" 
+                                 alt="{{ $project->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @elseif($project->properties->first() && $project->properties->first()->images->first())
+                            <img src="{{ Storage::url($project->properties->first()->images->first()->path) }}" 
+                                 alt="{{ $project->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100">
+                                <i class="fa fa-building text-4xl text-blue-300"></i>
+                            </div>
+                        @endif
+                        @if($project->logo)
+                            <img src="{{ $project->logo }}" alt="Logo" class="absolute bottom-2 right-2 w-8 h-8 rounded-lg bg-white p-1 shadow">
+                        @endif
+                    </div>
+                    <div class="p-3">
+                        <h4 class="font-semibold text-sm text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $project->name }}</h4>
+                        @if($project->user)
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-1">{{ $project->user->company_name ?? $project->user->name }}</p>
+                        @endif
+                        <div class="flex items-center justify-between mt-2">
+                            <div>
+                                @if($project->price_start)
+                                    <p class="text-xs font-semibold text-blue-600">
+                                        Mulai Rp {{ number_format($project->price_start, 0, ',', '.') }}
+                                    </p>
+                                @endif
+                            </div>
+                            <span class="text-xs text-gray-400">
+                                <i class="fa fa-home mr-1"></i> {{ $project->properties_count ?? 0 }}
+                            </span>
+                        </div>
+                        @if($project->city)
+                            <p class="text-xs text-gray-400 mt-1 line-clamp-1">
+                                <i class="fa fa-map-marker-alt mr-1"></i> {{ $project->city }}
+                            </p>
+                        @endif
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
     {{-- Tools --}}
     @include('frontend.components.tools')

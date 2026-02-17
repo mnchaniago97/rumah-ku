@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\AgentApplication;
 use App\Models\Project;
+use App\Services\WatermarkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +95,8 @@ class DeveloperProjectController extends Controller
             'price_end' => ['nullable', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:2048'],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['image', 'max:5120'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'total_units' => ['nullable', 'integer', 'min:0'],
@@ -105,10 +108,22 @@ class DeveloperProjectController extends Controller
         $data['status'] = 'active';
         $data['is_published'] = false;
 
+        $watermarkService = new WatermarkService();
+
         // Handle logo upload
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('project-logos', 'uploads');
+            $path = $watermarkService->processAndStore($request->file('logo'), 'project-logos', 'uploads');
             $data['logo'] = '/storage/' . $path;
+        }
+
+        // Handle multiple images upload
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $image) {
+                $path = $watermarkService->processAndStore($image, 'project-images', 'uploads');
+                $images[] = '/storage/' . $path;
+            }
+            $data['images'] = $images;
         }
 
         // Handle brochure upload
@@ -160,6 +175,8 @@ class DeveloperProjectController extends Controller
             'price_end' => ['nullable', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:2048'],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['image', 'max:5120'],
             'brochure' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'total_units' => ['nullable', 'integer', 'min:0'],
@@ -170,14 +187,26 @@ class DeveloperProjectController extends Controller
             'is_published' => ['nullable', 'boolean'],
         ]);
 
+        $watermarkService = new WatermarkService();
+
         // Handle logo upload
         if ($request->hasFile('logo')) {
             if ($developer_project->logo) {
                 $oldPath = str_replace('/storage/', '', $developer_project->logo);
                 Storage::disk('uploads')->delete($oldPath);
             }
-            $path = $request->file('logo')->store('project-logos', 'uploads');
+            $path = $watermarkService->processAndStore($request->file('logo'), 'project-logos', 'uploads');
             $data['logo'] = '/storage/' . $path;
+        }
+
+        // Handle multiple images upload
+        if ($request->hasFile('images')) {
+            $images = $developer_project->images ?? [];
+            foreach ($request->file('images') as $image) {
+                $path = $watermarkService->processAndStore($image, 'project-images', 'uploads');
+                $images[] = '/storage/' . $path;
+            }
+            $data['images'] = $images;
         }
 
         // Handle brochure upload
@@ -212,12 +241,85 @@ class DeveloperProjectController extends Controller
             $oldPath = str_replace('/storage/', '', $developer_project->brochure);
             Storage::disk('uploads')->delete($oldPath);
         }
+        
+        // Delete project images
+        if (!empty($developer_project->images)) {
+            foreach ($developer_project->images as $image) {
+                $oldPath = str_replace('/storage/', '', $image);
+                Storage::disk('uploads')->delete($oldPath);
+            }
+        }
 
         $developer_project->delete();
 
         return redirect()
             ->route('agent.developer-projects.index')
             ->with('success', 'Proyek berhasil dihapus.');
+    }
+
+    /**
+     * Delete a specific image from the project.
+     */
+    public function deleteImage(Project $developer_project, int $index): RedirectResponse
+    {
+        $this->checkDeveloper();
+
+        $images = $developer_project->images ?? [];
+
+        if (isset($images[$index])) {
+            // Delete file from storage
+            $imagePath = str_replace('/storage/', '', $images[$index]);
+            Storage::disk('uploads')->delete($imagePath);
+
+            // Remove from array
+            unset($images[$index]);
+            $developer_project->images = array_values($images); // Re-index array
+            $developer_project->save();
+
+            return back()->with('success', 'Gambar berhasil dihapus.');
+        }
+
+        return back()->with('error', 'Gambar tidak ditemukan.');
+    }
+
+    /**
+     * Add a property to the project.
+     */
+    public function addProperty(Request $request, Project $developer_project): RedirectResponse
+    {
+        $this->checkDeveloper();
+        
+        $request->validate([
+            'property_id' => ['required', 'exists:properties,id'],
+        ]);
+
+        $property = \App\Models\Property::find($request->input('property_id'));
+
+        // Check if property belongs to the developer
+        if ($property->user_id !== Auth::id()) {
+            return back()->with('error', 'Anda tidak memiliki akses ke properti ini.');
+        }
+
+        // Check if property is already in project
+        if ($developer_project->properties()->where('property_id', $property->id)->exists()) {
+            return back()->with('error', 'Properti sudah ada dalam proyek ini.');
+        }
+
+        $developer_project->properties()->attach($property->id);
+
+        return back()->with('success', 'Properti berhasil ditambahkan ke proyek.');
+    }
+
+    /**
+     * Remove a property from the project.
+     */
+    public function removeProperty(Project $developer_project, int $property_id): RedirectResponse
+    {
+        $this->checkDeveloper();
+        
+        $developer_project->properties()->detach($property_id);
+
+        return back()->with('success', 'Properti berhasil dihapus dari proyek.');
     }
 
     private function getMaxProjects(): int

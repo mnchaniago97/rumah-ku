@@ -258,6 +258,21 @@
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Properti Unggulan</span>
                     </label>
                 </div>
+                @php
+                    $userProjects = \App\Models\Project::where('user_id', auth()->id())->get();
+                @endphp
+                @if($userProjects->count() > 0)
+                <div class="md:col-span-2">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Proyek Developer</label>
+                    <select name="project_ids[]" multiple
+                        class="h-auto min-h-[44px] w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white">
+                        @foreach($userProjects as $proj)
+                            <option value="{{ $proj->id }}" @selected($property->projects->contains($proj->id))>{{ $proj->name }}</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Tahan Ctrl/Cmd untuk memilih beberapa proyek.</p>
+                </div>
+                @endif
             </div>
 
             <div class="mt-6 flex items-center gap-3">

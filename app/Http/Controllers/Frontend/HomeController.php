@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Banner;
+use App\Models\Project;
 use App\Models\Property;
 use App\Models\PropertyListingCategory;
 use App\Models\Testimonial;
@@ -68,6 +69,18 @@ class HomeController extends Controller
                 ->get();
         }
 
+        // Get developer projects (active and published)
+        $developerProjects = Project::with(['user', 'properties'])
+            ->where('status', 'active')
+            ->where('is_published', true)
+            ->whereHas('user', function ($q) {
+                $q->where('agent_type', 'developer');
+            })
+            ->withCount('properties')
+            ->latest()
+            ->take(6)
+            ->get();
+
         $testimonials = Testimonial::active()
             ->orderBy('sort_order')
             ->latest()
@@ -92,6 +105,7 @@ class HomeController extends Controller
             'recommendedProperties' => $recommendedProperties,
             'ourChoiceProperties' => $ourChoiceProperties,
             'popularProperties' => $popularProperties,
+            'developerProjects' => $developerProjects,
             'testimonials' => $testimonials,
             'articles' => $articles,
             'heroBanners' => $heroBanners,

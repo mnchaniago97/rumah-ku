@@ -95,6 +95,23 @@ class AgentController extends Controller
             ->with('success', 'Verifikasi agent dibatalkan.');
     }
 
+    public function updatePlan(\Illuminate\Http\Request $request, User $agent): RedirectResponse
+    {
+        $this->ensureAgent($agent);
+
+        $request->validate([
+            'plan_id' => ['nullable', 'exists:subscription_plans,id'],
+        ]);
+
+        $agent->update([
+            'agent_subscription_plan_id' => $request->input('plan_id') ?: null,
+        ]);
+
+        return redirect()
+            ->route('admin.agents.show', $agent)
+            ->with('success', 'Paket langganan berhasil diperbarui.');
+    }
+
     private function ensureAgent(User $agent): void
     {
         if ($agent->role !== 'agent') {

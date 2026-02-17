@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\PerumahanBaruController;
 use App\Http\Controllers\Frontend\JoinController;
 use App\Http\Controllers\Frontend\LegalController;
 use App\Http\Controllers\Frontend\PricingController;
+use App\Http\Controllers\Frontend\ProjectController;
 use App\Http\Controllers\Frontend\PropertyInquiryController;
 use App\Http\Controllers\Frontend\PropertyController as FrontendPropertyController;
 use App\Http\Controllers\Frontend\RumahSubsidiController;
@@ -30,6 +31,11 @@ Route::get('/articles/{slug}', [FrontendArticleController::class, 'show'])->name
 Route::get('/aset-lelang-bank', [AsetLelangBankController::class, 'index'])->name('aset-lelang-bank');
 Route::post('/carikan-properti', [PropertyInquiryController::class, 'store'])->name('property-inquiries.store');
 
+// Developer Projects Routes
+Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
+Route::get('/projects/{slug}', [ProjectController::class, 'show'])->name('projects.show');
+Route::post('/projects/{slug}/inquiry', [ProjectController::class, 'inquiry'])->name('projects.inquiry');
+
 // Static Pages
 Route::view('/about', 'frontend.pages.about')->name('about');
 Route::view('/contact', 'frontend.pages.contact')->name('contact');
@@ -42,7 +48,6 @@ Route::get('/kebijakan-privasi', [LegalController::class, 'show'])->defaults('pa
 Route::get('/syarat-penggunaan', [LegalController::class, 'show'])->defaults('page', 'syarat-penggunaan')->name('legal.terms');
 Route::get('/syarat-penggunaan-agen', [LegalController::class, 'show'])->defaults('page', 'syarat-penggunaan-agen')->name('legal.agent-terms');
 Route::get('/community-guideline', [LegalController::class, 'show'])->defaults('page', 'community-guideline')->name('legal.community');
-Route::redirect('/projects', '/perumahan-baru')->name('projects');
 Route::get('/rumah-subsidi', [RumahSubsidiController::class, 'index'])->name('rumah-subsidi');
 Route::get('/sewa', [SewaController::class, 'index'])->name('sewa');
 Route::get('/sewa/{shortcut}', [SewaController::class, 'index'])
@@ -98,7 +103,7 @@ Route::get('/join/{type}', [JoinController::class, 'show'])
 Route::post('/join/{type}', [JoinController::class, 'store'])
     ->whereIn('type', ['property-agent', 'in-house-marketing', 'property-owner', 'developer'])
     ->name('join.store');
-Route::view('/discounted', 'frontend.pages.discounted')->name('discounted');
+Route::get('/tanah-dijual', [\App\Http\Controllers\Frontend\TanahController::class, 'index'])->name('tanah-dijual');
 Route::view('/takeover', 'frontend.pages.takeover')->name('takeover');
 Route::get('/forum', [ForumController::class, 'index'])->name('forum');
 Route::get('/forum/posts', [ForumController::class, 'posts'])->name('forum.posts');

@@ -7,6 +7,7 @@ use App\Models\Feature;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\PropertyListingCategory;
+use App\Services\WatermarkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -147,9 +148,10 @@ class PropertyController extends Controller
         }
 
         if ($request->hasFile('images')) {
+            $watermarkService = new WatermarkService();
             $files = $request->file('images');
             foreach ($files as $index => $file) {
-                $path = $file->store('properties', 'uploads');
+                $path = $watermarkService->processAndStore($file, 'properties', 'uploads');
                 PropertyImage::create([
                     'property_id' => $property->id,
                     'path' => '/storage/' . $path,
@@ -271,10 +273,11 @@ class PropertyController extends Controller
         $property->features()->sync($featureIds);
 
         if ($request->hasFile('images')) {
+            $watermarkService = new WatermarkService();
             $startIndex = $property->images()->max('sort_order') ?? 0;
             $files = $request->file('images');
             foreach ($files as $offset => $file) {
-                $path = $file->store('properties', 'uploads');
+                $path = $watermarkService->processAndStore($file, 'properties', 'uploads');
                 PropertyImage::create([
                     'property_id' => $property->id,
                     'path' => '/storage/' . $path,

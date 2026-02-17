@@ -117,4 +117,65 @@
       class="mt-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-mono text-xs dark:border-gray-800 dark:bg-gray-900 dark:text-white">{{ $accessJson }}</textarea>
     @error('access_json')<div class="mt-1 text-xs text-red-600">{{ $message }}</div>@enderror
   </div>
+
+  {{-- Developer-specific: Max Projects --}}
+  <div class="md:col-span-2" id="developerMaxProjects" style="display: none;">
+    <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+      <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-3">Pengaturan Developer</h4>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-semibold text-gray-600 dark:text-gray-300">Maksimal Proyek Aktif</label>
+          <input type="number" min="-1" name="max_projects_input" id="maxProjectsInput"
+            value="{{ isset($plan->access['max_projects']) ? $plan->access['max_projects'] : 1 }}"
+            class="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm dark:border-gray-800 dark:bg-gray-900 dark:text-white" />
+          <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">Gunakan -1 untuk unlimited.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const agentTypeSelect = document.querySelector('select[name="agent_type"]');
+  const developerSection = document.getElementById('developerMaxProjects');
+  const accessJsonTextarea = document.querySelector('textarea[name="access_json"]');
+  const maxProjectsInput = document.getElementById('maxProjectsInput');
+
+  function toggleDeveloperSection() {
+    if (agentTypeSelect.value === 'developer') {
+      developerSection.style.display = 'block';
+    } else {
+      developerSection.style.display = 'none';
+    }
+  }
+
+  function updateAccessJson() {
+    if (agentTypeSelect.value !== 'developer') return;
+
+    let access = {};
+    try {
+      access = JSON.parse(accessJsonTextarea.value || '{}');
+    } catch (e) {
+      access = {};
+    }
+
+    const maxProjects = parseInt(maxProjectsInput.value) || 1;
+    access.max_projects = maxProjects === -1 ? -1 : maxProjects;
+
+    accessJsonTextarea.value = JSON.stringify(access, null, 2);
+  }
+
+  if (agentTypeSelect) {
+    agentTypeSelect.addEventListener('change', toggleDeveloperSection);
+    toggleDeveloperSection();
+  }
+
+  if (maxProjectsInput) {
+    maxProjectsInput.addEventListener('change', updateAccessJson);
+    maxProjectsInput.addEventListener('input', updateAccessJson);
+  }
+});
+</script>
+@endpush
