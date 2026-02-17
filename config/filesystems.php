@@ -49,11 +49,10 @@ return [
 
         'uploads' => [
             'driver' => 'local',
-            'root' => public_path('storage'),
+            'root' => env('UPLOADS_ROOT', base_path('../public_html/storage')),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
-            'report' => false,
         ],
 
         's3' => [
