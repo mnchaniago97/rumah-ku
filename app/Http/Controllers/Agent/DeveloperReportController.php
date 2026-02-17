@@ -10,6 +10,7 @@ use App\Models\PropertyInquiry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DeveloperReportController extends Controller
 {
@@ -40,12 +41,16 @@ class DeveloperReportController extends Controller
         $totalProjects = Project::where('user_id', $user->id)->count();
         $activeProjects = Project::where('user_id', $user->id)->where('status', 'active')->count();
 
-        // Views statistics
-        $totalViews = Property::where('user_id', $user->id)->sum('views');
-        $viewsThisMonth = Property::where('user_id', $user->id)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->sum('views');
+        // Views statistics - check if views column exists
+        $totalViews = 0;
+        $viewsThisMonth = 0;
+        if (Schema::hasColumn('properties', 'views')) {
+            $totalViews = Property::where('user_id', $user->id)->sum('views');
+            $viewsThisMonth = Property::where('user_id', $user->id)
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->sum('views');
+        }
 
         // Inquiries statistics
         $totalInquiries = PropertyInquiry::whereHas('property', function ($q) use ($user) {
@@ -85,14 +90,22 @@ class DeveloperReportController extends Controller
             $propertiesByCategory = ['Tidak ada data' => 0];
         }
 
-        // Top Projects by Views
-        $topProjects = Project::where('user_id', $user->id)
-            ->withCount(['properties as views_count' => function ($q) {
-                $q->select(DB::raw('coalesce(sum(views), 0)'));
-            }])
-            ->orderByDesc('views_count')
-            ->limit(5)
-            ->get();
+        // Top Projects by Views (or by property count if views column doesn't exist)
+        if (Schema::hasColumn('properties', 'views')) {
+            $topProjects = Project::where('user_id', $user->id)
+                ->withCount(['properties as views_count' => function ($q) {
+                    $q->select(DB::raw('coalesce(sum(views), 0)'));
+                }])
+                ->orderByDesc('views_count')
+                ->limit(5)
+                ->get();
+        } else {
+            $topProjects = Project::where('user_id', $user->id)
+                ->withCount('properties')
+                ->orderByDesc('properties_count')
+                ->limit(5)
+                ->get();
+        }
 
         // Recent Properties
         $recentProperties = Property::where('user_id', $user->id)
@@ -136,6 +149,19 @@ class DeveloperReportController extends Controller
     {
         $labels = [];
         $data = [];
+
+        // Check if views column exists
+        if (!Schema::hasColumn('properties', 'views')) {
+            for ($i = 5; $i >= 0; $i--) {
+                $date = now()->subMonths($i);
+                $labels[] = $date->format('M Y');
+                $data[] = 0;
+            }
+            return [
+                'labels' => $labels,
+                'data' => $data,
+            ];
+        }
 
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);

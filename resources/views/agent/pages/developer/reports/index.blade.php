@@ -119,7 +119,7 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">{{ $project->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $project->views_count ?? 0 }} views</p>
+                                <p class="text-xs text-gray-500">{{ $project->views_count ?? $project->properties_count ?? 0 }} properti</p>
                             </div>
                         </div>
                     @endforeach
