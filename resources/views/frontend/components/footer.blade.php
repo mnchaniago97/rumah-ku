@@ -16,8 +16,8 @@
 
 <footer class="bg-gray-900 text-gray-300">
     <div class="max-w-[1200px] mx-auto px-4 py-12">
+        <!-- About Section -->
         <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
-            <!-- About -->
             <div class="col-span-1 md:col-span-2">
                 <h3 class="text-xl font-bold text-white">{{ $footer['brand'] ?? 'Rumah IO' }}</h3>
                 <p class="mt-4 text-sm text-gray-400">
@@ -51,67 +51,72 @@
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div>
-                <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Tautan Cepat</h4>
-                <ul class="mt-4 space-y-2">
-                    @foreach(($quickLinks ?? []) as $row)
-                        @if(filled($row['label'] ?? null) && filled($row['url'] ?? null))
-                            <li>
-                                <a href="{{ $row['url'] }}" class="text-sm text-gray-400 hover:text-white transition duration-200">
-                                    {{ $row['label'] }}
-                                </a>
-                            </li>
-                        @endif
-                    @endforeach
-                </ul>
-            </div>
+            <!-- Quick Links & Contact - Mobile: Single Row -->
+            <div class="col-span-1 md:col-span-2">
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Quick Links -->
+                    <div>
+                        <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Tautan Cepat</h4>
+                        <ul class="mt-4 space-y-2">
+                            @foreach(($quickLinks ?? []) as $row)
+                                @if(filled($row['label'] ?? null) && filled($row['url'] ?? null))
+                                    <li>
+                                        <a href="{{ $row['url'] }}" class="text-sm text-gray-400 hover:text-white transition duration-200">
+                                            {{ $row['label'] }}
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
 
-            <!-- Contact -->
-            <div>
-                <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Hubungi Kami</h4>
-                <ul class="mt-4 space-y-3 text-sm">
-                    @if(filled($footerContact['address'] ?? null))
-                        <li class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-map-marker-alt text-blue-500"></i>
-                            </div>
-                            <span class="text-gray-400">{{ $footerContact['address'] }}</span>
-                        </li>
-                    @endif
-                    @if(filled($footerContact['phone'] ?? null))
-                        <li class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-phone-alt text-green-500"></i>
-                            </div>
-                            <span class="text-gray-400">{{ $footerContact['phone'] }}</span>
-                        </li>
-                    @endif
-                    @if(filled($footerContact['email'] ?? null))
-                        <li class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-envelope text-yellow-500"></i>
-                            </div>
-                            <span class="text-gray-400">{{ $footerContact['email'] }}</span>
-                        </li>
-                    @endif
-                    @if(filled($footerContact['whatsapp'] ?? null))
-                        <li class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
-                                <i class="fab fa-whatsapp text-green-500"></i>
-                            </div>
-                            <span class="text-gray-400">{{ $footerContact['whatsapp'] }}</span>
-                        </li>
-                    @endif
-                </ul>
+                    <!-- Contact -->
+                    <div>
+                        <h4 class="text-sm font-semibold uppercase tracking-wider text-white">Hubungi Kami</h4>
+                        <ul class="mt-4 space-y-3 text-sm">
+                            @if(filled($footerContact['address'] ?? null))
+                                <li class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-map-marker-alt text-blue-500"></i>
+                                    </div>
+                                    <span class="text-gray-400">{{ $footerContact['address'] }}</span>
+                                </li>
+                            @endif
+                            @if(filled($footerContact['phone'] ?? null))
+                                <li class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-phone-alt text-green-500"></i>
+                                    </div>
+                                    <span class="text-gray-400">{{ $footerContact['phone'] }}</span>
+                                </li>
+                            @endif
+                            @if(filled($footerContact['email'] ?? null))
+                                <li class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-envelope text-yellow-500"></i>
+                                    </div>
+                                    <span class="text-gray-400">{{ $footerContact['email'] }}</span>
+                                </li>
+                            @endif
+                            @if(filled($footerContact['whatsapp'] ?? null))
+                                <li class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center flex-shrink-0">
+                                        <i class="fab fa-whatsapp text-green-500"></i>
+                                    </div>
+                                    <span class="text-gray-400">{{ $footerContact['whatsapp'] }}</span>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Bottom Bar -->
         <div class="mt-12 border-t border-gray-800 pt-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-400">{{ $footer['copyright'] ?? '' }}</p>
-                <div class="flex gap-6 text-sm">
+                <p class="text-sm text-gray-400 text-center md:text-left">{{ $footer['copyright'] ?? '' }}</p>
+                <div class="flex flex-wrap justify-center gap-3 md:gap-6 text-sm">
                     @foreach(($legalLinks ?? []) as $row)
                         @if(filled($row['label'] ?? null) && filled($row['url'] ?? null))
                             <a href="{{ $row['url'] }}" class="text-gray-400 hover:text-white transition duration-200">
