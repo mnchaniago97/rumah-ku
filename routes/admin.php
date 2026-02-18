@@ -57,7 +57,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::post('developer-projects/{developer_project}/toggle-publish', [DeveloperProjectController::class, 'togglePublish'])->name('developer-projects.toggle-publish');
 
     Route::resource('rumah-subsidi', RumahSubsidiController::class);
+    Route::delete('rumah-subsidi/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('rumah-subsidi.images.destroy');
     Route::resource('sewa', SewaController::class);
+    Route::delete('sewa/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('sewa.images.destroy');
 
     Route::resource('forum-posts', ForumPostController::class);
     Route::resource('forum-comments', ForumCommentController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);

@@ -28,6 +28,19 @@ class PropertyImageController extends Controller
         // Delete the image record
         $image->delete();
 
+        // Determine redirect based on route name
+        $routeName = request()->route()->getName();
+        
+        if (str_contains($routeName, 'rumah-subsidi')) {
+            return redirect()
+                ->route('admin.rumah-subsidi.show', $property)
+                ->with('success', 'Image deleted successfully.');
+        } elseif (str_contains($routeName, 'sewa')) {
+            return redirect()
+                ->route('admin.sewa.show', $property)
+                ->with('success', 'Image deleted successfully.');
+        }
+
         return redirect()
             ->route('admin.properties.show', $property)
             ->with('success', 'Image deleted successfully.');

@@ -65,7 +65,18 @@
                     $imgPath = '/storage/' . ltrim($imgPath, '/');
                 }
               @endphp
-              <img src="{{ $imgPath }}" alt="Foto properti" class="h-28 w-full rounded-lg border border-gray-200 object-cover dark:border-gray-800" loading="lazy">
+              <div class="group relative">
+                <img src="{{ $imgPath }}" alt="Foto properti" class="h-28 w-full rounded-lg border border-gray-200 object-cover dark:border-gray-800" loading="lazy">
+                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                    <form action="{{ route('agent.sewa.images.destroy', [$property, $image]) }}" method="POST" onsubmit="return confirm('Hapus gambar ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="rounded-full bg-red-500 p-2 text-white hover:bg-red-600">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+              </div>
             @endforeach
           </div>
         </div>

@@ -20,8 +20,10 @@ Route::prefix('agent')->name('agent.')->middleware(['auth', 'role:agent'])->grou
     Route::resource('properties', PropertyController::class);
     Route::delete('properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('properties.images.destroy');
     Route::resource('sewa', SewaController::class);
+    Route::delete('sewa/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('sewa.images.destroy');
     Route::resource('users', UserController::class)->only(['index', 'show', 'update']);
     Route::resource('rumah-subsidi', RumahSubsidiController::class)->middleware('agent.feature:rumah_subsidi');
+    Route::delete('rumah-subsidi/{property}/images/{image}', [PropertyImageController::class, 'destroy'])->name('rumah-subsidi.images.destroy');
     
     // Developer projects - only for developer agent type
     Route::resource('developer-projects', DeveloperProjectController::class);
