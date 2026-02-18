@@ -202,7 +202,7 @@
         <div class="max-w-[1200px] mx-auto px-4 py-4">
             <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-2 md:overflow-visible md:snap-none" id="ads3-scroll">
                 @foreach($ads3Banners as $banner)
-                    <div class="flex-shrink-0 w-full md:w-auto snap-start">
+                    <div class="flex-shrink-0 w-[280px] md:w-auto snap-start">
                         <a href="{{ $banner->link ?? '#' }}" class="block">
                             <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
                         </a>
