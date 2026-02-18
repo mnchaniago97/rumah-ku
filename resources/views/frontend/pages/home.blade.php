@@ -400,15 +400,38 @@
 
     {{-- Banner Bawah --}}
     @if(isset($bottomBanners) && $bottomBanners->count() > 0)
-        <div class="max-w-[1200px] mx-auto px-4 py-6">
-            <div class="grid gap-4 {{ $bottomBanners->count() > 1 ? 'grid-cols-2' : 'grid-cols-1' }}">
+        @if($bottomBanners->count() == 1)
+            {{-- Single Banner: Tampilkan full width --}}
+            <div class="max-w-[1200px] mx-auto px-4 py-6">
                 @foreach($bottomBanners as $banner)
                     <a href="{{ $banner->link ?? '#' }}" class="block">
                         <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Bawah' }}" class="w-full rounded-xl">
                     </a>
                 @endforeach
             </div>
-        </div>
+        @else
+            {{-- Multiple Banners: Tampilkan sebagai Carousel --}}
+            <div class="max-w-[1200px] mx-auto px-4 py-6">
+                <div class="relative">
+                    <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" id="bottom-scroll">
+                        @foreach($bottomBanners as $banner)
+                            <div class="flex-shrink-0 w-full md:w-1/2 snap-start">
+                                <a href="{{ $banner->link ?? '#' }}" class="block">
+                                    <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Bawah' }}" class="w-full rounded-xl">
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <button id="bottom-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
+                        <i class="fa fa-chevron-left text-sm"></i>
+                    </button>
+                    <button id="bottom-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
+                        <i class="fa fa-chevron-right text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
     @else
         <div class="max-w-[1200px] mx-auto px-4 py-6">
             <img src="https://source.unsplash.com/1200x250/?real-estate" class="w-full rounded-xl" alt="Banner Bawah">
@@ -559,6 +582,30 @@
                 window.addEventListener('resize', updateAds3Buttons);
                 window.addEventListener('load', updateAds3Buttons);
                 requestAnimationFrame(updateAds3Buttons);
+            }
+
+            // Banner Bawah Carousel (only if more than 1 banner)
+            const bottomScroll = document.getElementById('bottom-scroll');
+            const bottomPrev = document.getElementById('bottom-prev');
+            const bottomNext = document.getElementById('bottom-next');
+
+            if (bottomScroll && bottomPrev && bottomNext) {
+                const bottomWidth = (bottomScroll.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
+
+                bottomNext.addEventListener('click', () => {
+                    bottomScroll.scrollBy({ left: bottomWidth, behavior: 'smooth' });
+                });
+
+                bottomPrev.addEventListener('click', () => {
+                    bottomScroll.scrollBy({ left: -bottomWidth, behavior: 'smooth' });
+                });
+
+                // Hide/show buttons based on scroll position
+                const updateBottomButtons = () => updateScrollButtons(bottomScroll, bottomPrev, bottomNext);
+                bottomScroll.addEventListener('scroll', updateBottomButtons);
+                window.addEventListener('resize', updateBottomButtons);
+                window.addEventListener('load', updateBottomButtons);
+                requestAnimationFrame(updateBottomButtons);
             }
 
             // Properti Pilihan Carousel
