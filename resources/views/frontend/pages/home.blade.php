@@ -197,18 +197,43 @@
         </div>
     </section>
 
-    {{-- Banner Iklan 3 --}}
+    {{-- Banner Iklan 3 Carousel --}}
     @if(isset($ads3Banners) && $ads3Banners->count() > 0)
-        <div class="max-w-[1200px] mx-auto px-4 py-4">
-            <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-2 md:overflow-visible md:snap-none" id="ads3-scroll">
+        @if($ads3Banners->count() == 1)
+            {{-- Single Banner: Tampilkan seperti Banner Bawah --}}
+            <div class="max-w-[1200px] mx-auto px-4 py-4">
                 @foreach($ads3Banners as $banner)
-                    <div class="flex-shrink-0 w-[280px] md:w-auto snap-start">
-                        <a href="{{ $banner->link ?? '#' }}" class="block">
-                            <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
-                        </a>
-                    </div>
+                    <a href="{{ $banner->link ?? '#' }}" class="block">
+                        <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
+                    </a>
                 @endforeach
             </div>
+        @else
+            {{-- Multiple Banners: Tampilkan sebagai Carousel --}}
+            <div class="max-w-[1200px] mx-auto px-4 py-4">
+                <div class="relative">
+                    <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth" id="ads3-scroll">
+                        @foreach($ads3Banners as $banner)
+                            <div class="flex-shrink-0 w-full md:w-1/2 snap-start">
+                                <a href="{{ $banner->link ?? '#' }}" class="block">
+                                    <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <button id="ads3-prev" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
+                        <i class="fa fa-chevron-left text-sm"></i>
+                    </button>
+                    <button id="ads3-next" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow flex items-center justify-center text-gray-700 hover:bg-white transition z-10" style="display: none;">
+                        <i class="fa fa-chevron-right text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
+    @else
+        <div class="max-w-[1200px] mx-auto px-4 py-4">
+            <img src="https://source.unsplash.com/1200x200/?house" class="w-full rounded-xl" alt="Banner Iklan 3">
         </div>
     @endif
 
@@ -510,6 +535,30 @@
                 window.addEventListener('resize', updateAds2Buttons);
                 window.addEventListener('load', updateAds2Buttons);
                 requestAnimationFrame(updateAds2Buttons);
+            }
+
+            // Ads3 Banner Carousel (only if more than 1 banner)
+            const ads3Scroll = document.getElementById('ads3-scroll');
+            const ads3Prev = document.getElementById('ads3-prev');
+            const ads3Next = document.getElementById('ads3-next');
+
+            if (ads3Scroll && ads3Prev && ads3Next) {
+                const ads3Width = (ads3Scroll.firstElementChild?.offsetWidth || 600) + 16; // banner width + gap
+
+                ads3Next.addEventListener('click', () => {
+                    ads3Scroll.scrollBy({ left: ads3Width, behavior: 'smooth' });
+                });
+
+                ads3Prev.addEventListener('click', () => {
+                    ads3Scroll.scrollBy({ left: -ads3Width, behavior: 'smooth' });
+                });
+
+                // Hide/show buttons based on scroll position
+                const updateAds3Buttons = () => updateScrollButtons(ads3Scroll, ads3Prev, ads3Next);
+                ads3Scroll.addEventListener('scroll', updateAds3Buttons);
+                window.addEventListener('resize', updateAds3Buttons);
+                window.addEventListener('load', updateAds3Buttons);
+                requestAnimationFrame(updateAds3Buttons);
             }
 
             // Properti Pilihan Carousel
