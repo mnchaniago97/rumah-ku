@@ -177,15 +177,19 @@
 
         {{-- Carousel Container --}}
         <div id="choice-carousel" class="relative">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-4 md:overflow-visible md:snap-none" id="choice-scroll">
                 @forelse($ourChoiceProperties as $property)
-                    @include('frontend.components.property-card', ['property' => $property])
+                    <div class="flex-shrink-0 w-[280px] snap-start">
+                        @include('frontend.components.property-card', ['property' => $property])
+                    </div>
                 @empty
                     @for($i = 0; $i < 8; $i++)
-                        <div class="bg-white rounded-xl shadow p-4">
-                            <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
-                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                        <div class="flex-shrink-0 w-[280px] snap-start">
+                            <div class="bg-white rounded-xl shadow p-4">
+                                <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                            </div>
                         </div>
                     @endfor
                 @endforelse
@@ -196,11 +200,13 @@
     {{-- Banner Iklan 3 --}}
     @if(isset($ads3Banners) && $ads3Banners->count() > 0)
         <div class="max-w-[1200px] mx-auto px-4 py-4">
-            <div class="grid gap-4 {{ $ads3Banners->count() > 1 ? 'grid-cols-2' : 'grid-cols-1' }}">
+            <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-2 md:overflow-visible md:snap-none" id="ads3-scroll">
                 @foreach($ads3Banners as $banner)
-                    <a href="{{ $banner->link ?? '#' }}" class="block">
-                        <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
-                    </a>
+                    <div class="flex-shrink-0 w-full md:w-auto snap-start">
+                        <a href="{{ $banner->link ?? '#' }}" class="block">
+                            <img src="{{ Storage::url($banner->image) }}" alt="{{ $banner->title ?? 'Banner Iklan 3' }}" class="w-full rounded-xl">
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -222,15 +228,19 @@
 
         {{-- Carousel Container --}}
         <div id="popular-carousel" class="relative">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-4 md:overflow-visible md:snap-none" id="popular-scroll">
                 @forelse($popularProperties as $property)
-                    @include('frontend.components.property-card', ['property' => $property])
+                    <div class="flex-shrink-0 w-[280px] snap-start">
+                        @include('frontend.components.property-card', ['property' => $property])
+                    </div>
                 @empty
                     @for($i = 0; $i < 8; $i++)
-                        <div class="bg-white rounded-xl shadow p-4">
-                            <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
-                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                        <div class="flex-shrink-0 w-[280px] snap-start">
+                            <div class="bg-white rounded-xl shadow p-4">
+                                <div class="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                            </div>
                         </div>
                     @endfor
                 @endforelse
@@ -250,51 +260,53 @@
                 Lihat Semua <i class="fa fa-arrow-right ml-1"></i>
             </a>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth md:grid md:grid-cols-4 md:overflow-visible md:snap-none" id="developer-scroll">
             @foreach($developerProjects as $project)
-                <a href="{{ route('projects.show', $project->slug ?? $project->id) }}" class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow group">
-                    <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
-                        @if(!empty($project->images) && count($project->images) > 0)
-                            <img src="{{ $project->images[0] }}" 
-                                 alt="{{ $project->name }}" 
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        @elseif($project->properties->first() && $project->properties->first()->images->first())
-                            <img src="{{ Storage::url($project->properties->first()->images->first()->path) }}" 
-                                 alt="{{ $project->name }}" 
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100">
-                                <i class="fa fa-building text-4xl text-blue-300"></i>
-                            </div>
-                        @endif
-                        @if($project->logo)
-                            <img src="{{ $project->logo }}" alt="Logo" class="absolute bottom-2 right-2 w-8 h-8 rounded-lg bg-white p-1 shadow">
-                        @endif
-                    </div>
-                    <div class="p-3">
-                        <h4 class="font-semibold text-sm text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $project->name }}</h4>
-                        @if($project->user)
-                            <p class="text-xs text-gray-500 mt-1 line-clamp-1">{{ $project->user->company_name ?? $project->user->name }}</p>
-                        @endif
-                        <div class="flex items-center justify-between mt-2">
-                            <div>
-                                @if($project->price_start)
-                                    <p class="text-xs font-semibold text-blue-600">
-                                        Mulai Rp {{ number_format($project->price_start, 0, ',', '.') }}
-                                    </p>
-                                @endif
-                            </div>
-                            <span class="text-xs text-gray-400">
-                                <i class="fa fa-home mr-1"></i> {{ $project->properties_count ?? 0 }}
-                            </span>
+                <div class="flex-shrink-0 w-[280px] snap-start">
+                    <a href="{{ route('projects.show', $project->slug ?? $project->id) }}" class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow group block">
+                        <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
+                            @if(!empty($project->images) && count($project->images) > 0)
+                                <img src="{{ $project->images[0] }}" 
+                                     alt="{{ $project->name }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            @elseif($project->properties->first() && $project->properties->first()->images->first())
+                                <img src="{{ Storage::url($project->properties->first()->images->first()->path) }}" 
+                                     alt="{{ $project->name }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100">
+                                    <i class="fa fa-building text-4xl text-blue-300"></i>
+                                </div>
+                            @endif
+                            @if($project->logo)
+                                <img src="{{ $project->logo }}" alt="Logo" class="absolute bottom-2 right-2 w-8 h-8 rounded-lg bg-white p-1 shadow">
+                            @endif
                         </div>
-                        @if($project->city)
-                            <p class="text-xs text-gray-400 mt-1 line-clamp-1">
-                                <i class="fa fa-map-marker-alt mr-1"></i> {{ $project->city }}
-                            </p>
-                        @endif
-                    </div>
-                </a>
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-1">{{ $project->name }}</h4>
+                            @if($project->user)
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-1">{{ $project->user->company_name ?? $project->user->name }}</p>
+                            @endif
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    @if($project->price_start)
+                                        <p class="text-xs font-semibold text-blue-600">
+                                            Mulai Rp {{ number_format($project->price_start, 0, ',', '.') }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <span class="text-xs text-gray-400">
+                                    <i class="fa fa-home mr-1"></i> {{ $project->properties_count ?? 0 }}
+                                </span>
+                            </div>
+                            @if($project->city)
+                                <p class="text-xs text-gray-400 mt-1 line-clamp-1">
+                                    <i class="fa fa-map-marker-alt mr-1"></i> {{ $project->city }}
+                                </p>
+                            @endif
+                        </div>
+                    </a>
+                </div>
             @endforeach
         </div>
     </section>
@@ -498,6 +510,69 @@
                 window.addEventListener('resize', updateAds2Buttons);
                 window.addEventListener('load', updateAds2Buttons);
                 requestAnimationFrame(updateAds2Buttons);
+            }
+
+            // Properti Pilihan Carousel
+            const choiceScroll = document.getElementById('choice-scroll');
+            const choicePrev = document.getElementById('choice-prev');
+            const choiceNext = document.getElementById('choice-next');
+            const choiceCardWidth = 280 + 16; // card width + gap
+
+            if (choiceScroll && choicePrev && choiceNext) {
+                choiceNext.addEventListener('click', () => {
+                    choiceScroll.scrollBy({ left: choiceCardWidth, behavior: 'smooth' });
+                });
+
+                choicePrev.addEventListener('click', () => {
+                    choiceScroll.scrollBy({ left: -choiceCardWidth, behavior: 'smooth' });
+                });
+
+                const updateChoiceButtons = () => updateScrollButtons(choiceScroll, choicePrev, choiceNext);
+                choiceScroll.addEventListener('scroll', updateChoiceButtons);
+                window.addEventListener('resize', updateChoiceButtons);
+                window.addEventListener('load', updateChoiceButtons);
+                requestAnimationFrame(updateChoiceButtons);
+            }
+
+            // Properti Populer Carousel
+            const popularScroll = document.getElementById('popular-scroll');
+            const popularPrev = document.getElementById('popular-prev');
+            const popularNext = document.getElementById('popular-next');
+
+            if (popularScroll && popularPrev && popularNext) {
+                popularNext.addEventListener('click', () => {
+                    popularScroll.scrollBy({ left: choiceCardWidth, behavior: 'smooth' });
+                });
+
+                popularPrev.addEventListener('click', () => {
+                    popularScroll.scrollBy({ left: -choiceCardWidth, behavior: 'smooth' });
+                });
+
+                const updatePopularButtons = () => updateScrollButtons(popularScroll, popularPrev, popularNext);
+                popularScroll.addEventListener('scroll', updatePopularButtons);
+                window.addEventListener('resize', updatePopularButtons);
+                window.addEventListener('load', updatePopularButtons);
+                requestAnimationFrame(updatePopularButtons);
+            }
+
+            // Proyek Developer Carousel
+            const developerScroll = document.getElementById('developer-scroll');
+
+            if (developerScroll) {
+                const updateDeveloperButtons = () => {
+                    const maxScroll = developerScroll.scrollWidth - developerScroll.clientWidth;
+                    // Hide prev/next buttons on desktop since it's a grid
+                    if (window.innerWidth >= 768) {
+                        if (choicePrev) choicePrev.style.display = 'none';
+                        if (choiceNext) choiceNext.style.display = 'none';
+                        if (popularPrev) popularPrev.style.display = 'none';
+                        if (popularNext) popularNext.style.display = 'none';
+                    }
+                };
+                developerScroll.addEventListener('scroll', updateDeveloperButtons);
+                window.addEventListener('resize', updateDeveloperButtons);
+                window.addEventListener('load', updateDeveloperButtons);
+                requestAnimationFrame(updateDeveloperButtons);
             }
         });
     </script>
